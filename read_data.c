@@ -20,13 +20,13 @@ void assign_units() {
     B_unit = CL * sqrt(4. * M_PI * RHO_unit);
     Ne_unit = RHO_unit / (MP + ME);
 
-    printf("MBH: %g\n", MBH);
-    printf("M_unit: %g\n", MUNIT);
-    printf("L_unit: %g\n", L_unit);
-    printf("RHO_unit: %g\n", RHO_unit);
-    printf("U_unit: %g\n", U_unit);
-    printf("B_unit: %g\n", B_unit);
-    printf("Ne_unit: %g\n\n", Ne_unit);
+    //printf("MBH: %g\n", MBH);
+    //printf("M_unit: %g\n", MUNIT);
+    //printf("L_unit: %g\n", L_unit);
+    //printf("RHO_unit: %g\n", RHO_unit);
+    //printf("U_unit: %g\n", U_unit);
+    //printf("B_unit: %g\n", B_unit);
+    //printf("Ne_unit: %g\n\n", Ne_unit);
 }
 
 void read_data(char *fname) {
@@ -49,13 +49,13 @@ void read_data(char *fname) {
 
     float var[50]; // must be float because HARMPI dump data is saved as float!
 
-    printf("Opening dump file '%s'...\n", fname);
+    printf("Opening dump file...\n");
     fp = fopen(fname, "r");
     if (fp == NULL) {
 		fprintf(stderr, "dump file not found.\n");
 		exit(1);
 	} else {
-		fprintf(stderr, "Successfully opened '%s'.\n", fname);
+		fprintf(stderr, "Successfully opened dump file.\n");
 	}
 
     // get standard HARMPI header
@@ -291,13 +291,13 @@ void read_gdump(char *fname)
 
     float var[58];
 
-    printf("Opening gdump file '%s'...\n", fname);
+    printf("Opening gdump file...\n");
     fp = fopen(fname, "rb");
 	if (fp == NULL) {
 		fprintf(stderr, "gdump not found.\n");
 		exit(1);
 	} else {
-		fprintf(stderr, "Successfully opened '%s'.\n", fname);
+		fprintf(stderr, "Successfully opened gdump file.\n");
 	}
 
     // get standard HARMPI header
@@ -369,6 +369,7 @@ void read_gdump(char *fname)
     init_storage_metric();
 
     // Read metric
+    printf("Reading body...\n");
     for (i = 0; i < N1; i++) {
         for (j = 0; j < N2; j++) {
             for (k = 0; k < N3; k++) {

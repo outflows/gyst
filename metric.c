@@ -772,13 +772,6 @@ double Fangle(double x) {
 
 double limlin(double x, double x0, double dx, double y0) {
 	// RHS of Equation B4 of Ressler+2017.
-	// Fangle : integral Psi_s
-	// y0     : f2
-	// dx     : df
-	// x      : f1
-	// x0     : f2
-	// input:
-	// output:
 
   	double Fangle(double x);
   	return(y0 - dx * Fangle(-(x-x0)/dx));
@@ -786,8 +779,6 @@ double limlin(double x, double x0, double dx, double y0) {
 
 double mins(double f1, double f2, double df) {
 	// Equation B4 in Ressler+2017
-	// input:
-	// output:
 
     double limlin(double x, double x0, double dx, double y0);
     return(limlin(f1, f2, df, f2));
@@ -795,8 +786,6 @@ double mins(double f1, double f2, double df) {
 
 double maxs(double f1, double f2, double df) {
 	// Equation B5 in Ressler+2017
-	// input:
-	// output:
 
     double mins(double f1, double f2, double df);
     return(-mins(-f1, -f2, df));
@@ -806,8 +795,6 @@ double maxs(double f1, double f2, double df) {
 //=maxs if dir >= 0
 double minmaxs(double f1, double f2, double df, double dir) {
 	// Returns either min_s (B4 in Ressler+2017) or max_s (B5 in Ressler+2017)
-	// input:
-	// output:
 
     double mins(double f1, double f2, double df);
     double maxs(double f1, double f2, double df);

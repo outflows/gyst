@@ -5,14 +5,12 @@ char dump_file[100], jcs_output[100], normal_output[100], jpeak_output[100];
 char gdump_file[100];
 
 double *****grid_gcov, *****grid_gcon, ***grid_gdet, ******grid_conn;
-//double gcov[NDIM][NDIM], gcon[NDIM][NDIM], gdet, conn[NDIM][NDIM][NDIM];
-
 
 struct of_geom {
-	double gcon[NDIM][NDIM] ;
-	double gcov[NDIM][NDIM] ;
-	double g ;
-} ;
+	double gcon[NDIM][NDIM];
+	double gcov[NDIM][NDIM];
+	double g;
+};
 
 double t;
 double gam;
