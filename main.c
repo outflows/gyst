@@ -20,10 +20,9 @@ int main(int argc, char *argv[])
     clock_t begin = clock();
 
     if (argc < 2) {
-		fprintf(stderr, "ERROR: dumpfile must be specified. To run this program properly, you must type:\n\n");
+        fprintf(stderr, "ERROR: dumpfile must be specified. To run this program properly, you must type:\n\n");
         fprintf(stderr, "./gyst dumpfile_name\n\n");
-        //fprintf(stderr, "where dumpfile_name is your dumpfile.\n");
-		exit(0);
+        exit(0);
     }
 
     strcpy(dump, path);
@@ -50,7 +49,6 @@ int main(int argc, char *argv[])
     read_data(dump);
 
     strcat(gdump, "gdump2D");
-    printf("gdump file: '%s'\n", gdump);
     gdumpfile = fopen(gdump, "rb");
     if (gdumpfile == NULL) {
         printf("gdump not found, setting up grid...\n");
@@ -68,6 +66,7 @@ int main(int argc, char *argv[])
     }
     else {
         fclose(gdumpfile);
+        printf("gdump file: '%s'\n", gdump);
         printf("gdump found, reading gdump...\n");
         read_gdump(gdump);
     }
@@ -89,13 +88,14 @@ int main(int argc, char *argv[])
     clock_t begin_current = clock();
     get_current_sheets();
     //if (CHARACTERIZE) find_normal(normal_output);
-    if (CHARACTERIZE) find_normal();
+    //if (CHARACTERIZE) find_normal();
     clock_t end_current = clock();
     double time_spent_current = (double)(end_current - begin_current) / CLOCKS_PER_SEC;
 
     clock_t end = clock();
     double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
+    printf("\n");
     printf("Running time (initialization): %lf seconds.\n", time_spent_read);
     printf("Running time (get current sheets): %lf seconds.\n", time_spent_current);
     printf("Total running time: %lf seconds.\n", time_spent);
