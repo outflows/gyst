@@ -246,7 +246,6 @@ void get_current_sheets()
                                     k_ctr = 0;
                                 }
 
-
                                 if (flag[i_ctr][j_ctr][k_ctr] == 0) {
                                     // Check adjacency:
                                     //    _______________
@@ -477,7 +476,7 @@ void get_current_sheets()
     }
 
     printf("Finished getting current sheets.\n");
-    printf("NOTE: normalization of current left to plotting script!\n\n");
+    printf("NOTE: normalization of current left to plotting script!\n");
     write_current_sheets(jcs_output);
 }
 

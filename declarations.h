@@ -92,9 +92,9 @@ void check_box_limits(int i, int j, int k, int box_lower_i, int box_lower_j,
 void find_normal();
 
 // eigen.c
-double *get_hessian2D(int i, int j);
-double *get_hessian3D(int i, int j, int k);
-double *get_evec(double *hessian);
+void get_hessian2D(int i, int j, double Hess2D[2][2]);
+void get_hessian3D(int i, int j, int k, double Hess3D[3][3]);
+double *get_evec(double **Hess);
 double *get_evec2D(double hessian[4]);
 double *get_evec3D(double hessian[9]);
 

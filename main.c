@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
     printf("\n");
     printf("Running time (initialization): %lf seconds.\n", time_spent_read);
     printf("Running time (get current sheets): %lf seconds.\n", time_spent_current);
-    printf("Total running time: %lf seconds.\n", time_spent);
+    printf("Total running time: %.2lf seconds.\n", time_spent);
     printf("Total running time: %.2lf minutes.\n", time_spent/60.);
 
     return(0);
