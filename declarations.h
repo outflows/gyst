@@ -4,15 +4,7 @@ double M_unit, L_unit, T_unit, RHO_unit, U_unit, B_unit, Ne_unit;
 char dump_file[100], jcs_output[100], normal_output[100], jpeak_output[100];
 char gdump_file[100];
 
-//double *****grid_gcov, *****grid_gcon, ***grid_gdet, ******grid_conn;
 double gcov[NDIM][NDIM], gcon[NDIM][NDIM], gdet, conn[NDIM][NDIM][NDIM];
-
-
-struct of_geom {
-	double gcon[NDIM][NDIM] ;
-	double gcov[NDIM][NDIM] ;
-	double g ;
-} ;
 
 double t;
 double gam;
@@ -43,9 +35,9 @@ int *kcoords;
 int N1;
 int N2;
 int N3;
-double ***a_r;
-double ***a_th;
-double ***a_phi;
+double ***r;
+double ***th;
+double ***phi;
 double rho;
 double ug;
 double v1;
@@ -123,11 +115,10 @@ double *get_evec3D(double hessian[9]);
 // read_data.c
 void assign_units();
 void init_storage(void);
+void init_storage_metric();
 double *malloc_rank1(int n1, int size);
 double **malloc_rank2_cont(int n1, int n2);
 double ***malloc_rank3_cont(int n1, int n2, int n3);
-double *****malloc_rank5_cont(int n1, int n2, int n3, int n4, int n5);
-double ******malloc_rank6_cont(int n1, int n2, int n3, int n4, int n5, int n6);
 void read_data(char *fname);
 void read_gdump(char *fname);
 
@@ -140,8 +131,7 @@ void get_locmax();
 void write_current_sheets(char *fname);
 
 // metric.c
-void get_connection(double *X, struct of_geom *geom, double conn[][NDIM][NDIM]);
-void get_geometry(int ii, int jj, int kk, struct of_geom *geom);
+void get_connection(double *X, double gcon[][NDIM], double conn[][NDIM][NDIM]);
 void gcon_func(double gcov[][NDIM], double gcon[][NDIM]);
 void gcov_func(double *X, double gcovp[][NDIM]);
 double gdet_func(double gcov[][NDIM]);

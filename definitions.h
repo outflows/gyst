@@ -70,7 +70,6 @@ extern char dump_file[100], jcs_output[100], normal_output[100], jpeak_output[10
 extern char path[100];
 extern char gdump[100];
 
-//extern double *****grid_gcov, *****grid_gcon, ***grid_gdet, ******grid_conn;
 extern double gcov[NDIM][NDIM], gcon[NDIM][NDIM], gdet, conn[NDIM][NDIM][NDIM];
 
 extern double t;
@@ -102,9 +101,9 @@ extern int *kcoords;
 extern int N1;
 extern int N2;
 extern int N3;
-extern double ***a_r;
-extern double ***a_th;
-extern double ***a_phi;
+extern double ***r;
+extern double ***th;
+extern double ***phi;
 extern double rho;
 extern double ug;
 extern double v1;

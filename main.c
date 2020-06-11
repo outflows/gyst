@@ -12,8 +12,6 @@ int main(int argc, char *argv[])
 {
     int i, j, k;
     double X[NDIM];
-    struct of_geom geom;
-    //FILE *gdumpfile;
     char dump[100], gdump[100];
     char path[100] = "/home/gustavo/Dropbox/trabalho/programs/grmonty_harmpi/";
 
@@ -22,11 +20,9 @@ int main(int argc, char *argv[])
     if (argc < 2) {
 		fprintf(stderr, "ERROR: dumpfile must be specified. To run this program properly, you must type:\n\n");
         fprintf(stderr, "./gyst dumpfile_name\n\n");
-        //fprintf(stderr, "where dumpfile_name is your dumpfile.\n");
 		exit(0);
     }
 
-    init_storage();
     assign_units();
 
     strcpy(dump, path);
@@ -55,7 +51,6 @@ int main(int argc, char *argv[])
     }
 
     clock_t begin_read = clock();
-
     read_data(dump);
 
     strcpy(gdump, path);
@@ -105,7 +100,7 @@ int main(int argc, char *argv[])
             for (j = 0; j < N2; j++) {
                 for (k = 0; k < N3; k++) {
                     coord(i, j, k, X);
-                    //get_connection(X, grid_gcon, grid_conn);
+                    get_connection(X, gcon, conn);
                 }
             }
         }
@@ -135,43 +130,6 @@ int main(int argc, char *argv[])
         read_metric(metricfilename);
     }
     printf("Finished reading metric file(s).\n\n");
-
-
-
-/*
-    strcat(gdump, "gdump2D");
-    printf("gdump file: '%s'\n", gdump);
-    gdumpfile = fopen(gdump, "rb");
-    if (gdumpfile == NULL) {
-        printf("gdump not found, preparing grid...\n");
-
-        for (i = 0; i < N1; i++) {
-            for (j = 0; j < N2; j++) {
-                for (k = 0; k < N3; k++) {
-                    coord(i, j, k, X);
-                    gcov_func(X, grid_gcov[i][j][k]);
-                    grid_gdet[i][j][k] = gdet_func(grid_gcov[i][j][k]);
-                    gcon_func(grid_gcov[i][j][k], grid_gcon[i][j][k]);
-                }
-            }
-        }
-    }
-    else {
-        fclose(gdumpfile);
-        printf("gdump found, reading gdump...\n");
-        read_gdump(gdump); // will give me grid_gcov, grid_gcon, grid_gdet
-    }
-
-    printf("Calculating connection coefficients...\n");
-    for (i = 0; i < N1; i++) {
-        for (j = 0; j < N2; j++) {
-            for (k = 0; k < N3; k++) {
-                get_geometry(i, j, k, &geom);
-                get_connection(X, &geom, grid_conn[i][j][k]);
-            }
-        }
-    }
-*/
 
     clock_t end_read = clock();
     double time_spent_read = (double)(end_read - begin_read) / CLOCKS_PER_SEC;
