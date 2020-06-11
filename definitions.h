@@ -70,8 +70,7 @@ extern char dump_file[100], jcs_output[100], normal_output[100], jpeak_output[10
 extern char path[100];
 extern char gdump[100];
 
-//extern double *****grid_gcov, *****grid_gcon, ***grid_gdet, ******grid_conn;
-extern double gcov[NDIM][NDIM], gcon[NDIM][NDIM], gdet, conn[NDIM][NDIM][NDIM];
+extern double *****grid_gcov, *****grid_gcon, ***grid_gdet, ******grid_conn;
 
 extern double t;
 extern double gam;
@@ -110,11 +109,19 @@ extern double ug;
 extern double v1;
 extern double v2;
 extern double v3;
-extern double B1;
-extern double B2;
-extern double ***B3;
+//extern double B1;
+//extern double B2;
+//extern double ***B3;
+extern double ****B;
 extern double divb;
 extern double gdet;
+extern double ****ucov;
+extern double ****ucon;
+extern double ****bcov;
+extern double ****bcon;
+extern double ****jcov;
+extern double ****jcon;
+/*
 extern double ju0;
 extern double jd0;
 extern double ju1;
@@ -139,6 +146,7 @@ extern double bu2;
 extern double bd2;
 extern double ***bu3;
 extern double bd3;
+*/
 
 extern double jsq;
 extern double jdotu;

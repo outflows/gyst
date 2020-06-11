@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     int i, j, k;
     double X[NDIM];
     struct of_geom geom;
-    //FILE *gdumpfile;
+    FILE *gdumpfile;
     char dump[100], gdump[100];
     char path[100] = "/home/gustavo/Dropbox/trabalho/programs/grmonty_harmpi/";
 
@@ -26,7 +26,6 @@ int main(int argc, char *argv[])
 		exit(0);
     }
 
-    init_storage();
     assign_units();
 
     strcpy(dump, path);
@@ -57,7 +56,7 @@ int main(int argc, char *argv[])
     clock_t begin_read = clock();
 
     read_data(dump);
-
+/*
     strcpy(gdump, path);
     if (N3 > 1) {
         strcat(gdump, "gdump3D");
@@ -135,10 +134,10 @@ int main(int argc, char *argv[])
         read_metric(metricfilename);
     }
     printf("Finished reading metric file(s).\n\n");
+*/
 
 
 
-/*
     strcat(gdump, "gdump2D");
     printf("gdump file: '%s'\n", gdump);
     gdumpfile = fopen(gdump, "rb");
@@ -171,7 +170,7 @@ int main(int argc, char *argv[])
             }
         }
     }
-*/
+
 
     clock_t end_read = clock();
     double time_spent_read = (double)(end_read - begin_read) / CLOCKS_PER_SEC;

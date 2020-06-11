@@ -43,16 +43,14 @@ void read_metric(char *fname)
 
                 for (m = 0; m < NDIM; m++) {
                     for (n = 0; n < NDIM; n++) {
-                        gcov[m][n] = var[index];
-                        //grid_gcov[i][j][k][m][n] = var[index];
+                        grid_gcov[i][j][k][m][n] = var[index];
                         index++;
                     }
                 }
 
                 for (m = 0; m < NDIM; m++) {
                     for (n = 0; n < NDIM; n++) {
-                        //grid_gcon[i][j][k][m][n] = var[index];
-                        gcon[m][n] = var[index];
+                        grid_gcon[i][j][k][m][n] = var[index];
                         index++;
                     }
                 }
@@ -60,8 +58,7 @@ void read_metric(char *fname)
                 for (l = 0; l < NDIM; l++) {
                     for (m = 0; m < NDIM; m++) {
                         for (n = 0; n < NDIM; n++) {
-                            //grid_conn[i][j][k][l][m][n] = var[index];
-                            conn[l][m][n] = var[index];
+                            grid_conn[i][j][k][l][m][n] = var[index];
                             index++;
                         }
                     }
@@ -93,23 +90,20 @@ void write_metric(char *fname)
 
                 for (m = 0; m < NDIM; m++) {
                     for (n = 0; n < NDIM; n++) {
-                        //fwrite(&grid_gcov[i][j][k][m][n], sizeof(double), 1, fp);
-                        fwrite(&gcov[m][n], sizeof(double), 1, fp);
+                        fwrite(&grid_gcov[i][j][k][m][n], sizeof(double), 1, fp);
                     }
                 }
 
                 for (m = 0; m < NDIM; m++) {
                     for (n = 0; n < NDIM; n++) {
-                        //fwrite(&grid_gcon[i][j][k][m][n], sizeof(double), 1, fp);
-                        fwrite(&gcon[m][n], sizeof(double), 1, fp);
+                        fwrite(&grid_gcon[i][j][k][m][n], sizeof(double), 1, fp);
                     }
                 }
 
                 for (l = 0; l < NDIM; l++) {
                     for (m = 0; m < NDIM; m++) {
                         for (n = 0; n < NDIM; n++) {
-                            //fwrite(&grid_conn[i][j][k][l][m][n], sizeof(double), 1, fp);
-                            fwrite(&conn[l][m][n], sizeof(double), 1, fp);
+                            fwrite(&grid_conn[i][j][k][l][m][n], sizeof(double), 1, fp);
                         }
                     }
                 }
@@ -137,24 +131,10 @@ void gcov_func(double *X, double gcovp[][NDIM])
   bl_coord(X,&rr,&tth,&pphi) ;
 
   cth = cos(tth) ;
-
-  //-orig        sth = fabs(sin(th)) ;
-  //-orig        if(sth < SMALL) sth = SMALL ;
-
   sth = sin(tth) ;
 
   s2 = sth*sth ;
   rho2 = rr*rr + a*a*cth*cth ;
-
-  //    tfac = 1. ;
-  //    if (r<rbr){
-  //	rfac = r - R0 ;
-  //    }
-  //    else{
-  //        rfac = (r-R0)*(1.+npow2*cpow2*pow((-x1br+X[1]),npow2-1.));
-  //    }
-  //    hfac = M_PI + (1. - hslope)*M_PI*cos(2.*M_PI*X[2]) ;
-  //    pfac = 1. ;
 
   //compute Jacobian x1,x2,x3 -> r,th,phi
   dxdxp_func(X, ddxdxp);
@@ -237,13 +217,13 @@ void get_connection(double *X, struct of_geom *geom, double conn[][NDIM][NDIM])
 			conn[i][j][k] = (gh[i][j] - gl[i][j])/(Xh[k] - Xl[k]) ;
 	}
 
-	/* now rearrange to find \Gamma_{ijk} */
+	// now rearrange to find \Gamma_{ijk}
 	for(i=0;i<NDIM;i++)
 	for(j=0;j<NDIM;j++)
 	for(k=0;k<NDIM;k++)
 		tmp[i][j][k] = 0.5*(conn[j][i][k] + conn[k][i][j] - conn[k][j][i]) ;
 
-	/* finally, raise index */
+	// finally, raise index
 	for(i=0;i<NDIM;i++)
 	for(j=0;j<NDIM;j++)
 	for(k=0;k<NDIM;k++)  {
@@ -261,7 +241,7 @@ void coord(int i, int j, int k, double *X)
 	X[2] = startx[2] + (j + 0.5) * dx[2];
 	X[3] = startx[3] + (k + 0.5) * dx[3];
 }
-/*
+
 void get_geometry(int ii, int jj, int kk, struct of_geom *geom)
 {
 	int i;
@@ -272,7 +252,7 @@ void get_geometry(int ii, int jj, int kk, struct of_geom *geom)
 	}
 	geom->g = grid_gdet[ii][jj][kk];
 }
-*/
+
 
 /****************************************/
 

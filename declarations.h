@@ -4,8 +4,8 @@ double M_unit, L_unit, T_unit, RHO_unit, U_unit, B_unit, Ne_unit;
 char dump_file[100], jcs_output[100], normal_output[100], jpeak_output[100];
 char gdump_file[100];
 
-//double *****grid_gcov, *****grid_gcon, ***grid_gdet, ******grid_conn;
-double gcov[NDIM][NDIM], gcon[NDIM][NDIM], gdet, conn[NDIM][NDIM][NDIM];
+double *****grid_gcov, *****grid_gcon, ***grid_gdet, ******grid_conn;
+//double gcov[NDIM][NDIM], gcon[NDIM][NDIM], gdet, conn[NDIM][NDIM][NDIM];
 
 
 struct of_geom {
@@ -51,35 +51,15 @@ double ug;
 double v1;
 double v2;
 double v3;
-double B1;
-double B2;
-double ***B3;
+double ****B;
 double divb;
 double gdet;
-double ju0;
-double jd0;
-double ju1;
-double jd1;
-double ju2;
-double jd2;
-double ju3;
-double jd3;
-//double uu0;
-double ud0;
-//double uu1;
-double ud1;
-//double uu2;
-double ud2;
-//double uu3;
-double ud3;
-double bu0;
-double bd0;
-double bu1;
-double bd1;
-double bu2;
-double bd2;
-double ***bu3;
-double bd3;
+double ****ucov;
+double ****ucon;
+double ****bcov;
+double ****bcon;
+double ****jcov;
+double ****jcon;
 
 double jsq;
 double jdotu;
@@ -122,14 +102,18 @@ double *get_evec3D(double hessian[9]);
 
 // read_data.c
 void assign_units();
-void init_storage(void);
+void read_data(char *fname);
+void read_gdump(char *fname);
+
+// malloc.c
+void init_storage_data();
+void init_storage_metric();
 double *malloc_rank1(int n1, int size);
 double **malloc_rank2_cont(int n1, int n2);
 double ***malloc_rank3_cont(int n1, int n2, int n3);
+double ****malloc_rank4_cont(int n1, int n2, int n3, int n4);
 double *****malloc_rank5_cont(int n1, int n2, int n3, int n4, int n5);
 double ******malloc_rank6_cont(int n1, int n2, int n3, int n4, int n5, int n6);
-void read_data(char *fname);
-void read_gdump(char *fname);
 
 // sheets.c
 void check_adjacency (int i_adj, int j_adj, int k_adj, double J_peak, int mm,

@@ -8,10 +8,8 @@
 
 // grmonty units
 void assign_units() {
-    /*
-     * Calculates the units for radiative transfer calculations.
-     * Not needed here.
-    */
+    // Calculates the units for radiative transfer calculations.
+    // Not needed here.
 
     printf("Assigning units...\n");
 
@@ -32,31 +30,24 @@ void assign_units() {
 }
 
 void read_data(char *fname) {
-    /*
-     * Reads the data from an iharm2d dump file, stores these data in the
-     * appropriate variables and uses them to calculate a few derived
-     * quantities.
-     *
-     * This function is largely based on init_harm2dv3_data.c from grmonty,
-     * with a few ideas taken from Gammie's file to read iharm2d data when
-     * plotting.
-    */
+    // Reads the data from a HARMPI dump file, stores these data in the
+    // appropriate variables and uses them to calculate a few derived
+    // quantities.
+    //
+    // This function is largely based on init_harm2dv3_data.c from grmonty,
+    // with a few ideas taken from Gammie's file to read iharm2d data when
+    // plotting.
 
     FILE *fp;
     int i, j, k;
-    //double startx[NDIM];//, dx[NDIM];
     double tf, cour, DTd, DTl, DTi, DTr, DTr01, lim, failed;
     int N1tot, N2tot, N3tot, N1G, N2G, N3G;
     int nstep, dump_cnt, image_cnt, rdump_cnt, rdump01_cnt, NPR, DOKTOT;
     double fractheta, fracphi;
-    // cylindrification stuff
-    //double x10, x20, fracdisk, fracjet, r0disk, rdiskend, r0jet, rjetend;
-    //double jetnu, rsjet, r0grid;
-
     //double ti, tj, tk, x1, x2, x3;//, r, th, phi;
     //double ktot, v1min, v1max, v2min, v2max, v3min, v3max;
 
-    float var[50]; // must be float because HARMPI data is saved as float!
+    float var[50]; // must be float because HARMPI dump data is saved as float!
 
     printf("Opening dump file '%s'...\n", fname);
     fp = fopen(fname, "r");
@@ -132,7 +123,8 @@ void read_data(char *fname) {
     fseek(fp, 0, SEEK_SET);
     while ((i=fgetc(fp)) != '\n');
 
-    //printf("Done!\n");
+    // initialize malloc for variables
+    init_storage_data();
 
     printf("Simulation grid: %d x %d x %d\n", N1, N2, N3);
 
@@ -142,7 +134,6 @@ void read_data(char *fname) {
         for (j = 0; j < N2; j++) {
             for (k = 0; k < N3; k++) {
 
-                // float, not double, because HARMPI data is saved as float
                 fread(var, sizeof(float), 50, fp);
                 //ti  = var[0];
                 //tj  = var[1];
@@ -160,30 +151,30 @@ void read_data(char *fname) {
                 v1  = var[11];
                 v2  = var[12];
                 v3  = var[13];
-                B1  = var[14];
-                B2  = var[15];
-                B3[i][j][k] = var[16];
+                B[1][i][j][k] = var[14];
+                B[2][i][j][k] = var[15];
+                B[3][i][j][k] = var[16];
 
                 //ktot = var[17];
                 //divb = var[18];
 
-                // 4-vec U and B (con and cov)
-                //uu0 = var[19];
-                //uu1 = var[20];
-                //uu2 = var[21];
-                //uu3 = var[22];
-                ud0 = var[23];
-                ud1 = var[24];
-                ud2 = var[25];
-                ud3 = var[26];
-                bu0 = var[27];
-                bu1 = var[28];
-                bu2 = var[29];
-                bu3[i][j][k] = var[30];
-                bd0 = var[31];
-                bd1 = var[32];
-                bd2 = var[33];
-                bd3 = var[34];
+                // 4-vec U and B (cov and con)
+                ucov[0][i][j][k] = var[19];
+                ucov[1][i][j][k] = var[20];
+                ucov[2][i][j][k] = var[21];
+                ucov[3][i][j][k] = var[22];
+                ucon[0][i][j][k] = var[23];
+                ucon[1][i][j][k] = var[24];
+                ucon[2][i][j][k] = var[25];
+                ucon[3][i][j][k] = var[26];
+                bcov[0][i][j][k] = var[27];
+                bcov[1][i][j][k] = var[28];
+                bcov[2][i][j][k] = var[29];
+                bcov[3][i][j][k] = var[30];
+                bcon[0][i][j][k] = var[31];
+                bcon[1][i][j][k] = var[32];
+                bcon[2][i][j][k] = var[33];
+                bcon[3][i][j][k] = var[34];
 
                 //v1min = var[35];
                 //v1max = var[36];
@@ -195,33 +186,40 @@ void read_data(char *fname) {
                 // metric determinant
                 gdet = var[41];
 
-                // current; added for my version of HARMPI which calculates currents
-                ju0 = var[42];
-                ju1 = var[43];
-                ju2 = var[44];
-                ju3 = var[45];
-                jd0 = var[46];
-                jd1 = var[47];
-                jd2 = var[48];
-                jd3 = var[49];
+                // current
+                jcov[0][i][j][k] = var[42];
+                jcov[1][i][j][k] = var[43];
+                jcov[2][i][j][k] = var[44];
+                jcov[3][i][j][k] = var[45];
+                jcon[0][i][j][k] = var[46];
+                jcon[1][i][j][k] = var[47];
+                jcon[2][i][j][k] = var[48];
+                jcon[3][i][j][k] = var[49];
 
                 // get some derived quantities
-                jsq   = ju0*jd0 + ju1*jd1 + ju2*jd2 + ju3*jd3;
-                jdotu = ju0*ud0 + ju1*ud1 + ju2*ud2 + ju3*ud3;
+                jsq = jcov[0][i][j][k]*jcon[0][i][j][k] +
+                      jcov[1][i][j][k]*jcon[1][i][j][k] +
+                      jcov[2][i][j][k]*jcon[2][i][j][k] +
+                      jcov[3][i][j][k]*jcon[3][i][j][k];
+                jdotu = jcov[0][i][j][k]*ucon[0][i][j][k] +
+                        jcov[1][i][j][k]*ucon[1][i][j][k] +
+                        jcov[2][i][j][k]*ucon[2][i][j][k] +
+                        jcov[3][i][j][k]*ucon[3][i][j][k];
                 Jsq   = jsq + jdotu*jdotu;
                 gJsq  = gdet*Jsq;
                 J[i][j][k] = sqrt(Jsq);
                 if (isnan(J[i][j][k])) J[i][j][k] = 1e-20;
                 pg  = (gam - 1.)*ug;
-                bsq = bu0*bd0 + bu1*bd1 + bu2*bd2 + bu3[i][j][k]*bd3;
+                bsq = bcov[0][i][j][k]*bcon[0][i][j][k] +
+                      bcov[1][i][j][k]*bcon[1][i][j][k] +
+                      bcov[2][i][j][k]*bcon[2][i][j][k] +
+                      bcov[3][i][j][k]*bcon[3][i][j][k];
                 betapl[i][j][k] = 2.*pg/bsq;
-                sigmaphi[i][j][k] = bu3[i][j][k]*bd3/(rho);
-                Sigmaphi[i][j][k] = B3[i][j][k]*B3[i][j][k]/(rho);
+                sigmaphi[i][j][k] = bcov[3][i][j][k]*bcon[3][i][j][k]/(rho);
+                Sigmaphi[i][j][k] = B[3][i][j][k]*B[3][i][j][k]/(rho);
             }
         }
     }
-
-    //printf("Done!\n");
     printf("Finished reading data.\n\n");
     fclose(fp);
 /*
@@ -275,8 +273,6 @@ void read_data(char *fname) {
             }
         }
     }
-
-    printf("Done!\n");
 */
 }
 
@@ -289,8 +285,8 @@ void read_gdump(char *fname)
     int N1tot, N2tot, N3tot, N1G, N2G, N3G;
     int nstep, dump_cnt, image_cnt, rdump_cnt, rdump01_cnt, NPR, DOKTOT;
     double fractheta, fracphi;
-    double mpi_startn[NDIM];
-    double rr, tth, pphi, X1, X2, X3;
+    //double mpi_startn[NDIM];
+    //double rr, tth, pphi, X1, X2, X3;
     double dxdxp[NDIM][NDIM];
 
     float var[58];
@@ -369,6 +365,9 @@ void read_gdump(char *fname)
     fseek(fp, 0, SEEK_SET);
     while ((i=fgetc(fp)) != '\n');
 
+    // initialize malloc for metric and connection coefficients
+    init_storage_metric();
+
     // Read metric
     for (i = 0; i < N1; i++) {
         for (j = 0; j < N2; j++) {
@@ -390,8 +389,7 @@ void read_gdump(char *fname)
                 index = 9;
                 for (m = 0; m < NDIM; m++) {
                     for(n = 0; n < NDIM; n++) {
-                        //grid_gcov[i][j][k][m][n] = var[index];
-                        gcov[m][n] = var[index];
+                        grid_gcov[i][j][k][m][n] = var[index];
                         index++;
                     }
                 }
@@ -399,15 +397,13 @@ void read_gdump(char *fname)
                 // gcon
                 for (m = 0; m < NDIM; m++) {
                     for(n = 0; n < NDIM; n++) {
-                        //grid_gcon[i][j][k][m][n] = var[index];
-                        gcon[m][n] = var[index];
+                        grid_gcon[i][j][k][m][n] = var[index];
                         index++;
                     }
                 }
 
                 // g
-                //grid_gdet[i][j][k] = var[index];
-                gdet = var[index];
+                grid_gdet[i][j][k] = var[index];
                 index++;
 
                 // dxdxp
@@ -424,137 +420,4 @@ void read_gdump(char *fname)
 
     printf("Finished reading gdump.\n\n");
     fclose(fp);
-}
-
-
-double *malloc_rank1(int n1, int size)
-{
-    /*
-        Allocates a 1D array
-    */
-
-	void *A;
-
-	if ((A = (void *) malloc(n1 * size)) == NULL) {
-		fprintf(stderr, "malloc failure in malloc_rank1\n");
-		exit(123);
-	}
-
-	return A;
-}
-
-double **malloc_rank2_cont(int n1, int n2)
-{
-    // Allocates a multidimensional array
-
-	double **A;
-	double *space;
-	int i;
-
-	space = malloc_rank1(n1 * n2, sizeof(double));
-
-	A = malloc_rank1(n1, sizeof(double *));
-
-	for (i = 0; i < n1; i++)
-		A[i] = &(space[i * n2]);
-
-	return A;
-}
-
-double ***malloc_rank3_cont(int n1, int n2, int n3)
-{
-    // Allocates a multidimensional array
-
-	double*** arr;
-	int i,j;
-
-	arr = (double ***) malloc(n1*sizeof(double**));
-	for (i = 0; i < n1; i++) {
-		arr[i] = (double **) malloc(n2*sizeof(double*));
-        for(j = 0; j < n2; j++) {
-        	arr[i][j] = (double *) malloc(n3 * sizeof(double));
-        }
-    }
-
-	return arr;
-}
-
-double *****malloc_rank5_cont(int n1, int n2, int n3, int n4, int n5)
-{
-    // Allocates a multidimensional array
-
-	double***** arr;
-	int i,j,k,l;
-
-	arr = (double *****) malloc(n1*sizeof(double**));
-	for (i = 0; i < n1; i++) {
-		arr[i] = (double ****) malloc(n2*sizeof(double*));
-        for(j = 0; j < n2; j++) {
-        	arr[i][j] = (double ***) malloc(n3 * sizeof(double));
-            for(k = 0; k < n3; k++) {
-            	arr[i][j][k] = (double **) malloc(n4 * sizeof(double));
-                for(l = 0; l < n4; l++) {
-                	arr[i][j][k][l] = (double *) malloc(n5 * sizeof(double));
-                }
-            }
-        }
-    }
-
-	return arr;
-}
-
-double ******malloc_rank6_cont(int n1, int n2, int n3, int n4, int n5, int n6)
-{
-    // Allocates a multidimensional array
-
-	double****** arr;
-	int i,j,k,l,m;
-
-    arr = (double *****) malloc(n1*sizeof(double**));
-	for (i = 0; i < n1; i++) {
-		arr[i] = (double ****) malloc(n2*sizeof(double*));
-        for(j = 0; j < n2; j++) {
-        	arr[i][j] = (double ***) malloc(n3 * sizeof(double));
-            for(k = 0; k < n3; k++) {
-            	arr[i][j][k] = (double **) malloc(n4 * sizeof(double));
-                for(l = 0; l < n4; l++) {
-                	arr[i][j][k][l] = (double *) malloc(n5 * sizeof(double));
-                    for(m = 0; m < n5; m++) {
-                    	arr[i][j][k][l][m] = (double *) malloc(n6 * sizeof(double));
-                    }
-                }
-            }
-        }
-    }
-
-	return arr;
-}
-
-void init_storage(void)
-{
-    int i, j, k, l, m, n;
-    printf("Allocating memory...\n");
-
-    flag = (int ***) malloc_rank3_cont(N1, N2, N3);
-    flag_buffer = (int ***) malloc_rank3_cont(N1, N2, N3);
-    a_r = (double ***) malloc_rank3_cont(N1, N2, N3);
-    a_th = (double ***) malloc_rank3_cont(N1, N2, N3);
-    a_phi = (double ***) malloc_rank3_cont(N1, N2, N3);
-    B3 = (double ***) malloc_rank3_cont(N1, N2, N3);
-    bu3 = (double ***) malloc_rank3_cont(N1, N2, N3);
-    J = (double ***) malloc_rank3_cont(N1, N2, N3);
-    J_cs = (double ***) malloc_rank3_cont(N1, N2, N3);
-    betapl = (double ***) malloc_rank3_cont(N1, N2, N3);
-    sigmaphi = (double ***) malloc_rank3_cont(N1, N2, N3);
-    Sigmaphi = (double ***) malloc_rank3_cont(N1, N2, N3);
-
-    // allocate metric and christoffel
-    // gcov, gcon: [N1M][N2M][N3M][NDIM][NDIM]
-    // conn: [N1M][N2M][N3M][NDIM][NDIM][NDIM]
-/*
-    grid_gcov = (double *****) malloc_rank5_cont(N1, N2, N3, NDIM, NDIM);
-    grid_gcon = (double *****) malloc_rank5_cont(N1, N2, N3, NDIM, NDIM);
-    grid_gdet = (double ***) malloc_rank3_cont(N1, N2, N3);
-    grid_conn = (double ******) malloc_rank6_cont(N1, N2, N3, NDIM, NDIM, NDIM);
-*/
 }
