@@ -30,7 +30,11 @@ double startx[NDIM];
 double dx[NDIM];
 double dt;
 
+double ***dJdx, ***dJdy, ***dJdz;
+
 double ***J_cs;
+double ***J_cs_peak;
+double ***J_cs_char;
 int ***flag;
 int ***flag_buffer;
 
@@ -92,8 +96,9 @@ void check_box_limits(int i, int j, int k, int box_lower_i, int box_lower_j,
 void find_normal();
 
 // eigen.c
+void get_hessian(int i, int j, int k, double **Hess);
 void get_hessian2D(int i, int j, double Hess2D[2][2]);
-void get_hessian3D(int i, int j, int k, double Hess3D[3][3]);
+//void get_hessian3D(int i, int j, int k, double Hess3D[3][3]);
 double *get_evec(double **Hess);
 double *get_evec2D(double hessian[4]);
 double *get_evec3D(double hessian[9]);
@@ -119,7 +124,13 @@ void check_adjacency (int i_adj, int j_adj, int k_adj, double J_peak, int mm,
                       int *kcoords);
 void get_current_sheets();
 void get_locmax();
-void write_current_sheets(char *fname);
+void write_current_sheets(char *fname, double ***sheets);
+
+// characterization.c
+void characterize(double ***sheets, int i, int j, int k);
+void xyz_to_rthphi(double x, double y, double z, double r, double th, double phi);
+void rthphi_to_xyz(double r, double th, double phi, double x, double y, double z);
+void sph_to_cart3D(double eig_sph[3], double eig_cart[3], double theta, double phi);
 
 // metric.c
 void get_connection(double *X, struct of_geom *geom, double conn[][NDIM][NDIM]);
@@ -134,6 +145,8 @@ void dxdxp_func(double *X, double dxdxp[][NDIM]);
 void bl_coord(double *X, double *r, double *th, double *phi);
 void bl_coord_vec(double *X, double *V);
 void coord(int i, int j, int k, double *X);
+void Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM]);
+double dot3(double *v1, double *v2);
 
 void vofx_gammiecoords(double *X, double *V);
 void vofx_sjetcoords(double *X, double *V);

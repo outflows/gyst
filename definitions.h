@@ -90,7 +90,11 @@ extern double startx[NDIM];
 extern double dx[NDIM];
 extern double dt;
 
+extern double ***dJdx, ***dJdy, ***dJdz;
+
 extern double ***J_cs;
+extern double ***J_cs_peak;
+extern double ***J_cs_char;
 extern int ***flag;
 extern int ***flag_buffer;
 

@@ -253,6 +253,101 @@ void get_geometry(int ii, int jj, int kk, struct of_geom *geom)
 	geom->g = grid_gdet[ii][jj][kk];
 }
 
+void Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM])
+{
+	double pphi = fmod(X[3], stopx[3]);
+  	if (pphi < 0.0) pphi = stopx[3]+pphi;
+
+	int abc;
+
+	*i = (int) ((X[1] - startx[1]) / dx[1] - 0.5 + 1000) - 1000;
+	*j = (int) ((X[2] - startx[2]) / dx[2] - 0.5 + 1000) - 1000;
+	//*k = (int) ((X[3] - startx[3]) / dx[3] - 0.5 + 1000) - 1000;
+	*k = (int) ((pphi - startx[3]) / dx[3] - 0.5 + 1000) - 1000;
+
+	abc = *k;
+
+	if (*i < 0) {
+		*i = 0;
+		del[1] = 0.;
+	} else if (*i > N1 - 2) {
+		*i = N1 - 2;
+		del[1] = 1.;
+	} else {
+		del[1] = (X[1] - ((*i + 0.5) * dx[1] + startx[1])) / dx[1];
+	}
+
+	if (*j < 0) {
+		*j = 0;
+		del[2] = 0.;
+	} else if (*j > N2 - 2) {
+		*j = N2 - 2;
+		del[2] = 1.;
+	} else {
+		del[2] = (X[2] - ((*j + 0.5) * dx[2] + startx[2])) / dx[2];
+	}
+
+	if (*k < 0) {
+		*k = 0;
+		del[3] = 0.;
+	} else if (*k > N3 - 2) {
+		*k = N3 - 2;
+		del[3] = 1.;
+	} else {
+		del[3] = (pphi - ((*k + 0.5) * dx[3] + startx[3])) / dx[3];
+	}
+
+	//fprintf(stderr, "Xtoijk: %g %g %g\n", del[1], del[2], del[3]);
+
+	if (del[1] > 1.) del[1] = 1.;
+  	if (del[1] < 0.) del[1] = 0.;
+  	if (del[2] > 1.) del[2] = 1.;
+  	if (del[2] < 0.) del[2] = 0.;
+  	if (del[3] > 1.) del[3] = 1.;
+  	if (del[3] < 0.) {
+    	int oldk = *k;
+    	*k = N3-1;
+    	del[3] += 1.;
+    	if (del[3] < 0) {
+      		fprintf(stderr, "Xtoijk: unable to resolve X[3] coordinate to zone %d %d %g %g\n", oldk, *k, del[3], X[3]);
+      		exit(-7);
+    	}
+  	}
+	//printf("%g %d %d %g\n", phi, abc, *k, del[3]);
+
+
+	return;
+}
+
+
+double dot3(double *v1, double *v2)
+{
+	double vv1[4], vv2[4];
+
+	vv1[0] = 0.;
+	vv1[1] = v1[0];
+	vv1[2] = v1[1];
+	vv1[3] = v1[2];
+
+	vv2[0] = 0.;
+	vv2[1] = v2[0];
+	vv2[2] = v2[1];
+	vv2[3] = v2[2];
+
+	return vv1[0]*vv2[0] + vv1[1]*vv2[1] + vv1[2]*vv2[2] + vv1[3]*vv2[3];
+}
+
+
+void bl_coord(double *X, double *r, double *th, double *phi)
+{
+  double V[NDIM];
+  bl_coord_vec(X,V);
+  *r = V[1];
+  *th = V[2];
+  *phi = V[3];
+  return ;
+}
+
 
 /****************************************/
 
@@ -285,16 +380,6 @@ void dxdxp_func(double *X, double dxdxp[][NDIM])
       }
     }
   }
-}
-
-void bl_coord(double *X, double *r, double *th, double *phi)
-{
-  double V[NDIM];
-  bl_coord_vec(X,V);
-  *r = V[1];
-  *th = V[2];
-  *phi = V[3];
-  return ;
 }
 
 /******************************************************************************/
@@ -1115,6 +1200,125 @@ double zbrent(double (*func)(double, double), double param1, double lower, doubl
 	printf("Maximum number of iterations exceeded in ZBRENT");
 }
 
+
+double find_x1_cyl(double x1, double radius)
+{
+    // to be used with zbrent
+    double theexp = x1;
+    if (x1 > x1br) theexp += cpow2 * pow(x1 - x1br, npow2);
+    double diff = radius - (exp(theexp) + R0);
+    return(diff);
+}
+
+
+double find_x2_cyl(double x2, double theta)
+{
+    // to be used with zbrent
+    double v2 = calcth_cylindrified(x2);
+    double diff = theta - v2;
+    return(diff);
+}
+
+
+double calcrmks(double x1) {
+    double theexp = x1;
+    if (x1 > x1br) {
+        theexp += cpow2 * pow(x1 - x1br, npow2);
+    }
+    return(exp(theexp) + R0);
+}
+
+
+double to1stquadrant_single(double x2in)
+{
+    double ntimes = floor((x2in + 2.)/4.);
+    double x2mirror -= 4*ntimes;
+    int *ismirrored = 0;
+
+  	if(x2mirror > 0.) {
+        x2mirror = -x2mirror;
+    	*ismirrored = 1-*ismirrored;
+    }
+
+    if (x2mirror < -1.) {
+        x2mirror = -2. - x2mirror;
+    	*ismirrored = 1-*ismirrored;
+    }
+    return(x2mirror);
+}
+
+
+double func2_single(double r0, double rr, double x20, double x2)
+{
+    double mone = -1.;
+    double sth1in = sinth1in_single(r0,rr,x20,x2);
+    double sth2in = sin(th2in_single(r0,rr,x20,x2));
+    double sth1inaxis = sinth1in_single(r0,rr,x20,mone);
+    double sth2inaxis = sin(th2in_single(r0,rr,x20,mone));
+
+    return(minmaxs(sth1in, sth2in, abs(sth2inaxis-sth1inaxis)+SMALL, r-r0));
+}
+
+
+double sinth1in_single(double r0, double rr, double x20, double x2)
+{
+    double thc = M_PI_2*(1.0 + x2) + ((1. - hslope)/2.)*sin(M_PI*(1.0 + x2));
+    return (r0 * sin(thc) / rr);
+}
+
+
+double th2in_single(double r0, double rr, double x20, double x2)
+{
+    double thetac = M_PI_2*(1.0 + x20) + ((1. - hslope)/2.)*sin(M_PI*(1.0 + x20));
+    double thetamid = M_PI_2*(1.0 + 0.) + ((1. - hslope)/2.)*sin(M_PI*(1.0 + 0.));
+    double ttheta = M_PI_2*(1.0 + x2) + ((1. - hslope)/2.)*sin(M_PI*(1.0 + x2));
+    double th0 = asin(sinth0_single(x20, r0, rr));
+
+    return((ttheta - thetac)/(thetamid - thetac) * (thetamid-th0) + th0);
+}
+
+
+double sinth0_single(double x20, double r0, double rr)
+{
+    double th0 = M_PI_2*(1.0 + x20) + ((1. - hslope)/2.)*sin(M_PI*(1.0 + x20));
+    return (r0*sin(th0)/rr);
+}
+
+
+double calcth_cylindrified(double x2in)
+{
+    double thorig = M_PI_2*(1.0 + x2in) + ((1. - hslope)/2.)*sin(M_PI*(1.0 + x2in));
+    double x2mirror = to1stquadrant_single(x2in);
+    double thmirror = M_PI_2*(1.0 + x2mirror) + ((1. - hslope)/2.)*sin(M_PI*(1.0 + x2mirror));
+
+    double r0 = calcrmks(global_x10);
+    double x20 = global_x20;
+    double x1tr = log(0.5*(exp(global_x10)+exp(startx1)));
+    double rtr = calcrmks(x1tr);
+    double thtr = M_PI_2*(1.0 + x2mirror) + ((1. - hslope)/2.)*sin(M_PI*(1.0 + x2mirror));
+
+    double f1 = sin(M_PI_2*(1.0 + x2mirror) + ((1. - hslope)/2.)*sin(M_PI*(1.0 + x2mirror)));
+    double f2 = func2_single(r0, rin, x20, x2mirror);
+
+    double dftr = func2_single(r0, rtr, x20, x2mirror) - f1;
+    double sinth = maxs(rin*f1, rin*f2, rtr*abs(dftr)+SMALL)/rin;
+
+    double tth = asin(sinth);
+    double ttheta = thorig;
+
+    if (0 == ismirrored) ttheta = thorig + (tth - thmirror);
+    else ttheta  = thorig  - (tth  - thmirror);
+
+    return ttheta;
+}
+
+
+
+
+
+/*
+
+
 double x1_ks_to_x1_mks (double *X_ks)
 {
     // finds x1 mks given x1 ks
@@ -1261,3 +1465,5 @@ void fourvec_old_to_new(double *fourvec_old, double jac[][NDIM], double *fourvec
         fourvec_new[3] += jac[i][3]*fourvec_old[i];
     }
 }
+
+*/

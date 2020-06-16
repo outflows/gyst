@@ -141,8 +141,15 @@ void get_current_sheets()
     // TO DO: adapt jpeak to GRMONTY grid (0, 1 thing, like flag)
     // TO DO: print to another file the 0-1 grid for the new jpeak
 
+    for (i = 0; i < N1; i++) {
+        for (j = 0; j < N2; j++) {
+            for (k = 0; k < N3; k++) {
+                J_cs_peak[i][j][k] = J_cs[i][j][k];
+            }
+        }
+    }
     // We now print the maxima to a file
-    write_current_sheets(jpeak_output);
+    write_current_sheets(jpeak_output, J_cs_peak);
 
     // Now, we loop over the entire grid again, but this time we check if the
     // current at cell (i,j, k) is smaller than half the smallest J_peak, which
@@ -246,7 +253,8 @@ void get_current_sheets()
                                     k_ctr = 0;
                                 }
 
-                                if (flag[i_ctr][j_ctr][k_ctr] == 0) {
+                                //if (flag[i_ctr][j_ctr][k_ctr] == 0) {
+                                if (flag_buffer[i_ctr][j_ctr][k_ctr] == 0) {
                                     // Check adjacency:
                                     //    _______________
                                     //   /|             /|
@@ -323,6 +331,7 @@ void get_current_sheets()
                                     // when checking the adjacency of its own
                                     // adjacent cells
                                     flag[i_ctr][j_ctr][k_ctr] = 1;
+                                    flag_buffer[i_ctr][j_ctr][k_ctr] = 1;
                                 }
                             }
                         }
@@ -382,7 +391,8 @@ void get_current_sheets()
                                     k_ctr = 0;
                                 }
 
-                                if (flag[i_ctr][j_ctr][k_ctr] == 0) {
+                                //if (flag[i_ctr][j_ctr][k_ctr] == 0) {
+                                if (flag_buffer[i_ctr][j_ctr][k_ctr] == 0) {
                                     // Check adjacency:
                                     //    _______________
                                     //   /|             /|
@@ -458,6 +468,7 @@ void get_current_sheets()
                                     // when checking the adjacency of its own
                                     // adjacent cells
                                     flag[i_ctr][j_ctr][k_ctr] = 1;
+                                    flag_buffer[i_ctr][j_ctr][k_ctr] = 1;
                                 }
                             }
                         }
@@ -477,7 +488,7 @@ void get_current_sheets()
 
     printf("Finished getting current sheets.\n");
     printf("NOTE: normalization of current left to plotting script!\n");
-    write_current_sheets(jcs_output);
+    write_current_sheets(jcs_output, J_cs);
 }
 
 void get_locmax() {
@@ -578,13 +589,14 @@ void check_adjacency (int i_adj, int j_adj, int k_adj,
         // if it's not large enough, flag adjacent cell
         else {
         	flag[i_adj][j_adj][k_adj] = 1;
+            flag_buffer[i_adj][j_adj][k_adj] = 1;
         }
     }
 }
 
 
 
-void write_current_sheets(char *fname) {
+void write_current_sheets(char *fname, double ***sheets) {
 
     // Writes J_cs on a file to be plotted by a Python script. J_cs will
     // be written as a 1D array of size N1*N2*N3. This means that we must use
@@ -595,13 +607,13 @@ void write_current_sheets(char *fname) {
     FILE *fp;
     int i, j, k;
 
-    fp = fopen(fname, "w");
+    fp = fopen(fname, "wb");
 
     printf("Writing into file '%s'...\n", fname);
     for (i = 0; i < N1; i++) {
         for (j = 0; j < N2; j++) {
             for (k = 0; k < N3; k++) {
-                fprintf(fp, "%lf\n", J_cs[i][j][k]);
+                fwrite(&sheets[i][j][k], sizeof(double), 1, fp);
             }
         }
     }

@@ -152,9 +152,14 @@ void init_storage_data()
     jcon = (double ****) malloc_rank4_cont(NDIM, N1, N2, N3);
     J = (double ***) malloc_rank3_cont(N1, N2, N3);
     J_cs = (double ***) malloc_rank3_cont(N1, N2, N3);
+	J_cs_peak = (double ***) malloc_rank3_cont(N1, N2, N3);
+	J_cs_char = (double ***) malloc_rank3_cont(N1, N2, N3);
     betapl = (double ***) malloc_rank3_cont(N1, N2, N3);
     sigmaphi = (double ***) malloc_rank3_cont(N1, N2, N3);
     Sigmaphi = (double ***) malloc_rank3_cont(N1, N2, N3);
+	dJdx = (double ***) malloc_rank3_cont(N1, N2, N3); // must be global
+	dJdy = (double ***) malloc_rank3_cont(N1, N2, N3); // must be global
+	dJdz = (double ***) malloc_rank3_cont(N1, N2, N3); // must be global
 
 
 }
