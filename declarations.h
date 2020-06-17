@@ -1,7 +1,7 @@
 // Constants, definitions and units
 double M_unit, L_unit, T_unit, RHO_unit, U_unit, B_unit, Ne_unit;
 
-char dump_file[100], jcs_output[100], normal_output[100], jpeak_output[100];
+char dump_file[100], jcs_output[100], jchar_output[100], jpeak_output[100];
 char gdump_file[100];
 
 double *****grid_gcov, *****grid_gcon, ***grid_gdet, ******grid_conn;
@@ -11,6 +11,8 @@ struct of_geom {
 	double gcov[NDIM][NDIM];
 	double g;
 };
+
+double x1in;
 
 double t;
 double gam;
@@ -27,6 +29,7 @@ double global_x10, global_x20;
 double fracdisk, fracjet, r0disk, rdiskend, r0jet, rjetend, jetnu, rsjet, r0grid;
 
 double startx[NDIM];
+double stopx[NDIM];
 double dx[NDIM];
 double dt;
 
@@ -48,11 +51,9 @@ int N3;
 double ***a_r;
 double ***a_th;
 double ***a_phi;
-double rho;
+double ***rho;
 double ug;
-double v1;
-double v2;
-double v3;
+double ****V;
 double ****B;
 double divb;
 double gdet;
@@ -127,10 +128,10 @@ void get_locmax();
 void write_current_sheets(char *fname, double ***sheets);
 
 // characterization.c
-void characterize(double ***sheets, int i, int j, int k);
+void characterize();
 void xyz_to_rthphi(double x, double y, double z, double r, double th, double phi);
 void rthphi_to_xyz(double r, double th, double phi, double x, double y, double z);
-void sph_to_cart3D(double eig_sph[3], double eig_cart[3], double theta, double phi);
+void vec_sph_to_cart(double eig_sph[3], double eig_cart[3], double theta, double phi);
 
 // metric.c
 void get_connection(double *X, struct of_geom *geom, double conn[][NDIM][NDIM]);
@@ -140,7 +141,6 @@ void gcov_func(double *X, double gcovp[][NDIM]);
 double gdet_func(double gcov[][NDIM]);
 void read_metric(char *fname);
 void write_metric(char *fname);
-
 void dxdxp_func(double *X, double dxdxp[][NDIM]);
 void bl_coord(double *X, double *r, double *th, double *phi);
 void bl_coord_vec(double *X, double *V);
@@ -164,12 +164,22 @@ int LU_decompose(double A[][NDIM], int permute[]);
 void LU_substitution(double A[][NDIM], double B[], int permute[]);
 
 double zbrent(double (*func)(double, double), double param1, double lower, double upper, double tol);
-double x1_ks_to_x1_mks (double *X_ks);
-double x2_ks_to_x2_mks (double *X_ks);
-double find_x1_mks(double x1, double radius);
-double find_x2_mks(double x2, double theta);
-void x_cyl_to_ks(double *X_cyl, double *X_ks);
-void x_ks_to_mks(double *X_ks, double *X_mks);
-void jac_cyl_to_ks(double *X_cyl, double jac[][NDIM]);
-void jac_ks_to_mks(double *X_ks, double jac[][NDIM]);
-void fourvec_old_to_new(double *fourvec_old, double jac[][NDIM], double *fourvec_new);
+double find_x1_cyl(double x1, double radius);
+double find_x2_cyl(double x2, double theta);
+double calcrmks(double x1);
+void to1stquadrant_single(double x2in, double x2out, int *ismirrored);
+double func2_single(double r0, double rr, double x20, double x2);
+double sinth1in_single(double r0, double rr, double x20, double x2);
+double th2in_single(double r0, double rr, double x20, double x2);
+double sinth0_single(double x20, double r0, double rr);
+double calcth_cylindrified(double x2in);
+
+//double x1_ks_to_x1_mks (double *X_ks);
+//double x2_ks_to_x2_mks (double *X_ks);
+//double find_x1_mks(double x1, double radius);
+//double find_x2_mks(double x2, double theta);
+//void x_cyl_to_ks(double *X_cyl, double *X_ks);
+//void x_ks_to_mks(double *X_ks, double *X_mks);
+//void jac_cyl_to_ks(double *X_cyl, double jac[][NDIM]);
+//void jac_ks_to_mks(double *X_ks, double jac[][NDIM]);
+//void fourvec_old_to_new(double *fourvec_old, double jac[][NDIM], double *fourvec_new);

@@ -66,11 +66,13 @@
 // Constants, definitions and units
 extern double M_unit, L_unit, T_unit, RHO_unit, U_unit, B_unit, Ne_unit;
 
-extern char dump_file[100], jcs_output[100], normal_output[100], jpeak_output[100];
+extern char dump_file[100], jcs_output[100], jchar_output[100], jpeak_output[100];
 extern char path[100];
 extern char gdump[100];
 
 extern double *****grid_gcov, *****grid_gcon, ***grid_gdet, ******grid_conn;
+
+extern double x1in;
 
 extern double t;
 extern double gam;
@@ -87,6 +89,7 @@ extern double global_x10, global_x20;
 extern double fracdisk, fracjet, r0disk, rdiskend, r0jet, rjetend, jetnu, rsjet, r0grid;
 
 extern double startx[NDIM];
+extern double stopx[NDIM];
 extern double dx[NDIM];
 extern double dt;
 
@@ -108,11 +111,9 @@ extern int N3;
 extern double ***a_r;
 extern double ***a_th;
 extern double ***a_phi;
-extern double rho;
+extern double ***rho;
 extern double ug;
-extern double v1;
-extern double v2;
-extern double v3;
+extern double ****V;
 extern double ****B;
 extern double divb;
 extern double gdet;

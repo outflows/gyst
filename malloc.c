@@ -143,7 +143,9 @@ void init_storage_data()
     a_r = (double ***) malloc_rank3_cont(N1, N2, N3);
     a_th = (double ***) malloc_rank3_cont(N1, N2, N3);
     a_phi = (double ***) malloc_rank3_cont(N1, N2, N3);
+	rho = (double ***) malloc_rank3_cont(N1, N2, N3);
     B = (double ****) malloc_rank4_cont(NDIM, N1, N2, N3);
+	V = (double ****) malloc_rank4_cont(NDIM, N1, N2, N3);
     ucov = (double ****) malloc_rank4_cont(NDIM, N1, N2, N3);
     ucon = (double ****) malloc_rank4_cont(NDIM, N1, N2, N3);
     bcov = (double ****) malloc_rank4_cont(NDIM, N1, N2, N3);

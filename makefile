@@ -11,9 +11,9 @@ CC_LOAD = $(CC) $(CCFLAGS)
 EXE = gyst
 all: $(EXE)
 
-SRCS = main.c read_data.c sheets.c malloc.c eigen.c metric.c #characterization.c
+SRCS = main.c read_data.c sheets.c malloc.c eigen.c metric.c characterization.c
 
-OBJS = main.o read_data.o sheets.o malloc.o eigen.o metric.o #characterization.o
+OBJS = main.o read_data.o sheets.o malloc.o eigen.o metric.o characterization.o
 
 INCS = declarations.h definitions.h
 

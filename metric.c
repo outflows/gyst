@@ -1220,7 +1220,8 @@ double find_x2_cyl(double x2, double theta)
 }
 
 
-double calcrmks(double x1) {
+double calcrmks(double x1)
+{
     double theexp = x1;
     if (x1 > x1br) {
         theexp += cpow2 * pow(x1 - x1br, npow2);
@@ -1229,22 +1230,22 @@ double calcrmks(double x1) {
 }
 
 
-double to1stquadrant_single(double x2in)
+void to1stquadrant_single(double x2in, double x2out, int *ismirrored)
 {
+    x2out = x2in;
     double ntimes = floor((x2in + 2.)/4.);
-    double x2mirror -= 4*ntimes;
-    int *ismirrored = 0;
+    x2out = x2out - 4*ntimes;
+    *ismirrored = 0;
 
-  	if(x2mirror > 0.) {
-        x2mirror = -x2mirror;
+  	if(x2out > 0.) {
+        x2out = -x2out;
     	*ismirrored = 1-*ismirrored;
     }
 
-    if (x2mirror < -1.) {
-        x2mirror = -2. - x2mirror;
+    if (x2out < -1.) {
+        x2out = -2. - x2out;
     	*ismirrored = 1-*ismirrored;
     }
-    return(x2mirror);
 }
 
 
@@ -1256,7 +1257,7 @@ double func2_single(double r0, double rr, double x20, double x2)
     double sth1inaxis = sinth1in_single(r0,rr,x20,mone);
     double sth2inaxis = sin(th2in_single(r0,rr,x20,mone));
 
-    return(minmaxs(sth1in, sth2in, abs(sth2inaxis-sth1inaxis)+SMALL, r-r0));
+    return(minmaxs(sth1in, sth2in, abs(sth2inaxis-sth1inaxis)+SMALL, rr-r0));
 }
 
 
@@ -1287,13 +1288,16 @@ double sinth0_single(double x20, double r0, double rr)
 
 double calcth_cylindrified(double x2in)
 {
+    int *ismirrored;
+    double x2mirror;
+    double rin = calcrmks(x1in);
     double thorig = M_PI_2*(1.0 + x2in) + ((1. - hslope)/2.)*sin(M_PI*(1.0 + x2in));
-    double x2mirror = to1stquadrant_single(x2in);
+    to1stquadrant_single(x2in, x2mirror, &ismirrored);
     double thmirror = M_PI_2*(1.0 + x2mirror) + ((1. - hslope)/2.)*sin(M_PI*(1.0 + x2mirror));
 
     double r0 = calcrmks(global_x10);
     double x20 = global_x20;
-    double x1tr = log(0.5*(exp(global_x10)+exp(startx1)));
+    double x1tr = log(0.5*(exp(global_x10)+exp(startx[1])));
     double rtr = calcrmks(x1tr);
     double thtr = M_PI_2*(1.0 + x2mirror) + ((1. - hslope)/2.)*sin(M_PI*(1.0 + x2mirror));
 

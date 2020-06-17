@@ -123,6 +123,11 @@ void read_data(char *fname) {
     fseek(fp, 0, SEEK_SET);
     while ((i=fgetc(fp)) != '\n');
 
+    stopx[0] = 1.;
+	stopx[1] = startx[1] + N1 * dx[1];
+	stopx[2] = startx[2] + N2 * dx[2];
+	stopx[3] = startx[3] + N3 * dx[3];
+
     // initialize malloc for variables
     init_storage_data();
 
@@ -146,11 +151,11 @@ void read_data(char *fname) {
                 a_phi[i][j][k] = var[8];
 
                 // primitive variables
-                rho = var[9];
+                rho[i][j][k] = var[9];
                 ug  = var[10];
-                v1  = var[11];
-                v2  = var[12];
-                v3  = var[13];
+                V[1][i][j][k] = var[11];
+                V[2][i][j][k] = var[12];
+                V[3][i][j][k] = var[13];
                 B[1][i][j][k] = var[14];
                 B[2][i][j][k] = var[15];
                 B[3][i][j][k] = var[16];
@@ -215,8 +220,8 @@ void read_data(char *fname) {
                       bcov[2][i][j][k]*bcon[2][i][j][k] +
                       bcov[3][i][j][k]*bcon[3][i][j][k];
                 betapl[i][j][k] = 2.*pg/bsq;
-                sigmaphi[i][j][k] = bcov[3][i][j][k]*bcon[3][i][j][k]/(rho);
-                Sigmaphi[i][j][k] = B[3][i][j][k]*B[3][i][j][k]/(rho);
+                sigmaphi[i][j][k] = bcov[3][i][j][k]*bcon[3][i][j][k]/(rho[i][j][k]);
+                Sigmaphi[i][j][k] = B[3][i][j][k]*B[3][i][j][k]/(rho[i][j][k]);
             }
         }
     }

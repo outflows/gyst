@@ -157,7 +157,8 @@ double *get_evec(double **Hess)
 	double *hessian;
 	double max_eigval = -SMALL;
 	double min_eigval = 1e20;
-	static double *max_eigvec, *mid_eigvec, *min_eigvec;
+	double *max_eigvec, *mid_eigvec, *min_eigvec;
+	static double *eigvec;
 
 	if (N3 > 1) n = 3;
 	else n = 2;
@@ -174,7 +175,7 @@ double *get_evec(double **Hess)
     max_eigvec = (double *) malloc(n*sizeof(double*));
 	mid_eigvec = (double *) malloc(n*sizeof(double*));
 	min_eigvec = (double *) malloc(n*sizeof(double*));
-	eigvec =  = (double *) malloc(n*n*sizeof(double*));
+	eigvec = (double *) malloc(n*n*sizeof(double*));
 
 	gsl_matrix_view m = gsl_matrix_view_array(hessian, n, n);
 	gsl_vector *eval = gsl_vector_alloc(n);
@@ -229,15 +230,18 @@ double *get_evec(double **Hess)
 	// don't forget to add in main code a condition to skip analysis
 	// if max_eigval < SMALL
 
-    gsl_vector_free(eval);
-    gsl_matrix_free(evec);
-	free(hessian);
-
 	for (i = 0; i < n; i++) {
 		eigvec[i] = max_eigvec[i];
 		eigvec[i+3] = mid_eigvec[i];
 		eigvec[i+6] = min_eigvec[i];
 	}
+
+	gsl_vector_free(eval);
+    gsl_matrix_free(evec);
+	free(hessian);
+	free(max_eigvec);
+	free(mid_eigvec);
+	free(min_eigvec);
 
     return eigvec;
 }

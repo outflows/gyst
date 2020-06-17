@@ -33,8 +33,8 @@ int main(int argc, char *argv[])
     strcat(jcs_output, "_jcs");
     strcpy(jpeak_output, dump_file);
     strcat(jpeak_output, "_jcs_peak");
-    strcpy(normal_output, dump_file);
-    strcat(normal_output, "_normal");
+    strcpy(jchar_output, dump_file);
+    strcat(jchar_output, "_jcs_char");
 
     if (!CHARACTERIZE) {
         printf("CHARACTERIZE set to 0 by user: this run WILL NOT characterize the current sheets\n\n");
@@ -91,15 +91,16 @@ int main(int argc, char *argv[])
         write_metric("metric");
     }
 
-
     printf("Finished data initialization.\n\n");
     clock_t end_read = clock();
     double time_spent_read = (double)(end_read - begin_read) / CLOCKS_PER_SEC;
 
     clock_t begin_current = clock();
     get_current_sheets();
-    //if (CHARACTERIZE) find_normal(normal_output);
-    //if (CHARACTERIZE) find_normal();
+    if (CHARACTERIZE) {
+        characterize();
+        write_current_sheets(jchar_output, J_cs_char);
+    }
     clock_t end_current = clock();
     double time_spent_current = (double)(end_current - begin_current) / CLOCKS_PER_SEC;
 
