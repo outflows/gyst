@@ -24,13 +24,16 @@ void characterize()
     double rr, tth, pphi, p_r, p_th, p_phi;
     double x, y, z, p_x, p_y, p_z;
     double Hess[3][3];
-    double e1[3], e1_cart[3], e2[3], e3[3], *evec;
+    double e1[3], e1_cart[3], e2[3], e3[3], evec[9];
     double ap_x[NDIM], p_cart[NDIM], Vprim[NDIM], Bprim[NDIM];
     double del[NDIM];
     double new_position[3];
     double V_proj_e1, B_proj_e1, B_proj_e2, B_proj_e3;
     double step, B_upper, B_lower, V_upper, V_lower, V_A, V_rec;
 
+    printf("Beginning characterization...\n");
+
+    printf("Getting 1st derivatives...\n");
     for (i = 0; i < N1; i++) {
         for (j = 0; j < N2; j++) {
             for (k = 0; k < N3; k++) {
@@ -40,6 +43,7 @@ void characterize()
         }
     }
 
+    printf("Entering main loop...\n");
     for (i = 0; i < N1; i++) {
         for (j = 0; j < N2; j++) {
             for (k = 0; k < N3; k++) {
@@ -49,16 +53,23 @@ void characterize()
                     tth = a_th[i][j][k];
                     pphi = a_phi[i][j][k];
                     //1. get hessian
+                    for (ii = 0; ii < 3; ii++) {
+                        for (jj = 0; jj < 3; jj++) {
+                            Hess[ii][jj] = 0.;
+                        }
+                    }
+                    for (ii = 0; ii < 9; ii++) evec[ii] = 0.;
                     get_hessian(i, j, k, Hess);
                     //2. get eigenvectors (max: e1, min: e3)
-                    evec = get_evec(Hess);
+                    get_evec(Hess, evec); // seg fault here
+
                     for (ii = 0; ii < 3; ii++) {
                         e1[ii] = evec[ii];
                         e2[ii] = evec[ii+3];
                         e3[ii] = evec[ii+6];
                     }
                     //3. convert r, theta, phi to cartesian
-                    rthphi_to_xyz(rr, tth, pphi, x, y, z);
+                    rthphi_to_xyz(rr, tth, pphi, &x, &y, &z);
                     //4. convert max_eigvec to cartesian
                     vec_sph_to_cart(e1, e1_cart, tth, pphi);
 
@@ -76,16 +87,18 @@ void characterize()
                         step += step;
 
                         //5.2 convert point to spherical
-                        xyz_to_rthphi(p_x, p_y, p_z, p_r, p_th, p_phi);
+                        xyz_to_rthphi(p_x, p_y, p_z, &p_r, &p_th, &p_phi);
 
                         //6. find x1, x2, x3 corresponding to them
                         ap_x[1] = zbrent(find_x1_cyl, p_r, 0, 8., 1E-6);
                         x1in = ap_x[1];
-                        ap_x[2] = zbrent(find_x2_cyl, p_th, -1.0, 1.0, 1E-6);
+                        ap_x[2] = zbrent(find_x2_cyl, p_th, -1.0, 1.0, 1E-6); // check this
                         ap_x[3] = p_phi;
 
                         //7. find closest cell corresponding to spherical
                         Xtoijk(ap_x, &ii, &jj, &kk, del);
+
+                        //printf("%g %g %g\n", ap_x[1], ap_x[2], ap_x[3]);
 
                         //7.1 test value of J_cs
                         if (J_cs[ii][jj][kk] < 0.5*J_cs_peak[i][j][k]) break;
@@ -100,17 +113,17 @@ void characterize()
                         Bprim[1] = B[1][ii][jj][kk];
                         Bprim[2] = B[2][ii][jj][kk];
                         Bprim[3] = B[3][ii][jj][kk];
-                        V_proj_e1 = dot3(Vprim, e1) / sqrt(dot3(e1,e1));
+                        V_proj_e1 = dot3(Vprim, e1) / (sqrt(dot3(e1,e1)) + SMALL);
                         //9. project B along e1, e2, e3 to find B along these eigenvectors
-                        B_proj_e1 = dot3(Bprim, e1) / sqrt(dot3(e1,e1));
-                        B_proj_e2 = dot3(Bprim, e2) / sqrt(dot3(e2,e2));
-                        B_proj_e3 = dot3(Bprim, e3) / sqrt(dot3(e3,e3));
+                        B_proj_e1 = dot3(Bprim, e1) / (sqrt(dot3(e1,e1)) + SMALL);
+                        B_proj_e2 = dot3(Bprim, e2) / (sqrt(dot3(e2,e2)) + SMALL);
+                        B_proj_e3 = dot3(Bprim, e3) / (sqrt(dot3(e3,e3)) + SMALL);
                         B_upper = abs(B_proj_e3);
 
                         //10. use B_proj to find v_alfven
                         V_A = sqrt((B_proj_e1*B_proj_e1 +
                                     B_proj_e2*B_proj_e2 +
-                                    B_proj_e3*B_proj_e3)/rho[ii][jj][kk]);
+                                    B_proj_e3*B_proj_e3))/(rho[ii][jj][kk] + SMALL);
                         V_upper = V_proj_e1/V_A;
                     }
 
@@ -129,7 +142,7 @@ void characterize()
                         step += step;
 
                         //5.2 convert point to spherical
-                        xyz_to_rthphi(p_x, p_y, p_z, p_r, p_th, p_phi);
+                        xyz_to_rthphi(p_x, p_y, p_z, &p_r, &p_th, &p_phi);
                         //6. find x1, x2, x3 corresponding to them
                         ap_x[1] = zbrent(find_x1_cyl, p_r, 0, 8., 1E-6);
                         x1in = ap_x[1];
@@ -151,16 +164,17 @@ void characterize()
                         Bprim[1] = B[1][ii][jj][kk];
                         Bprim[2] = B[2][ii][jj][kk];
                         Bprim[3] = B[3][ii][jj][kk];
-                        V_proj_e1 = dot3(Vprim, e1) / sqrt(dot3(e1,e1));
+                        V_proj_e1 = dot3(Vprim, e1) / (sqrt(dot3(e1,e1)) + SMALL);
                         //9. project B along e1, e2, e3 to find B along these eigenvectors
-                        B_proj_e1 = dot3(B, e1) / sqrt(dot3(e1,e1));
-                        B_proj_e2 = dot3(B, e2) / sqrt(dot3(e2,e2));
-                        B_proj_e3 = dot3(B, e3) / sqrt(dot3(e3,e3));
+                        B_proj_e1 = dot3(Bprim, e1) / (sqrt(dot3(e1,e1)) + SMALL);
+                        B_proj_e2 = dot3(Bprim, e2) / (sqrt(dot3(e2,e2)) + SMALL);
+                        B_proj_e3 = dot3(Bprim, e3) / (sqrt(dot3(e3,e3)) + SMALL);
                         B_lower = abs(B_proj_e3);
+
                         //10. use B_proj to find v_alfven
                         V_A = sqrt((B_proj_e1*B_proj_e1 +
                                     B_proj_e2*B_proj_e2 +
-                                    B_proj_e3*B_proj_e3)/rho[ii][jj][kk]);
+                                    B_proj_e3*B_proj_e3))/(rho[ii][jj][kk] + SMALL);
                         V_lower = V_proj_e1/V_A;
                     }
                     //12. get V_in/V_A
@@ -181,26 +195,26 @@ void characterize()
         }
     }
 
-
-
-
 }
 
 
-void xyz_to_rthphi(double x, double y, double z, double r, double th, double phi)
+void xyz_to_rthphi(double x, double y, double z, double *r, double *th, double *phi)
 {
     // change to BL?
-    r = sqrt(x*x + y*y + z*z);
-    th = atan(sqrt(x*x + y*y)/z);
-    phi = atan(y/x);
+    *r = sqrt(x*x + y*y + z*z);
+    *th = atan(sqrt(x*x + y*y)/z);
+    *phi = atan(y/x);
+    //printf("during %g %g %g %g %g %g\n", x, y, z, *r, *th, *phi);
 }
 
-void rthphi_to_xyz(double r, double th, double phi, double x, double y, double z)
+void rthphi_to_xyz(double r, double th, double phi, double *x, double *y, double *z)
 {
     // change to BL?
-    x = r*sin(th)*cos(phi);
-    y = r*sin(th)*sin(phi);
-    z = r*cos(th);
+    *x = r*sin(th)*cos(phi);
+    *y = r*sin(th)*sin(phi);
+    *z = r*cos(th);
+    //if (N3 == 1) y = 0.;
+    //printf("during %g %g %g %g %g %g\n", r, th, phi, *x, *y, *z);
 }
 
 void vec_sph_to_cart(double eig_sph[3], double eig_cart[3], double theta, double phi)

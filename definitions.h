@@ -1,9 +1,9 @@
 #define CYL 1 // did we use cylindrification in our simulation?
 
 // General controls: 0 or 1 to tell the code to do or not do something
-#define CHARACTERIZE 0 // characterize current sheets -- LEAVE AT 0,
-                       // characterization routines not fully implemented yet!
-                       // Use python notebook for this!
+// LEAVE CHARACTERIZE AT 0 FOR NOW -- NOT WORKING YET
+#define CHARACTERIZE 1
+#define SHEETS 0
 
 // Threshold values for our criteria to find current sheets
 #define SIGMAPHI_THR 10e-5
@@ -26,7 +26,6 @@
 #define DELTAR (1.e-4)
 
 // Cylindrification in HARMPI
-#define CYL 1
 #define DOCYL 1
 #define SINGSMALL 1.e-20
 #define COORDSINGFIX 1

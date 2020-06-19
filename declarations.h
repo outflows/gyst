@@ -97,10 +97,10 @@ void check_box_limits(int i, int j, int k, int box_lower_i, int box_lower_j,
 void find_normal();
 
 // eigen.c
-void get_hessian(int i, int j, int k, double **Hess);
+void get_hessian(int i, int j, int k, double Hess[3][3]);
 void get_hessian2D(int i, int j, double Hess2D[2][2]);
 //void get_hessian3D(int i, int j, int k, double Hess3D[3][3]);
-double *get_evec(double **Hess);
+void get_evec(double Hess[3][3], double eigvec[9]);
 double *get_evec2D(double hessian[4]);
 double *get_evec3D(double hessian[9]);
 
@@ -108,6 +108,8 @@ double *get_evec3D(double hessian[9]);
 void assign_units();
 void read_data(char *fname);
 void read_gdump(char *fname);
+void read_current_sheets(char *fname, double ***sheets);
+void write_current_sheets(char *fname, double ***sheets);
 
 // malloc.c
 void init_storage_data();
@@ -125,16 +127,15 @@ void check_adjacency (int i_adj, int j_adj, int k_adj, double J_peak, int mm,
                       int *kcoords);
 void get_current_sheets();
 void get_locmax();
-void write_current_sheets(char *fname, double ***sheets);
 
 // characterization.c
 void characterize();
-void xyz_to_rthphi(double x, double y, double z, double r, double th, double phi);
-void rthphi_to_xyz(double r, double th, double phi, double x, double y, double z);
+void xyz_to_rthphi(double x, double y, double z, double *r, double *th, double *phi);
+void rthphi_to_xyz(double r, double th, double phi, double *x, double *y, double *z);
 void vec_sph_to_cart(double eig_sph[3], double eig_cart[3], double theta, double phi);
 
 // metric.c
-void get_connection(double *X, struct of_geom *geom, double conn[][NDIM][NDIM]);
+void get_connection(double *X, struct of_geom *geom, double ******conn, int i, int j, int k);
 void get_geometry(int ii, int jj, int kk, struct of_geom *geom);
 void gcon_func(double gcov[][NDIM], double gcon[][NDIM]);
 void gcov_func(double *X, double gcovp[][NDIM]);

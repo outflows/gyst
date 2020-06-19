@@ -34,7 +34,7 @@ void get_1stderivative(int i, int j, int k, double ***J_cs)
 	dJdz[i][j][k] = (dJdz_kp - dJdz_km)/2.;
 }
 
-void get_hessian(int i, int j, int k, double **Hess3D)
+void get_hessian(int i, int j, int k, double Hess3D[3][3])
 {
     // IMPORTANT WHEN CALLING THIS FUNCTION! (not anymore, we changed to void)
     // https://www.tutorialspoint.com/cprogramming/c_return_arrays_from_function.htm
@@ -144,10 +144,14 @@ void get_hessian(int i, int j, int k, double **Hess3D)
 	Hess3D[2][2] = d2Jdz2 - grid_conn[i][j][k][1][3][3]*dJdx[i][j][k] -
 							grid_conn[i][j][k][2][3][3]*dJdy[i][j][k] -
 						    grid_conn[i][j][k][3][3][3]*dJdz[i][j][k];
+
+	//printf("%g %g %g\n", Hess3D[0][0], Hess3D[0][1], Hess3D[0][2]);
+	//printf("%g %g %g\n", Hess3D[1][0], Hess3D[1][1], Hess3D[1][2]);
+	//printf("%g %g %g\n", Hess3D[2][0], Hess3D[2][1], Hess3D[2][2]);
 }
 
 
-double *get_evec(double **Hess)
+void get_evec(double Hess[3][3], double eigvec[9])
 {
     // returns eigenvector corresponding to highest eigenvalue
 	// based on https://www.gnu.org/software/gsl/doc/html/eigen.html
@@ -158,10 +162,11 @@ double *get_evec(double **Hess)
 	double max_eigval = -SMALL;
 	double min_eigval = 1e20;
 	double *max_eigvec, *mid_eigvec, *min_eigvec;
-	static double *eigvec;
+	//static double *eigvec;
 
-	if (N3 > 1) n = 3;
-	else n = 2;
+	//if (N3 > 1) n = 3;
+	//else n = 2;
+	n = 3;
 	hessian = (double *) malloc(n*n*sizeof(double*));
 
 	k = 0;
@@ -175,7 +180,7 @@ double *get_evec(double **Hess)
     max_eigvec = (double *) malloc(n*sizeof(double*));
 	mid_eigvec = (double *) malloc(n*sizeof(double*));
 	min_eigvec = (double *) malloc(n*sizeof(double*));
-	eigvec = (double *) malloc(n*n*sizeof(double*));
+	//eigvec = (double *) malloc(n*n*sizeof(double*));
 
 	gsl_matrix_view m = gsl_matrix_view_array(hessian, n, n);
 	gsl_vector *eval = gsl_vector_alloc(n);
@@ -242,8 +247,6 @@ double *get_evec(double **Hess)
 	free(max_eigvec);
 	free(mid_eigvec);
 	free(min_eigvec);
-
-    return eigvec;
 }
 
 

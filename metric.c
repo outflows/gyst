@@ -29,6 +29,8 @@ void read_metric(char *fname)
 
     fp = fopen(fname, "rb");
 
+    init_storage_metric();
+
     if(fp==NULL) {
       fprintf(stderr,"error opening metricfile\n") ;
       exit(1) ;
@@ -121,7 +123,7 @@ void gcov_func(double *X, double gcovp[][NDIM])
   int i,j,k,l ;
   double sth,cth,s2,rho2 ;
   double rr,tth,pphi ;
-  double tfac,rfac,hfac,pfac ;
+  double tfac,rfac,hfac,pfac;
   double ggcov[NDIM][NDIM];
   double ddxdxp[NDIM][NDIM];
 
@@ -196,40 +198,41 @@ double gdet_func(double gcov[][NDIM])
 
 }
 
-void get_connection(double *X, struct of_geom *geom, double conn[][NDIM][NDIM])
+void get_connection(double *X, struct of_geom *geom, double ******conn, int i, int j, int k)
 {
-	int i,j,k,l ;
+	int ii,jj,kk,ll ;
 	double tmp[NDIM][NDIM][NDIM] ;
 	double Xh[NDIM],Xl[NDIM] ;
 	double gh[NDIM][NDIM] ;
 	double gl[NDIM][NDIM] ;
 
-	for(k=0;k<NDIM;k++) {
-		for(l=0;l<NDIM;l++) Xh[l] = X[l] ;
-		for(l=0;l<NDIM;l++) Xl[l] = X[l] ;
-		Xh[k] += DELTA ;
-		Xl[k] -= DELTA ;
+	for(kk=0;kk<NDIM;kk++) {
+		for(ll=0;ll<NDIM;ll++) Xh[ll] = X[ll] ;
+		for(ll=0;ll<NDIM;ll++) Xl[ll] = X[ll] ;
+		Xh[kk] += DELTA ;
+		Xl[kk] -= DELTA ;
 		gcov_func(Xh,gh) ;
 		gcov_func(Xl,gl) ;
 
-		for(i=0;i<NDIM;i++)
-		for(j=0;j<NDIM;j++)
-			conn[i][j][k] = (gh[i][j] - gl[i][j])/(Xh[k] - Xl[k]) ;
+		for(ii=0;ii<NDIM;ii++)
+		for(jj=0;jj<NDIM;jj++)
+            conn[i][j][k][ii][jj][kk] = (gh[ii][jj] - gl[ii][jj])/(Xh[kk] - Xl[kk]) ;
 	}
 
 	// now rearrange to find \Gamma_{ijk}
-	for(i=0;i<NDIM;i++)
-	for(j=0;j<NDIM;j++)
-	for(k=0;k<NDIM;k++)
-		tmp[i][j][k] = 0.5*(conn[j][i][k] + conn[k][i][j] - conn[k][j][i]) ;
+	for(ii=0;ii<NDIM;ii++)
+	for(jj=0;jj<NDIM;jj++)
+	for(kk=0;kk<NDIM;kk++)
+		tmp[ii][jj][kk] = 0.5*(conn[i][j][k][jj][ii][kk] + conn[i][j][k][kk][ii][jj] - conn[i][j][k][kk][jj][ii]) ;
 
 	// finally, raise index
-	for(i=0;i<NDIM;i++)
-	for(j=0;j<NDIM;j++)
-	for(k=0;k<NDIM;k++)  {
-		conn[i][j][k] = 0. ;
-		for(l=0;l<NDIM;l++) conn[i][j][k] += geom->gcon[i][l]*tmp[l][j][k] ;
+	for(ii=0;ii<NDIM;ii++)
+	for(jj=0;jj<NDIM;jj++)
+	for(kk=0;kk<NDIM;kk++)  {
+		conn[i][j][k][ii][jj][kk] = 0. ;
+		for(ll=0;ll<NDIM;ll++) conn[i][j][k][ii][jj][kk] += geom->gcon[ii][ll]*tmp[ll][jj][kk] ;
 	}
+
 }
 
 void coord(int i, int j, int k, double *X)
@@ -369,7 +372,7 @@ void dxdxp_func(double *X, double dxdxp[][NDIM])
 
       for(j=0;j<NDIM;j++){
         dxdxp[j][k] = (Vh[j]-Vl[j])/(Xh[k] - Xl[k]) ;
-        //fprintf(stderr, "%lf\n", dxdxp[j][k]);
+        //fprintf(stderr, "%d %d %g\n", j, k, dxdxp[j][k]);
       }
     }
   }
@@ -937,23 +940,18 @@ double sinth0(double *X0, double *X, void (*vofx)(double*, double*)) {
     int j;
 
     //X1 = {0, X[1], X0[1], 0}
-	// Copy input X (mirrored MKS) into Xc0
     DLOOPA Xc0[j] = X[j];
-	// Set Xc0 to be cylindrified MKS
     Xc0[2] = X0[2];
 
-	// Finds associated Vc0 (KS/BL) to Xc0 (MKS mirrored, but Xc0[2] cylindrified)
     vofx(Xc0, Vc0);
-	// Finds associated V0 (KS/BL) to X0 (MKS cylindrified)
     vofx(X0, V0);
 
 	//    (r cyl)* sin(theta cyl)/r mirrored
     return(V0[1] * sin(V0[2]) / Vc0[1]);
 }
 
-double sinth1in(double *X0, double *X, void (*vofx)(double*, double*)) {
-	// input:
-	// output:
+double sinth1in(double *X0, double *X, void (*vofx)(double*, double*))
+{
 
 	double V0[NDIM];
 	double V[NDIM];
@@ -980,12 +978,9 @@ double th2in(double *X0, double *X, void (*vofx)(double*, double*)) {
     int j;
     double res, th0;
 
-	// Copy input X (mirrored MKS) into Xc0
     DLOOPA Xc0[j] = X[j];
-	// Define Xc0[2] as X0[2] (cylindrified, global_x20)
     Xc0[2] = X0[2];
-	// Find the associated Vc0 (KS/BL) to Xc0
-    vofx(Xc0, Vc0); // vofx_gammiecoords in our case
+    vofx(Xc0, Vc0);
 	// Xc0 = (X[0], X[1], global_x20, X[3])
 	// Vc0 = KS/BL of Xc0
 	// So Vc0[2] = M_PI_2*(1.0+global_x20) + ((1. - hslope)/2.)*sin(M_PI*(1.0+global_x20));
@@ -1003,6 +998,7 @@ double th2in(double *X0, double *X, void (*vofx)(double*, double*)) {
 
 	// Find smoothened angle
     th0 = asin(sinth0(X0, X, vofx));
+
     res = (V[2] - Vc0[2])/(Vcmid[2] - Vc0[2]) * (Vcmid[2]-th0) + th0;
 
     return(res);
@@ -1013,20 +1009,8 @@ double th2in(double *X0, double *X, void (*vofx)(double*, double*)) {
 //ASSUMES: poles are at
 //            X[2] = -1 and +1, which correspond to
 //            V[2] = 0 and pi
-void vofx_cylindrified(double *Xin, void (*vofx)(double*, double*), double *Vout) {
-	// this is grtrans calcth_cylindrified
-	// grtrans  ------------ here
-	//
-	// r0       ------------ V0[1]
-	// rin      ------------ V[1]
-	// x1tr     ------------ Xtr[1]
-	// x20      ------------ X0[2]
-	// rtr      ------------ Vtr[1]
-	// theta    ------------ Vout[2]
-	// thorig   ------------ Vin[2]
-	// thmirror ------------ V[2]
-	// x2mirror ------------ X[2]
-	// calcthmksbl3 -------- vofx
+void vofx_cylindrified(double *Xin, void (*vofx)(double*, double*), double *Vout)
+{
     double npiovertwos;
 	double Vin[NDIM];            // KS/BL from input pure MKS Xin
 	double X[NDIM], V[NDIM];     // mirrored pure MKS, BL/KS
@@ -1036,16 +1020,11 @@ void vofx_cylindrified(double *Xin, void (*vofx)(double*, double*), double *Vout
     double sinth, th;
     int j, ismirrored;
 
-
-	// In our case, vofx is vofx_gammiecoords, so here we take the input MKS
-    // coordinates X and find KS/BL Vin as in vofx_gammiecoords
-    vofx(Xin, Vin); // vofx_gammiecoords in our case
+    vofx(Xin, Vin);
 
     // BRING INPUT TO 1ST QUADRANT:  X[2] \in [-1 and 0]
     to1stquadrant(Xin, X, &ismirrored);
-	// After bringing to 1st quadrant (Xin to X -- MKS), we find the associated
-	// KS/BL V
-    vofx(X, V); // vofx_gammiecoords in our case
+    vofx(X, V);
 
     // initialize X0: cylindrify region
     // X[1] < X0[1] && X[2] < X0[2] (value of X0[3] not used)
@@ -1053,9 +1032,8 @@ void vofx_cylindrified(double *Xin, void (*vofx)(double*, double*), double *Vout
     X0[1] = global_x10;
     X0[2] = global_x20;
     X0[3] = 0;
-	// After initializing cylindrification (cylindrified coords being X0 -- MKS)
-	// we find the associated KS/BL V0
-    vofx(X0, V0); // vofx_gammiecoords in our case
+
+    vofx(X0, V0);
 
     // {0, roughly midpoint between grid origin and x10, -1, 0}
 	// Here, we simply copy the 1st quadrant coordinates X into Xtr
@@ -1063,13 +1041,16 @@ void vofx_cylindrified(double *Xin, void (*vofx)(double*, double*), double *Vout
 	// makes sure that Xtr[1] is always bound to be between startx[1] and X0[1]
     Xtr[1] = log(0.5*( exp(X0[1])+exp(startx[1])));
     // After setting the Xtr coordinates, find associated Vtr
-    vofx(Xtr, Vtr); // vofx_gammiecoords in our case
+    vofx(Xtr, Vtr);
 
 	// calculates V from X and returns sin(V[2]) -- X0 not used?!
     f1 = func1(X0, X, vofx); // vofx_gammiecoords in our case
     //
     f2 = func2(X0, X, vofx); // vofx_gammiecoords in our case
     dftr = func2(X0, Xtr, vofx) - func1(X0, Xtr, vofx); // vofx_gammiecoords in our case
+
+    //printf("%g %g %g\n", f1, f2, dftr);
+
 
     // Compute new theta
     sinth = maxs(V[1]*f1, V[1]*f2, Vtr[1]*fabs(dftr)+SMALL) / V[1];
@@ -1099,10 +1080,8 @@ double func1(double *X0, double *X,  void (*vofx)(double*, double*)) {
 	return(sin(V[2]));
 }
 
-double func2(double *X0, double *X,  void (*vofx)(double*, double*)) {
-	// input:
-	// output:
-
+double func2(double *X0, double *X,  void (*vofx)(double*, double*))
+{
     double V[NDIM];
     double Xca[NDIM]; // axis
     double func2;
@@ -1113,7 +1092,7 @@ double func2(double *X0, double *X,  void (*vofx)(double*, double*)) {
     DLOOPA Xca[j] = X[j];
     Xca[2] = -1;
 
-    vofx(X, V); // vofx_gammiecoords in our case
+    vofx(X, V);
     // X and V are mirrored pure MKS
     // X0 are cylindrified MKS
     sth1in = sinth1in(X0, X, vofx); // sth1in depends on V[1]
@@ -1121,6 +1100,8 @@ double func2(double *X0, double *X,  void (*vofx)(double*, double*)) {
 
     sth1inaxis = sinth1in(X0, Xca, vofx);
     sth2inaxis = sin(th2in(X0, Xca, vofx));
+
+    //printf("%g %g\n", sth1inaxis, sth2inaxis);
 
     func2 = minmaxs(sth1in, sth2in, fabs(sth2inaxis-sth1inaxis)+SMALL, X[1] - X0[1]);
 
