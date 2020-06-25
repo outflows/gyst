@@ -139,7 +139,6 @@ void init_storage_data()
     printf("Allocating memory for data...\n");
 
     flag = (int ***) malloc_rank3_cont(N1, N2, N3);
-    flag_buffer = (int ***) malloc_rank3_cont(N1, N2, N3);
     a_r = (double ***) malloc_rank3_cont(N1, N2, N3);
     a_th = (double ***) malloc_rank3_cont(N1, N2, N3);
     a_phi = (double ***) malloc_rank3_cont(N1, N2, N3);
@@ -162,8 +161,6 @@ void init_storage_data()
 	dJdx = (double ***) malloc_rank3_cont(N1, N2, N3); // must be global
 	dJdy = (double ***) malloc_rank3_cont(N1, N2, N3); // must be global
 	dJdz = (double ***) malloc_rank3_cont(N1, N2, N3); // must be global
-
-
 }
 
 

@@ -110,8 +110,7 @@ int main(int argc, char *argv[])
 
     clock_t begin_current = clock();
     if (SHEETS) {
-        //get_current_sheets();
-        get_current_sheets2();
+        get_current_sheets();
     }
     clock_t end_current = clock();
     double time_spent_current = (double)(end_current - begin_current) / CLOCKS_PER_SEC;

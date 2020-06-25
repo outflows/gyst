@@ -98,11 +98,6 @@ extern double ***J_cs;
 extern double ***J_cs_peak;
 extern double ***J_cs_char;
 extern int ***flag;
-extern int ***flag_buffer;
-
-extern int *icoords;
-extern int *jcoords;
-extern int *kcoords;
 
 extern int N1;
 extern int N2;

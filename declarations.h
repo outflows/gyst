@@ -39,11 +39,6 @@ double ***J_cs;
 double ***J_cs_peak;
 double ***J_cs_char;
 int ***flag;
-int ***flag_buffer;
-
-int *icoords;
-int *jcoords;
-int *kcoords;
 
 int N1;
 int N2;
