@@ -1,14 +1,3 @@
-/***********************************************
-
-NOTE!!! THIS IS UNFINISHED AND PRONE TO ERRORS!
-
-DO NOT USE THIS!
-
-***********************************************/
-
-// METHOD 1: NORMAL
-// METHOD 2: HESSIAN
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -20,7 +9,7 @@ DO NOT USE THIS!
 void characterize()
 {
     int i, j, k;
-    int ii, jj, kk;
+    int ii, jj, kk, newk;
     double rr, tth, pphi, p_r, p_th, p_phi;
     double x, y, z, p_x, p_y, p_z;
     double Hess[3][3];
@@ -31,6 +20,7 @@ void characterize()
     double V_proj_e1, B_proj_e1, B_proj_e2, B_proj_e3;
     double step, B_upper, B_lower, V_upper, V_lower, V_A, V_rec;
 
+    if (SHEETS) printf("\n");
     printf("Beginning characterization...\n");
 
     printf("Getting 1st derivatives...\n");
@@ -61,7 +51,7 @@ void characterize()
                     for (ii = 0; ii < 9; ii++) evec[ii] = 0.;
                     get_hessian(i, j, k, Hess);
                     //2. get eigenvectors (max: e1, min: e3)
-                    get_evec(Hess, evec); // seg fault here
+                    get_evec(Hess, evec);
 
                     for (ii = 0; ii < 3; ii++) {
                         e1[ii] = evec[ii];
@@ -74,7 +64,7 @@ void characterize()
                     vec_sph_to_cart(e1, e1_cart, tth, pphi);
 
                     //5. move along eigenvector (upper)
-                    step = 0.1;
+                    step = 2.;
                     while(1) {
                         p_cart[0] = x;
                         p_cart[1] = y;
@@ -98,7 +88,7 @@ void characterize()
                         //7. find closest cell corresponding to spherical
                         Xtoijk(ap_x, &ii, &jj, &kk, del);
 
-                        //printf("%g %g %g\n", ap_x[1], ap_x[2], ap_x[3]);
+                        //printf("upper %g %g %g %d %d %d %g\n", ap_x[1], ap_x[2], ap_x[3], ii, jj, kk, J_cs[ii][jj][kk]);
 
                         //7.1 test value of J_cs
                         if (J_cs[ii][jj][kk] < 0.5*J_cs_peak[i][j][k]) break;
@@ -128,7 +118,7 @@ void characterize()
                     }
 
                     //5. move along eigenvector (lower)
-                    step = 0.1;
+                    step = 2.;
                     while(1) {
                         p_cart[0] = x;
                         p_cart[1] = y;
@@ -143,13 +133,17 @@ void characterize()
 
                         //5.2 convert point to spherical
                         xyz_to_rthphi(p_x, p_y, p_z, &p_r, &p_th, &p_phi);
+
                         //6. find x1, x2, x3 corresponding to them
                         ap_x[1] = zbrent(find_x1_cyl, p_r, 0, 8., 1E-6);
                         x1in = ap_x[1];
                         ap_x[2] = zbrent(find_x2_cyl, p_th, -1.0, 1.0, 1E-6);
                         ap_x[3] = p_phi;
+
                         //7. find closest cell corresponding to spherical using Xtoijk
                         Xtoijk(ap_x, &ii, &jj, &kk, del);
+
+                        //printf("lower %g %g %g %d %d %d %g\n", ap_x[1], ap_x[2], ap_x[3], ii, jj, kk, J_cs[ii][jj][kk]);
 
                         //7.1 test value of J_cs
                         if (J_cs[ii][jj][kk] < 0.5*J_cs_peak[i][j][k]) break;
@@ -190,10 +184,11 @@ void characterize()
                     }
 
                 }
-
             }
         }
     }
+    write_current_sheets(jchar_output, J_cs_char);
+    printf("Finished characterization of sheets.\n");
 
 }
 

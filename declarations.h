@@ -122,10 +122,8 @@ double *****malloc_rank5_cont(int n1, int n2, int n3, int n4, int n5);
 double ******malloc_rank6_cont(int n1, int n2, int n3, int n4, int n5, int n6);
 
 // sheets.c
-void check_adjacency (int i_adj, int j_adj, int k_adj, double J_peak, int mm,
-                      int cells, int size_current, int *icoords, int *jcoords,
-                      int *kcoords);
 void get_current_sheets();
+void fill(int i, int j, int k, double threshold);
 void get_locmax();
 
 // characterization.c

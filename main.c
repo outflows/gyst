@@ -110,7 +110,8 @@ int main(int argc, char *argv[])
 
     clock_t begin_current = clock();
     if (SHEETS) {
-        get_current_sheets();
+        //get_current_sheets();
+        get_current_sheets2();
     }
     clock_t end_current = clock();
     double time_spent_current = (double)(end_current - begin_current) / CLOCKS_PER_SEC;
@@ -122,8 +123,6 @@ int main(int argc, char *argv[])
             read_current_sheets(jpeak_output, J_cs_peak);
         }
         characterize();
-        write_current_sheets(jchar_output, J_cs_char);
-        printf("Finished characterization of sheets.\n\n");
     }
     clock_t end_char = clock();
     double time_spent_char = (double)(end_char - begin_char) / CLOCKS_PER_SEC;

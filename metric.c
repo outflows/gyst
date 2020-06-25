@@ -19,104 +19,6 @@
 #include "declarations.h"
 
 
-void read_metric(char *fname)
-{
-    int i, j, k;
-    int l, m, n;
-    int index;
-    double var[96];
-    FILE *fp;
-
-    fp = fopen(fname, "rb");
-
-    init_storage_metric();
-
-    if(fp==NULL) {
-      fprintf(stderr,"error opening metricfile\n") ;
-      exit(1) ;
-    }
-
-    for (i = 0; i < N1; i++) {
-        for (j = 0; j < N2; j++) {
-            for (k = 0; k < N3; k++) {
-
-                fread(var, sizeof(double), 96, fp);
-                index = 0;
-
-                for (m = 0; m < NDIM; m++) {
-                    for (n = 0; n < NDIM; n++) {
-                        grid_gcov[i][j][k][m][n] = var[index];
-                        index++;
-                    }
-                }
-
-                for (m = 0; m < NDIM; m++) {
-                    for (n = 0; n < NDIM; n++) {
-                        grid_gcon[i][j][k][m][n] = var[index];
-                        index++;
-                    }
-                }
-
-                for (l = 0; l < NDIM; l++) {
-                    for (m = 0; m < NDIM; m++) {
-                        for (n = 0; n < NDIM; n++) {
-                            grid_conn[i][j][k][l][m][n] = var[index];
-                            index++;
-                        }
-                    }
-                }
-
-            }
-        }
-    }
-    fclose(fp);
-}
-
-
-void write_metric(char *fname)
-{
-    int i, j, k;
-    int l, m, n;
-    FILE *fp;
-
-    fp = fopen(fname, "wb");
-
-    if(fp==NULL) {
-      fprintf(stderr,"error opening metricfile\n") ;
-      exit(1) ;
-    }
-
-    for (i = 0; i < N1; i++) {
-        for (j = 0; j < N2; j++) {
-            for (k = 0; k < N3; k++) {
-
-                for (m = 0; m < NDIM; m++) {
-                    for (n = 0; n < NDIM; n++) {
-                        fwrite(&grid_gcov[i][j][k][m][n], sizeof(double), 1, fp);
-                    }
-                }
-
-                for (m = 0; m < NDIM; m++) {
-                    for (n = 0; n < NDIM; n++) {
-                        fwrite(&grid_gcon[i][j][k][m][n], sizeof(double), 1, fp);
-                    }
-                }
-
-                for (l = 0; l < NDIM; l++) {
-                    for (m = 0; m < NDIM; m++) {
-                        for (n = 0; n < NDIM; n++) {
-                            fwrite(&grid_conn[i][j][k][l][m][n], sizeof(double), 1, fp);
-                        }
-                    }
-                }
-
-            }
-        }
-    }
-    fclose(fp);
-}
-
-
 // insert metric here
 void gcov_func(double *X, double gcovp[][NDIM])
 {
@@ -178,24 +80,26 @@ void gcov_func(double *X, double gcovp[][NDIM])
 
 void gcon_func(double gcov[][NDIM], double gcon[][NDIM])
 {
-  invert_matrix( gcov, gcon );
+    invert_matrix(gcov, gcon);
 }
 
 double gdet_func(double gcov[][NDIM])
 {
-  int i,j,k;
-  int permute[NDIM];
-  double gcovtmp[NDIM][NDIM];
-  double detg;
+    int i,j,k;
+    int permute[NDIM];
+    double gcovtmp[NDIM][NDIM];
+    double detg;
 
-  for( i = 0 ; i < NDIM*NDIM ; i++ ) {  gcovtmp[0][i] = gcov[0][i]; }
-  if( LU_decompose( gcovtmp,  permute ) != 0  ) {
-    fprintf(stderr, "gdet_func(): singular matrix encountered! \n");
-  }
-  detg = 1.;
-  DLOOPA detg *= gcovtmp[j][j];
-  return( sqrt(fabs(detg)) );
+    for (i = 0; i < NDIM*NDIM; i++) {
+        gcovtmp[0][i] = gcov[0][i];
+    }
+    if (LU_decompose(gcovtmp, permute) != 0) {
+        fprintf(stderr, "gdet_func(): singular matrix encountered! \n");
+    }
+    detg = 1.;
+    DLOOPA detg *= gcovtmp[j][j];
 
+    return(sqrt(fabs(detg)));
 }
 
 void get_connection(double *X, struct of_geom *geom, double ******conn, int i, int j, int k)
@@ -290,17 +194,15 @@ void Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM])
 		del[2] = (X[2] - ((*j + 0.5) * dx[2] + startx[2])) / dx[2];
 	}
 
-	if (*k < 0) {
-		*k = 0;
-		del[3] = 0.;
-	} else if (*k > N3 - 2) {
-		*k = N3 - 2;
-		del[3] = 1.;
-	} else {
-		del[3] = (pphi - ((*k + 0.5) * dx[3] + startx[3])) / dx[3];
-	}
-
-	//fprintf(stderr, "Xtoijk: %g %g %g\n", del[1], del[2], del[3]);
+    if (*k < 0) {
+    	*k = 0;
+    	del[3] = 0.;
+    } else if (*k > N3 - 1) {
+    	*k = N3 - 2;
+    	del[3] = 1.;
+    } else {
+    	del[3] = (pphi - ((*k + 0.5) * dx[3] + startx[3])) / dx[3];
+    }
 
 	if (del[1] > 1.) del[1] = 1.;
   	if (del[1] < 0.) del[1] = 0.;
@@ -316,8 +218,7 @@ void Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM])
       		exit(-7);
     	}
   	}
-	//printf("%g %d %d %g\n", phi, abc, *k, del[3]);
-
+	//printf("%g %d %d %g\n", pphi, abc, *k, del[3]);
 
 	return;
 }

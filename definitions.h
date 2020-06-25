@@ -2,8 +2,8 @@
 
 // General controls: 0 or 1 to tell the code to do or not do something
 // LEAVE CHARACTERIZE AT 0 FOR NOW -- NOT WORKING YET
+#define SHEETS 1
 #define CHARACTERIZE 1
-#define SHEETS 0
 
 // Threshold values for our criteria to find current sheets
 #define SIGMAPHI_THR 10e-5

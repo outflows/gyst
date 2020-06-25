@@ -227,7 +227,7 @@ void read_data(char *fname) {
             }
         }
     }
-    printf("Finished reading data.\n\n");
+    printf("Finished reading fluid data.\n\n");
     fclose(fp);
 /*
     // OLD WAY
@@ -435,6 +435,106 @@ void read_gdump(char *fname)
     printf("Finished reading gdump.\n\n");
     fclose(fp);
 }
+
+
+void read_metric(char *fname)
+{
+    int i, j, k;
+    int l, m, n;
+    int index;
+    double var[96];
+    FILE *fp;
+
+    fp = fopen(fname, "rb");
+
+    init_storage_metric();
+
+    if(fp==NULL) {
+      fprintf(stderr,"error opening metricfile\n") ;
+      exit(1) ;
+    }
+
+    for (i = 0; i < N1; i++) {
+        for (j = 0; j < N2; j++) {
+            for (k = 0; k < N3; k++) {
+
+                fread(var, sizeof(double), 96, fp);
+                index = 0;
+
+                for (m = 0; m < NDIM; m++) {
+                    for (n = 0; n < NDIM; n++) {
+                        grid_gcov[i][j][k][m][n] = var[index];
+                        index++;
+                    }
+                }
+
+                for (m = 0; m < NDIM; m++) {
+                    for (n = 0; n < NDIM; n++) {
+                        grid_gcon[i][j][k][m][n] = var[index];
+                        index++;
+                    }
+                }
+
+                for (l = 0; l < NDIM; l++) {
+                    for (m = 0; m < NDIM; m++) {
+                        for (n = 0; n < NDIM; n++) {
+                            grid_conn[i][j][k][l][m][n] = var[index];
+                            index++;
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+    printf("Finished reading metric.\n\n");
+    fclose(fp);
+}
+
+
+void write_metric(char *fname)
+{
+    int i, j, k;
+    int l, m, n;
+    FILE *fp;
+
+    fp = fopen(fname, "wb");
+
+    if(fp==NULL) {
+      fprintf(stderr,"error opening metricfile\n") ;
+      exit(1) ;
+    }
+
+    for (i = 0; i < N1; i++) {
+        for (j = 0; j < N2; j++) {
+            for (k = 0; k < N3; k++) {
+
+                for (m = 0; m < NDIM; m++) {
+                    for (n = 0; n < NDIM; n++) {
+                        fwrite(&grid_gcov[i][j][k][m][n], sizeof(double), 1, fp);
+                    }
+                }
+
+                for (m = 0; m < NDIM; m++) {
+                    for (n = 0; n < NDIM; n++) {
+                        fwrite(&grid_gcon[i][j][k][m][n], sizeof(double), 1, fp);
+                    }
+                }
+
+                for (l = 0; l < NDIM; l++) {
+                    for (m = 0; m < NDIM; m++) {
+                        for (n = 0; n < NDIM; n++) {
+                            fwrite(&grid_conn[i][j][k][l][m][n], sizeof(double), 1, fp);
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+    fclose(fp);
+}
+
 
 void write_current_sheets(char *fname, double ***sheets) {
 
