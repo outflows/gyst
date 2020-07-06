@@ -13,8 +13,10 @@
 #define J_FAC 5.
 
 // Box sizes
-#define HALF_BOX_SIZE 5 // to look for local maxima in J_cs
-#define SHEET_HALF_BOX_SIZE 5 // to find slope
+// to look for local maxima in J_cs
+#define HALF_BOX_SIZE 9
+// to find slope
+#define SHEET_HALF_BOX_SIZE 5
 
 //#define N1 (512)
 //#define N2 (256)
@@ -24,6 +26,7 @@
 #define SMALL (1.e-20)
 #define DELTA (1.e-5)
 #define DELTAR (1.e-4)
+#define STEP (0.6)
 
 // Cylindrification in HARMPI
 #define DOCYL 1
@@ -72,6 +75,7 @@ extern char gdump[100];
 extern double *****grid_gcov, *****grid_gcon, ***grid_gdet, ******grid_conn;
 
 extern double x1in;
+extern int peak_count;
 
 extern double t;
 extern double gam;

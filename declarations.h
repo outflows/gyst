@@ -13,6 +13,7 @@ struct of_geom {
 };
 
 double x1in;
+int peak_count;
 
 double t;
 double gam;
@@ -93,11 +94,17 @@ void find_normal();
 
 // eigen.c
 void get_hessian(int i, int j, int k, double Hess[3][3]);
-void get_hessian2D(int i, int j, double Hess2D[2][2]);
-//void get_hessian3D(int i, int j, int k, double Hess3D[3][3]);
 void get_evec(double Hess[3][3], double eigvec[9]);
-double *get_evec2D(double hessian[4]);
-double *get_evec3D(double hessian[9]);
+void get_1stderivative(int i, int j, int k, double ***J_cs);
+
+
+void characterize2D();
+void get_1stderivative2D(int i, int j, int k, double ***J_cs);
+void get_evec2D(double Hess[2][2], double eigvec[4]);
+void get_hessian2D(int i, int j, int k, double Hess2D[2][2]);
+void xy_to_rth(double x, double y, double *r, double *th);
+void rth_to_xy(double r, double th, double *x, double *y);
+void vec_pol_to_cart(double eig_pol[2], double eig_cart[2], double theta);
 
 // read_data.c
 void assign_units();
@@ -126,6 +133,8 @@ void characterize();
 void xyz_to_rthphi(double x, double y, double z, double *r, double *th, double *phi);
 void rthphi_to_xyz(double r, double th, double phi, double *x, double *y, double *z);
 void vec_sph_to_cart(double eig_sph[3], double eig_cart[3], double theta, double phi);
+void reverse_array(double *array, int n);
+void merge_arrays(double *a1, double *a2, double *newa, int size_a1, int size_a2);
 
 // metric.c
 void get_connection(double *X, struct of_geom *geom, double ******conn, int i, int j, int k);

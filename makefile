@@ -23,4 +23,4 @@ $(EXE): $(OBJS) $(INCS) makefile
 	$(CC_LOAD) $(OBJS) $(LIBS) -o $(EXE)
 
 clean:
-	/bin/rm *.o $(EXE)
+	/bin/rm *.o *_s $(EXE)

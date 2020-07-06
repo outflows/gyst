@@ -12,7 +12,7 @@ void get_current_sheets()
     // Calculates current sheets according to an algorithm similar to
     // Ball et al. 2016 and Zhdankin et al. 2013.
 
-    int i, j, k, count;
+    int i, j, k;
     double J_peak, J_peak_min, J_max, percent;
     double *J_mean, *J_mean_inner, *J_mean_outer;
 
@@ -65,7 +65,7 @@ void get_current_sheets()
     // The reason we do this will be clear soon.
     J_peak_min = pow(N1*N2*N3, 8); // just a high enough number
     J_max = 0;
-    count = 0;
+    peak_count = 0;
 
     for (i = 0; i < N1; i++) {
         for (j = 0; j < N2; j++) {
@@ -73,7 +73,7 @@ void get_current_sheets()
                 if (i <= N1_inside) {
                     //if ((J[i][j][k] > J_FAC*J_mean_inner[i]) && (betapl[i][j][k] > BETAPL_THR)) {
                     if ((J[i][j][k] > J_FAC*J_mean_inner[i]) && (sigmaphi[i][j][k] < SIGMAPHI_THR)) {
-                        count++;
+                        peak_count++;
                         J_cs[i][j][k] = J[i][j][k];
                         if (J_cs[i][j][k] < J_peak_min) {
                             J_peak_min = J_cs[i][j][k];
@@ -85,7 +85,7 @@ void get_current_sheets()
                 } else {
                     //if ((J[i][j][k] > J_FAC*J_mean_outer[i]) && (betapl[i][j][k] > BETAPL_THR)) {
                     if ((J[i][j][k] > J_FAC*J_mean_outer[i]) && (sigmaphi[i][j][k] < SIGMAPHI_THR)) {
-                        count++;
+                        peak_count++;
                         J_cs[i][j][k] = J[i][j][k];
                         if (J_cs[i][j][k] < J_peak_min) {
                             J_peak_min = J_cs[i][j][k];
@@ -108,8 +108,8 @@ void get_current_sheets()
 
     // Calculate amount and print percentage of points which are above the
     // current sheet threshold
-    percent = (double)(count)/(N1*N2*N3)*100.;
-    printf("%d (%.2lf%%) points are above the threshold.\n", count, percent);
+    percent = (double)(peak_count)/(N1*N2*N3)*100.;
+    printf("%d (%.2lf%%) points are above the threshold.\n", peak_count, percent);
 
     // TO DO: adapt jpeak to GRMONTY grid (0, 1 thing, like flag)
     // TO DO: print to another file the 0-1 grid for the new jpeak
@@ -143,20 +143,16 @@ void get_current_sheets()
         //}
         for (j = 0; j < N2; j++) {
             for (k = 0; k < N3; k++) {
-
                 if ((i <= N1_inside) &&
                     (J_cs_peak[i][j][k] > J_FAC*J_mean_inner[i]) &&
                     (sigmaphi[i][j][k] < SIGMAPHI_THR) &&
                     (flag[i][j][k] == 0)) {
-
                     J_peak = J_cs_peak[i][j][k];
                     fill(i, j, k, J_peak);
-
                 } else if ((i > N1_inside) &&
                            (J_cs_peak[i][j][k] > J_FAC*J_mean_outer[i]) &&
                            (sigmaphi[i][j][k] < SIGMAPHI_THR)
                            && (flag[i][j][k] == 0)) {
-
                     J_peak = J_cs_peak[i][j][k];
                     fill(i, j, k, J_peak);
                 }
@@ -189,7 +185,7 @@ void fill(int i, int j, int k, double threshold)
 
 
 void get_locmax() {
-    int i, j, k, ii, jj, kk, count, endloop;
+    int i, j, k, ii, jj, kk, endloop;
     int box_lower_i, box_lower_j, box_lower_k;
     int box_upper_i, box_upper_j, box_upper_k;
 
@@ -235,8 +231,8 @@ void get_locmax() {
                         for (jj = box_lower_j; jj < box_upper_j + 1; jj++) {
                             for (kk = box_lower_k; kk < box_upper_k + 1; kk++) {
                                 if (J_cs[ii][jj][kk] > J_cs[i][j][k]) {
-                                    J_cs[i][j][k] = 0;
-                                    count--;
+                                    J_cs[i][j][k] = 0.;
+                                    peak_count--;
                                     endloop = 1;
                                 }
                                 if (endloop) break;
