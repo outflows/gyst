@@ -1,32 +1,28 @@
 #define CYL 1 // did we use cylindrification in our simulation?
 
-// General controls: 0 or 1 to tell the code to do or not do something
-// LEAVE CHARACTERIZE AT 0 FOR NOW -- NOT WORKING YET
+// General controls: 0 or 1 to tell the code to do something or not
 #define SHEETS 1
-#define CHARACTERIZE 1
+#define CHARACTERIZE 0
 
 // Threshold values for our criteria to find current sheets
 #define SIGMAPHI_THR 10e-5
-#define BETAPL_THR 5.0
+#define BETAPL_THR 5.
 //#define BU3_THR 10e-3 #0.00775
 #define JPEAK_FAC 0.5
 #define J_FAC 5.
 
 // Box sizes
 // to look for local maxima in J_cs
-#define HALF_BOX_SIZE 9
+#define HALF_BOX_SIZE 11
 // to find slope
 #define SHEET_HALF_BOX_SIZE 5
 
-//#define N1 (512)
-//#define N2 (256)
-//#define N3 (72)
 #define GR (1)
 #define NDIM (4)
 #define SMALL (1.e-20)
 #define DELTA (1.e-5)
 #define DELTAR (1.e-4)
-#define STEP (0.6)
+#define STEP (0.3)
 
 // Cylindrification in HARMPI
 #define DOCYL 1

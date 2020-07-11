@@ -649,24 +649,22 @@ void cart_to_sph(double eig_cart[3], double eig_sph[3], double theta, double phi
 
 void characterize2D()
 {
-    int i, j, k, m;
-    int ii, jj, kk;
-    double rr, tth, pphi, p_r, p_th, p_phi;
-    double x, y, p_x, p_y;
-    double Hess[2][2];
-    double e1[2], e1_cart[2], e2[2], evec[4];
+    int i, j, k, ii, jj, kk, m;
+    double rr, tth, pphi, p_r, p_th, p_phi, x, y, p_x, p_y;
+    double Hess[2][2], e1[2], e1_cart[2], e2[2], evec[4];
     double ap_x[NDIM], p_cart[NDIM], Vprim[NDIM], Bprim[NDIM];
     double del[NDIM];
     double new_position[3];
     double V_proj_e1, B_proj_e1, B_proj_e2;
     double step, stepsize, B_upper, B_lower, V_upper, V_lower, V_A, V_rec;
-    double B_upper_arr[100], B_lower_arr[100];
-    double B_upper_arr_i[100], B_upper_arr_j[100], B_lower_arr_i[100], B_lower_arr_j[100];
-    double *B_arr;
-    int *B_i, *B_j;
-    int is_good, is_good_lower, is_good_upper, size_lower, size_upper, size_B;
-    char sheet_file[50], i_str[6], j_str[6], k_str[6];
+    double B_upper_arr[100], B_lower_arr[100], J_upper_arr[100], J_lower_arr[100];
+    double Br_center, Bth_center, Bphi_center, beta_center, sigma_center;
+    double *B_arr, *J_arr;
+    int is_good_count, is_good, is_good_lower, is_good_upper, size_lower, size_upper, size_B;
+    char sheet_file[100], i_str[6], j_str[6], k_str[6];
     FILE *fp;
+
+    int *B_i, *B_j, B_upper_arr_i[100], B_upper_arr_j[100], B_lower_arr_i[100], B_lower_arr_j[100];
 
     if (SHEETS) printf("\n");
     printf("Beginning characterization...\n");
@@ -681,17 +679,28 @@ void characterize2D()
         }
     }
 
+    is_good_count = 0;
     printf("Entering main loop...\n");
     for (i = 0; i < N1; i++) {
         for (j = 0; j < N2; j++) {
             for (k = 0; k < N3; k++) {
 
+                //if(J_cs_peak[i][j][k] <= 0) printf("jcs %d %d %d %lf\n", i, j, k, J_cs[i][j][k]);
                 if (J_cs_peak[i][j][k] > 0.) {
                     rr = a_r[i][j][k];
                     tth = a_th[i][j][k];
                     pphi = a_phi[i][j][k];
 
-                    //1. get hessian
+                    Br_center = B[1][i][j][k];
+                    Bth_center = B[2][i][j][k];
+                    Bphi_center = B[3][i][j][k];
+                    beta_center = betapl[i][j][k];
+                    sigma_center = (bcov[0][i][j][k]*bcon[0][i][j][k] +
+                                    bcov[1][i][j][k]*bcon[1][i][j][k] +
+                                    bcov[2][i][j][k]*bcon[2][i][j][k] +
+                                    bcov[3][i][j][k]*bcon[3][i][j][k])/rho[i][j][k];
+
+                    //1. get hessian (2nd derivative)
                     for (ii = 0; ii < 2; ii++) {
                         for (jj = 0; jj < 2; jj++) {
                             Hess[ii][jj] = 0.;
@@ -713,15 +722,15 @@ void characterize2D()
                     //4. convert max_eigvec to cartesian
                     vec_pol_to_cart(e1, e1_cart, tth);
 
+                    //printf("%d %d %d %lf %lf\n", i, j, k, B[3][i][j][k], J[i][j][k]);
                     //5. move along eigenvector (upper)
                     step = STEP;
                     stepsize = step;
                     m = 0;
-                    size_upper = 1;
                     //B_upper_arr = (double*) malloc(size_upper*sizeof(double));
                     for (int index = 0; index < 100; index++) B_upper_arr[index] = 0.;
                     is_good_upper = 0;
-                    while(m < 100) {
+                    while(m < 80) {
                         p_cart[0] = x;
                         p_cart[1] = y;
 
@@ -751,10 +760,8 @@ void characterize2D()
                         //printf("upper %g %g %g %d %d %d %g\n", ap_x[1], ap_x[2], ap_x[3], ii, jj, kk, J_cs[ii][jj][kk]);
 
                         //7.1 test value of J_cs
-                        if (J_cs[ii][jj][kk] > 0.5*J_cs_peak[i][j][k]) {
+                        if (J[ii][jj][kk] > 0.5*J_cs_peak[i][j][k]) {
 
-                            //8. project V along max_evec to find V_in at this cell
-                            // NOTE: may have to change, use 4vec and recalculate V, B
                             Vprim[0] = 0.;
                             Vprim[1] = V[1][ii][jj][kk];
                             Vprim[2] = V[2][ii][jj][kk];
@@ -764,15 +771,21 @@ void characterize2D()
                             Bprim[2] = B[2][ii][jj][kk];
                             Bprim[3] = B[3][ii][jj][kk];
 
-                            //9. project B along e1, e2, e3 to find B along these eigenvectors
+                            //9. project V, B along e1, e2, e3 to find V, B along these eigenvectors
+                            // NOTE: may have to change, use 4vec and recalculate V, B
+                            /*
                             V_proj_e1 = dot3(Vprim, e1) / (sqrt(dot3(e1,e1)) + SMALL);
                             B_proj_e1 = dot3(Bprim, e1) / (sqrt(dot3(e1,e1)) + SMALL);
                             B_proj_e2 = dot3(Bprim, e2) / (sqrt(dot3(e2,e2)) + SMALL);
                             B_upper = abs(B_proj_e1);
                             B_upper_arr[m] = B_proj_e1;
+                            */
 
                             B_upper = Bprim[3];
                             B_upper_arr[m] = B_upper;
+                            J_upper_arr[m] = J[ii][jj][kk];
+
+                            //printf("upper %d %d %d %lf %lf\n", ii, jj, kk, Bprim[3], J[ii][jj][kk]);
 
                             //B_upper_arr_i[m] = ii;
                             //B_upper_arr_j[m] = jj;
@@ -780,16 +793,18 @@ void characterize2D()
                             //printf("size upper %d, m %d, B %lf\n", size_upper, m, B_upper_arr[m]);
 
                             m++;
-                            size_upper++;
+                            size_upper = m;
 
                             //10. use B_proj to find v_alfven
+                            /*
                             V_A = sqrt((B_proj_e1*B_proj_e1 +
                                         B_proj_e2*B_proj_e2)/(rho[ii][jj][kk] + SMALL));
                             V_upper = V_proj_e1/V_A;
+                            */
 
                             V_A = sqrt((Bprim[1]*Bprim[1] +
                                         Bprim[2]*Bprim[2] +
-                                        Bprim[3]*Bprim[3] +)/(rho[ii][jj][kk] + SMALL));
+                                        Bprim[3]*Bprim[3])/(rho[ii][jj][kk] + SMALL));
                             V_upper = Vprim[1]/V_A;
 
                             is_good_upper = 1;
@@ -801,11 +816,10 @@ void characterize2D()
                     step = STEP;
                     stepsize = step;
                     m = 0;
-                    size_lower = 1;
                     //B_lower_arr = (double*) malloc(size_lower*sizeof(double));
                     for (int index = 0; index < 100; index++) B_lower_arr[index] = 0.;
                     is_good_lower = 0;
-                    while(m < 100) {
+                    while(m < 80) {
                         p_cart[0] = x;
                         p_cart[1] = y;
 
@@ -830,7 +844,7 @@ void characterize2D()
                         //printf("lower %g %g %g %d %d %d %g\n", ap_x[1], ap_x[2], ap_x[3], ii, jj, kk, J_cs[ii][jj][kk]);
 
                         //7.1 test value of J_cs
-                        if (J_cs[ii][jj][kk] > 0.5*J_cs_peak[i][j][k]) {
+                        if (J[ii][jj][kk] > 0.5*J_cs_peak[i][j][k]) {
 
                             //8. project V along max_evec to find V_in at this cell
                             // NOTE: may have to change, use 4vec and recalculate V, B
@@ -854,12 +868,15 @@ void characterize2D()
 
                             B_lower = Bprim[3];
                             B_lower_arr[m] = B_lower;
+                            J_lower_arr[m] = J[ii][jj][kk];
+
+                            //printf("lower %d %d %d %lf %lf\n", ii, jj, kk, Bprim[3], J[ii][jj][kk]);
 
                             //B_lower_arr_i[m] = ii;
                             //B_lower_arr_j[m] = jj;
                             //printf("size lower %d, m %d, B %lf\n", size_lower, m, B_lower_arr[m]);
                             m++;
-                            size_lower++;
+                            size_lower = m;
 
                             //10. use B_proj to find v_alfven
                             /*
@@ -870,7 +887,7 @@ void characterize2D()
 
                             V_A = sqrt((Bprim[1]*Bprim[1] +
                                         Bprim[2]*Bprim[2] +
-                                        Bprim[3]*Bprim[3] +)/(rho[ii][jj][kk] + SMALL));
+                                        Bprim[3]*Bprim[3])/(rho[ii][jj][kk] + SMALL));
                             V_lower = Vprim[1]/V_A;
 
                             is_good_lower = 1;
@@ -878,32 +895,41 @@ void characterize2D()
                         else break;
                     }
 
-                    //printf("%d %d %d %d\n", i, j, is_good_upper, is_good_lower);
-
-
                     if (is_good_lower && is_good_upper) {
                         //12. get V_in/V_A
                         V_rec = 0.5*(V_lower - V_upper);
 
                         is_good = 1;
                         // don't consider point if smallish reconnection velocity
-                        if (abs(V_rec) < 0.1) {
-                            J_cs_char[i][j][k] = 0.;
-                            is_good = 0;
-                        }
-                        // don't consider point if too asymetrical
-                        if (abs(B_upper) < 0.75*abs(B_lower) || abs(B_lower) < 0.75*abs(B_upper)) {
+                        if (abs(V_rec) < 0.6) {
                             J_cs_char[i][j][k] = 0.;
                             is_good = 0;
                         }
 
+                        // don't consider point if too asymetrical
+                        if (abs(B_upper) < 0.9*abs(B_lower) || abs(B_lower) < 0.9*abs(B_upper)) {
+                            J_cs_char[i][j][k] = 0.;
+                            is_good = 0;
+                        }
+
+                        if (B_upper * B_lower > 0) {
+                            J_cs_char[i][j][k] = 0.;
+                            is_good = 0;
+                        }
+
+                        //if (is_good) printf("is good %d %d %d\n", i, j, k);
+
                         if (is_good) {
-                            size_B = size_lower + size_upper - 1;
+                            is_good_count++;
+                            size_B = size_lower + size_upper;
                             B_arr = (double*) malloc(size_B*sizeof(double));
-                            //for (int mmm = 0; mmm < size_lower; mmm++) printf("%lf\n", B_lower_arr[mmm]);
-                            //printf("\n\n\n");
+                            J_arr = (double*) malloc(size_B*sizeof(double));
+
                             reverse_array(B_lower_arr, size_lower);
-                            merge_arrays(B_lower_arr, B_upper_arr, B_arr, size_lower - 1, size_upper);
+                            merge_arrays(B_lower_arr, B_upper_arr, B_arr, size_lower, size_upper);
+
+                            reverse_array(J_lower_arr, size_lower);
+                            merge_arrays(J_lower_arr, J_upper_arr, J_arr, size_lower, size_upper);
 
                             //B_i = (int*) malloc(size_B*sizeof(int));
                             //B_j = (int*) malloc(size_B*sizeof(int));
@@ -916,7 +942,8 @@ void characterize2D()
                             sprintf(j_str, "%d", j);
                             sprintf(k_str, "%d", k);
 
-                            strcpy(sheet_file, dump_file);
+                            strcpy(sheet_file, "/home/gustavo/work/gyst/sheets/");
+                            strcat(sheet_file, dump_file);
                             strcat(sheet_file, "_");
                             strcat(sheet_file, i_str);
                             strcat(sheet_file, "_");
@@ -926,8 +953,10 @@ void characterize2D()
                             strcat(sheet_file, "_s");
 
                             fp = fopen(sheet_file, "w");
+                            fprintf(fp, "%lf\t%lf\t%lf\t%lf\t%lf\n",
+                                Br_center, Bth_center, Bphi_center, beta_center, sigma_center);
                             for (m = 0; m < size_B; m++) {
-                                fprintf(fp, "%g\n", B_arr[m]);
+                                fprintf(fp, "%lf\t%lf\n", B_arr[m], J_arr[m]);
                             }
                             fclose(fp);
                             free(B_arr);
@@ -940,9 +969,9 @@ void characterize2D()
             }
         }
     }
+    printf("Identified %d possible reconnection sites.\n", is_good_count);
     write_current_sheets(jchar_output, J_cs_char);
     printf("Finished characterization of sheets.\n");
-
 }
 
 
