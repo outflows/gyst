@@ -221,6 +221,7 @@ void read_data(char *fname) {
                       bcov[1][i][j][k]*bcon[1][i][j][k] +
                       bcov[2][i][j][k]*bcon[2][i][j][k] +
                       bcov[3][i][j][k]*bcon[3][i][j][k];
+                sigma[i][j][k] = bsq/rho[i][j][k];
                 betapl[i][j][k] = 2.*pg/bsq;
                 sigmaphi[i][j][k] = bcov[3][i][j][k]*bcon[3][i][j][k]/(rho[i][j][k]);
                 Sigmaphi[i][j][k] = B[3][i][j][k]*B[3][i][j][k]/(rho[i][j][k]);

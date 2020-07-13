@@ -2,7 +2,7 @@
 
 // General controls: 0 or 1 to tell the code to do something or not
 #define SHEETS 1
-#define CHARACTERIZE 0
+#define CHARACTERIZE 1
 
 // Threshold values for our criteria to find current sheets
 #define SIGMAPHI_THR 10e-5
@@ -23,6 +23,11 @@
 #define DELTA (1.e-5)
 #define DELTAR (1.e-4)
 #define STEP (0.3)
+
+#define STEP1 (0.003)
+#define STEP2 (0.03)
+#define STEP3 (0.3)
+#define STEP4 (3.0)
 
 // Cylindrification in HARMPI
 #define DOCYL 1
@@ -122,6 +127,7 @@ extern double jdotu;
 extern double Jsq;
 extern double gJsq;
 extern double ***J;        // current
+extern double ***sigma;
 extern double ***sigmaphi; // phi-component of magnetization
 extern double ***Sigmaphi;
 extern double pg;        // gas pressure

@@ -65,6 +65,7 @@ double jdotu;
 double Jsq;
 double gJsq;
 double ***J;        // current
+double ***sigma; // phi-component of magnetization
 double ***sigmaphi; // phi-component of magnetization
 double ***Sigmaphi; // phi-component of magnetization
 double pg;        // gas pressure
@@ -186,3 +187,12 @@ double calcth_cylindrified(double x2in);
 //void jac_cyl_to_ks(double *X_cyl, double jac[][NDIM]);
 //void jac_ks_to_mks(double *X_ks, double jac[][NDIM]);
 //void fourvec_old_to_new(double *fourvec_old, double jac[][NDIM], double *fourvec_new);
+
+
+
+void characterize2D_single();
+void characterize2D_single2();
+void reverse_array_int(int *array, int n);
+void merge_arrays_int(int *a1, int *a2, int *newa, int size_a1, int size_a2);
+void Xtoijk_new(double X[NDIM], int *i, int *j, int *k, double del[NDIM]);
+void characterize2D2();

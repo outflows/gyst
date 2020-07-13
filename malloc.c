@@ -156,6 +156,7 @@ void init_storage_data()
 	J_cs_peak = (double ***) malloc_rank3_cont(N1, N2, N3);
 	J_cs_char = (double ***) malloc_rank3_cont(N1, N2, N3);
     betapl = (double ***) malloc_rank3_cont(N1, N2, N3);
+    sigma = (double ***) malloc_rank3_cont(N1, N2, N3);
     sigmaphi = (double ***) malloc_rank3_cont(N1, N2, N3);
     Sigmaphi = (double ***) malloc_rank3_cont(N1, N2, N3);
 	dJdx = (double ***) malloc_rank3_cont(N1, N2, N3); // must be global

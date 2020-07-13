@@ -160,8 +160,81 @@ void get_geometry(int ii, int jj, int kk, struct of_geom *geom)
 	geom->g = grid_gdet[ii][jj][kk];
 }
 
+void Xtoijk_new(double X[NDIM], int *i, int *j, int *k, double del[NDIM])
+{
+    double XG[NDIM];
+
+    XG[0] = X[0];
+    XG[1] = zbrent(find_x1_cyl, X[1], 0, 8., 1E-6);
+    XG[2] = zbrent(find_x2_cyl, X[2], -1.0, 1.0, 1E-6);
+    XG[3] = X[3];
+
+
+	double pphi = fmod(XG[3], stopx[3]);
+  	if (pphi < 0.0) pphi = stopx[3]+pphi;
+
+	int abc;
+
+	*i = (int) ((XG[1] - startx[1]) / dx[1] - 0.5 + 1000) - 1000;
+	*j = (int) ((XG[2] - startx[2]) / dx[2] - 0.5 + 1000) - 1000;
+	//*k = (int) ((X[3] - startx[3]) / dx[3] - 0.5 + 1000) - 1000;
+	*k = (int) ((pphi - startx[3]) / dx[3] - 0.5 + 1000) - 1000;
+
+	abc = *k;
+
+	if (*i < 0) {
+		*i = 0;
+		del[1] = 0.;
+	} else if (*i > N1 - 2) {
+		*i = N1 - 2;
+		del[1] = 1.;
+	} else {
+		del[1] = (XG[1] - ((*i + 0.5) * dx[1] + startx[1])) / dx[1];
+	}
+
+	if (*j < 0) {
+		*j = 0;
+		del[2] = 0.;
+	} else if (*j > N2 - 2) {
+		*j = N2 - 2;
+		del[2] = 1.;
+	} else {
+		del[2] = (XG[2] - ((*j + 0.5) * dx[2] + startx[2])) / dx[2];
+	}
+
+    if (*k < 0) {
+    	*k = 0;
+    	del[3] = 0.;
+    } else if (*k > N3 - 1) {
+    	*k = N3 - 2;
+    	del[3] = 1.;
+    } else {
+    	del[3] = (pphi - ((*k + 0.5) * dx[3] + startx[3])) / dx[3];
+    }
+
+	if (del[1] > 1.) del[1] = 1.;
+  	if (del[1] < 0.) del[1] = 0.;
+  	if (del[2] > 1.) del[2] = 1.;
+  	if (del[2] < 0.) del[2] = 0.;
+  	if (del[3] > 1.) del[3] = 1.;
+  	if (del[3] < 0.) {
+    	int oldk = *k;
+    	*k = N3-1;
+    	del[3] += 1.;
+    	if (del[3] < 0) {
+      		fprintf(stderr, "Xtoijk: unable to resolve X[3] coordinate to zone %d %d %g %g\n", oldk, *k, del[3], X[3]);
+      		exit(-7);
+    	}
+  	}
+	//printf("%g %d %d %g\n", pphi, abc, *k, del[3]);
+
+	return;
+}
+
+
 void Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM])
 {
+
 	double pphi = fmod(X[3], stopx[3]);
   	if (pphi < 0.0) pphi = stopx[3]+pphi;
 
@@ -222,7 +295,6 @@ void Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM])
 
 	return;
 }
-
 
 double dot3(double *v1, double *v2)
 {
