@@ -191,8 +191,8 @@ double calcth_cylindrified(double x2in);
 
 
 void characterize2D_single();
-void characterize2D_single2();
+//void characterize2D_single2();
 void reverse_array_int(int *array, int n);
 void merge_arrays_int(int *a1, int *a2, int *newa, int size_a1, int size_a2);
 void Xtoijk_new(double X[NDIM], int *i, int *j, int *k, double del[NDIM]);
-void characterize2D2();
+//void characterize2D2();

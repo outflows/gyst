@@ -174,8 +174,13 @@ void Xtoijk_new(double X[NDIM], int *i, int *j, int *k, double del[NDIM])
   	if (pphi < 0.0) pphi = stopx[3]+pphi;
 
 	int abc;
-
-	*i = (int) ((XG[1] - startx[1]) / dx[1] - 0.5 + 1000) - 1000;
+/*
+	*i = (int) round(((XG[1] - startx[1]) / dx[1] - 0.5 + 1000) - 1000);
+	*j = (int) round(((XG[2] - startx[2]) / dx[2] - 0.5 + 1000) - 1000);
+	//*k = (int) ((X[3] - startx[3]) / dx[3] - 0.5 + 1000) - 1000;
+	*k = (int) round(((pphi - startx[3]) / dx[3] - 0.5 + 1000) - 1000);
+*/
+    *i = (int) ((XG[1] - startx[1]) / dx[1] - 0.5 + 1000) - 1000;
 	*j = (int) ((XG[2] - startx[2]) / dx[2] - 0.5 + 1000) - 1000;
 	//*k = (int) ((X[3] - startx[3]) / dx[3] - 0.5 + 1000) - 1000;
 	*k = (int) ((pphi - startx[3]) / dx[3] - 0.5 + 1000) - 1000;

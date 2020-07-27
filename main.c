@@ -122,8 +122,8 @@ int main(int argc, char *argv[])
             read_current_sheets(jpeak_output, J_cs_peak);
         }
         if (N3 > 1) characterize();
-        else characterize2D2();
-        //else characterize2D_single2();
+        else characterize2D();
+        //else characterize2D_single();
     }
     clock_t end_char = clock();
     double time_spent_char = (double)(end_char - begin_char) / CLOCKS_PER_SEC;
