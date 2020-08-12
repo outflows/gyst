@@ -15,7 +15,9 @@ int main(int argc, char *argv[])
     struct of_geom geom;
     FILE *gdumpfile, *metricfile;
     char dump[100], gdump[100], metric[100];
-    char path[100] = "/home/gustavo/Dropbox/trabalho/programs/grmonty_harmpi/";
+    //char path[100] = "/home/gustavo/Dropbox/trabalho/programs/grmonty_harmpi/";
+    char path[100] = "/home/gustavo/work/dumps/";
+    char jcs_dir[100] = "/home/gustavo/work/gyst/jcs_files/";
 
     clock_t begin = clock();
 
@@ -30,15 +32,21 @@ int main(int argc, char *argv[])
 
     sscanf(argv[1], "%s", dump_file);
     strcat(dump, dump_file);
-    strcpy(jcs_output, dump_file);
+    strcat(jcs_dir, dump_file);
+    strcpy(jcs_output, jcs_dir);
     strcat(jcs_output, "_jcs");
-    strcpy(jpeak_output, dump_file);
+    //strcpy(jcs_output, dump_file);
+    //strcpy(jpeak_output, dump_file);
+    strcpy(jpeak_output, jcs_dir);
     strcat(jpeak_output, "_jcs_peak");
-    strcpy(jchar_output, dump_file);
+    //strcpy(jchar_output, dump_file);
+    strcpy(jchar_output, jcs_dir);
     strcat(jchar_output, "_jcs_char");
 
-    strcpy(metric, dump_file);
-    strcat(metric, "_metric");
+    strcpy(metric, path);
+    strcat(metric, "metric");
+    //strcpy(metric, dump_file);
+    //strcat(metric, "_metric");
 
     if (SHEETS) {
         printf("SHEETS set to 1 by user: this run WILL find the current sheets\n");
@@ -67,7 +75,7 @@ int main(int argc, char *argv[])
         read_metric(metric);
     }
     else {
-        strcat(gdump, "gdump2D");
+        strcat(gdump, "gdump");
         gdumpfile = fopen(gdump, "rb");
         if (gdumpfile == NULL) {
             printf("gdump not found, setting up grid...\n");

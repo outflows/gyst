@@ -87,11 +87,9 @@ double ***betapl;   // plasma beta
 //double lflem;    // angular momentum flux, EM
 //double lflma;    // angular momentum flux, matter
 
+
 // characterization.c
-void check_box_limits(int i, int j, int k, int box_lower_i, int box_lower_j,
-                      int box_lower_k, int box_upper_i, int box_upper_j,
-                      int box_upper_k, int halfboxsize);
-void find_normal();
+
 
 // eigen.c
 void get_hessian(int i, int j, int k, double Hess[3][3]);
@@ -196,3 +194,14 @@ void reverse_array_int(int *array, int n);
 void merge_arrays_int(int *a1, int *a2, int *newa, int size_a1, int size_a2);
 void Xtoijk_new(double X[NDIM], int *i, int *j, int *k, double del[NDIM]);
 //void characterize2D2();
+
+
+
+
+
+double find_normal(int i, int j, int k);
+void check_box_limits(int i, int j, int k,
+                      int box_lower_i, int box_lower_j, int box_lower_k,
+                      int box_upper_i, int box_upper_j, int box_upper_k,
+                      int halfboxsize);
+void characterize2D_normal();

@@ -979,11 +979,14 @@ void characterize2D()
     double Br_upper_arr[100], Br_lower_arr[100], Bth_upper_arr[100], Bth_lower_arr[100], Bphi_upper_arr[100], Bphi_lower_arr[100];
     double J_upper_arr[100], J_lower_arr[100], beta_upper_arr[100], beta_lower_arr[100];
     double sigma_upper_arr[100], sigma_lower_arr[100], sigmaphi_upper_arr[100], sigmaphi_lower_arr[100];
-    int i_upper_arr[100], i_lower_arr[100], j_upper_arr[100], j_lower_arr[100];
+    int i_upper_arr[100], i_lower_arr[100], j_upper_arr[100], j_lower_arr[100], k_upper_arr[100], k_lower_arr[100];
     double Br_arr[200], Bth_arr[200], Bphi_arr[200], J_arr[200], sigma_arr[200], sigmaphi_arr[200], beta_arr[200];
-    int i_arr[200], j_arr[200];
+    int i_arr[200], j_arr[200], k_arr[200];
 
     int i_am, j_am, k_am;
+    double B_test, B_min, B_max;
+    int more_to_go_lower, more_to_go_upper;
+    double iaux, jaux, kaux;
 
     if (SHEETS) printf("\n");
     printf("Beginning characterization...\n");
@@ -1049,9 +1052,15 @@ void characterize2D()
                     m = 0;
                     iter = 0;
                     is_good_upper = 0;
+                    more_to_go_upper = 0;
                     B_upper = 0.;
                     V_upper = 0.;
                     size_upper = 0;
+                    B_test = Bphi_center;
+
+                    B_min = 0.;
+                    B_max = 0.;
+
                     while(iter < 50) {
                         p_cart[0] = rr;
                         p_cart[1] = tth;
@@ -1073,10 +1082,12 @@ void characterize2D()
                         Xtoijk_new(ap_x, &ii, &jj, &kk, del);
 
                         //7.1 test value of J_cs
+                        //if ( fabs(B[3][ii][jj][kk]/B_test) > 0.05 || fabs(B_test/B[3][ii][jj][kk]) > 0.05) {
                         if (J[ii][jj][kk] > 0.5*J_cs_peak[i][j][k]) {
-
+                        //if ( (J[ii][jj][kk] > 0.5*J_cs_peak[i][j][k]) && (fabs(B[3][ii][jj][kk]/B_test) > 0.05 || fabs(B_test/B[3][ii][jj][kk]) > 0.05) ) {
                             if ((ii != i_am) || (jj != j_am)) {
                             //if (1) {
+                                //B_test = B[3][ii][jj][kk];
                                 i_am = ii;
                                 j_am = jj;
 
@@ -1109,6 +1120,14 @@ void characterize2D()
                                 sigmaphi_upper_arr[m] = sigmaphi[ii][jj][kk];
                                 i_upper_arr[m] = ii;
                                 j_upper_arr[m] = jj;
+                                k_upper_arr[m] = 0;
+
+                                if (Bphi_upper_arr[m] < B_min) {
+                                    B_min = Bphi_upper_arr[m];
+                                }
+                                if (Bphi_upper_arr[m] > B_max) {
+                                    B_max = Bphi_upper_arr[m];
+                                }
 
                                 m++;
                                 size_upper = m;
@@ -1131,7 +1150,71 @@ void characterize2D()
                         }
                         else break;
                     }
+/*
+                    if (more_to_go_upper) {
+                        while (iter < 50) {
 
+                            p_cart[0] = rr;
+                            p_cart[1] = tth;
+                            for (ii = 0; ii < 2; ii++) new_position[ii] = p_cart[ii] + e1[ii]*step;
+                            ap_x[1] = new_position[0];
+                            ap_x[2] = new_position[1];
+                            ap_x[3] = 0.;
+                            step += stepsize;
+                            Xtoijk_new(ap_x, &ii, &jj, &kk, del);
+
+                            if ( (1.05*B[3][ii][jj][kk] < B_upper) || (1.05*B_upper < B[3][ii][jj][kk]) ) {
+                                if ((ii != i_am) || (jj != j_am)) {
+                                    //B_test = B[3][ii][jj][kk];
+                                    i_am = ii;
+                                    j_am = jj;
+
+                                    Vprim[0] = 0.;
+                                    Vprim[1] = V[1][ii][jj][kk];
+                                    Vprim[2] = V[2][ii][jj][kk];
+                                    Vprim[3] = V[3][ii][jj][kk];
+                                    Bprim[0] = 0.;
+                                    Bprim[1] = B[1][ii][jj][kk];
+                                    Bprim[2] = B[2][ii][jj][kk];
+                                    Bprim[3] = B[3][ii][jj][kk];
+
+                                    //B_upper = Bprim[3];
+                                    Br_upper_arr[m] = Bprim[1];
+                                    Bth_upper_arr[m] = Bprim[2];
+                                    Bphi_upper_arr[m] = Bprim[3];
+                                    J_upper_arr[m] = J[ii][jj][kk];
+                                    beta_upper_arr[m] = betapl[ii][jj][kk];
+                                    sigma_upper_arr[m] = sigma[ii][jj][kk];
+                                    sigmaphi_upper_arr[m] = sigmaphi[ii][jj][kk];
+                                    i_upper_arr[m] = ii;
+                                    j_upper_arr[m] = jj;
+
+                                    if (Bphi_upper_arr[m] < B_min) {
+                                        B_min = Bphi_upper_arr[m];
+                                    }
+                                    if (Bphi_upper_arr[m] > B_max) {
+                                        B_max = Bphi_upper_arr[m];
+                                    }
+
+                                    m++;
+                                    size_upper = m;
+
+                                    V_A = sqrt((Bprim[1]*Bprim[1] +
+                                                Bprim[2]*Bprim[2] +
+                                                Bprim[3]*Bprim[3])/(rho[ii][jj][kk] + SMALL));
+                                    //V_upper = Vprim[1]/V_A;
+
+                                    is_good_upper = 1;
+                                }
+                                iter++;
+                            }
+                            else {
+                                more_to_go_upper = 0;
+                                break;
+                            }
+                        }
+                    }
+*/
                     //5. move along eigenvector (lower)
 /*
                     if (BETWEEN(i, 0, 180)) step = STEP1;
@@ -1149,9 +1232,11 @@ void characterize2D()
                     m = 0;
                     iter = 0;
                     is_good_lower = 0;
+                    more_to_go_lower = 0;
                     B_lower = 0.;
                     V_lower = 0.;
                     size_lower = 0;
+                    B_test = Bphi_center;
                     while(iter < 50) {
                         p_cart[0] = rr;
                         p_cart[1] = tth;
@@ -1173,10 +1258,11 @@ void characterize2D()
                         Xtoijk_new(ap_x, &ii, &jj, &kk, del);
 
                         //7.1 test value of J_cs
+                        //if ( fabs(B[3][ii][jj][kk]/B_test) > 0.05 || fabs(B_test/B[3][ii][jj][kk]) > 0.05) {
                         if (J[ii][jj][kk] > 0.5*J_cs_peak[i][j][k]) {
-
+                        //if ( (J[ii][jj][kk] > 0.5*J_cs_peak[i][j][k]) && (fabs(B[3][ii][jj][kk]/B_test) > 0.05 || fabs(B_test/B[3][ii][jj][kk]) > 0.05) ) {
                             if ((ii != i_am) || (jj != j_am)) {
-                            //if (1) {
+                                //B_test = B[3][ii][jj][kk];
                                 i_am = ii;
                                 j_am = jj;
 
@@ -1210,6 +1296,15 @@ void characterize2D()
                                 sigmaphi_lower_arr[m] = sigmaphi[ii][jj][kk];
                                 i_lower_arr[m] = ii;
                                 j_lower_arr[m] = jj;
+                                k_lower_arr[m] = 0;
+
+                                if (Bphi_lower_arr[m] < B_min) {
+                                    B_min = Bphi_lower_arr[m];
+                                }
+                                if (Bphi_lower_arr[m] > B_max) {
+                                    B_max = Bphi_lower_arr[m];
+                                }
+
                                 m++;
                                 size_lower = m;
 
@@ -1226,12 +1321,77 @@ void characterize2D()
                                 V_lower = Vprim[1]/V_A;
 
                                 is_good_lower = 1;
+                                more_to_go_lower = 1;
                             }
                             iter++;
                         }
                         else break;
                     }
+/*
+                    if (more_to_go_lower) {
+                        while (iter < 50) {
 
+                            p_cart[0] = rr;
+                            p_cart[1] = tth;
+                            for (ii = 0; ii < 2; ii++) new_position[ii] = p_cart[ii] - e1[ii]*step;
+                            ap_x[1] = new_position[0];
+                            ap_x[2] = new_position[1];
+                            ap_x[3] = 0.;
+                            step += stepsize;
+                            Xtoijk_new(ap_x, &ii, &jj, &kk, del);
+
+                            if ( (1.05*B[3][ii][jj][kk] < B_lower) || (1.05*B_lower < B[3][ii][jj][kk]) ) {
+                                if ((ii != i_am) || (jj != j_am)) {
+                                    //B_test = B[3][ii][jj][kk];
+                                    i_am = ii;
+                                    j_am = jj;
+
+                                    Vprim[0] = 0.;
+                                    Vprim[1] = V[1][ii][jj][kk];
+                                    Vprim[2] = V[2][ii][jj][kk];
+                                    Vprim[3] = V[3][ii][jj][kk];
+                                    Bprim[0] = 0.;
+                                    Bprim[1] = B[1][ii][jj][kk];
+                                    Bprim[2] = B[2][ii][jj][kk];
+                                    Bprim[3] = B[3][ii][jj][kk];
+
+                                    //B_lower = Bprim[3];
+                                    Br_lower_arr[m] = Bprim[1];
+                                    Bth_lower_arr[m] = Bprim[2];
+                                    Bphi_lower_arr[m] = Bprim[3];
+                                    J_lower_arr[m] = J[ii][jj][kk];
+                                    beta_lower_arr[m] = betapl[ii][jj][kk];
+                                    sigma_lower_arr[m] = sigma[ii][jj][kk];
+                                    sigmaphi_lower_arr[m] = sigmaphi[ii][jj][kk];
+                                    i_lower_arr[m] = ii;
+                                    j_lower_arr[m] = jj;
+
+                                    if (Bphi_lower_arr[m] < B_min) {
+                                        B_min = Bphi_lower_arr[m];
+                                    }
+                                    if (Bphi_lower_arr[m] > B_max) {
+                                        B_max = Bphi_lower_arr[m];
+                                    }
+
+                                    m++;
+                                    size_lower = m;
+
+                                    V_A = sqrt((Bprim[1]*Bprim[1] +
+                                                Bprim[2]*Bprim[2] +
+                                                Bprim[3]*Bprim[3])/(rho[ii][jj][kk] + SMALL));
+                                    //V_upper = Vprim[1]/V_A;
+
+                                    is_good_lower = 1;
+                                }
+                                iter++;
+                            }
+                            else {
+                                more_to_go_lower = 0;
+                                break;
+                            }
+                        }
+                    }
+*/
                     if (is_good_lower && is_good_upper) {
                         //12. get V_in/V_A
                         V_rec = 0.5*(V_lower - V_upper);
@@ -1262,9 +1422,15 @@ void characterize2D()
                             //printf("4\n");
                         }
 
+                        size_B = size_lower + size_upper + 1;
+                        if (size_B <= 3) {
+                            J_cs_char[i][j][k] = 0.;
+                            is_good = 0;
+                            //printf("5\n");
+                        }
+
                         if (is_good) {
                             is_good_count++;
-                            size_B = size_lower + size_upper + 1;
 
                             for (m = 0; m < 200; m++) {
                                 Br_arr[m] = 0.;
@@ -1276,6 +1442,7 @@ void characterize2D()
                                 sigmaphi_arr[m] = 0.;
                                 i_arr[m] = 0;
                                 j_arr[m] = 0;
+                                k_arr[m] = 0;
                             }
 
                             reverse_array(Br_lower_arr, size_lower);
@@ -1287,6 +1454,7 @@ void characterize2D()
                             reverse_array(sigmaphi_lower_arr, size_lower);
                             reverse_array_int(i_lower_arr, size_lower);
                             reverse_array_int(j_lower_arr, size_lower);
+                            reverse_array_int(k_lower_arr, size_lower);
 
                             Br_lower_arr[size_lower] = B[1][i][j][k];
                             Bth_lower_arr[size_lower] = B[2][i][j][k];
@@ -1297,6 +1465,7 @@ void characterize2D()
                             sigmaphi_lower_arr[size_lower] = sigmaphi[i][j][k];
                             i_lower_arr[size_lower] = i;
                             j_lower_arr[size_lower] = j;
+                            k_lower_arr[size_lower] = 0;
 
                             merge_arrays(Br_lower_arr, Br_upper_arr, Br_arr, size_lower+1, size_upper);
                             merge_arrays(Bth_lower_arr, Bth_upper_arr, Bth_arr, size_lower+1, size_upper);
@@ -1307,6 +1476,7 @@ void characterize2D()
                             merge_arrays(sigmaphi_lower_arr, sigmaphi_upper_arr, sigmaphi_arr, size_lower+1, size_upper);
                             merge_arrays_int(i_lower_arr, i_upper_arr, i_arr, size_lower+1, size_upper);
                             merge_arrays_int(j_lower_arr, j_upper_arr, j_arr, size_lower+1, size_upper);
+                            merge_arrays_int(k_lower_arr, k_upper_arr, k_arr, size_lower+1, size_upper);
 
                             sprintf(i_str, "%d", i);
                             sprintf(j_str, "%d", j);
@@ -1320,15 +1490,32 @@ void characterize2D()
                             strcat(sheet_file, "_");
                             strcat(sheet_file, k_str);
                             strcat(sheet_file, "_s");
-
+/*
                             fp = fopen(sheet_file, "w");
                             fprintf(fp, "Br\tBth\tBph\tJ\tbeta\tsigma\tsigmaphi\ti\tj\tk\n");
                             for (m = 0; m < size_B; m++) {
                                 fprintf(fp, "%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%d\t%d\t0\n",
                                 Br_arr[m], Bth_arr[m], Bphi_arr[m], J_arr[m],
                                 beta_arr[m], sigma_arr[m], sigmaphi_arr[m], i_arr[m], j_arr[m]);
-
                             }
+*/
+                            fp = fopen(sheet_file, "wb");
+                            for (m = 0; m < size_B; m++) {
+                                fwrite(&Br_arr[m], sizeof(double), 1, fp);
+                                fwrite(&Bth_arr[m], sizeof(double), 1, fp);
+                                fwrite(&Bphi_arr[m], sizeof(double), 1, fp);
+                                fwrite(&J_arr[m], sizeof(double), 1, fp);
+                                fwrite(&beta_arr[m], sizeof(double), 1, fp);
+                                fwrite(&sigma_arr[m], sizeof(double), 1, fp);
+                                fwrite(&sigmaphi_arr[m], sizeof(double), 1, fp);
+                                iaux = i_arr[m];
+                                jaux = j_arr[m];
+                                //jaux = 0.;
+                                fwrite(&iaux, sizeof(double), 1, fp);
+                                fwrite(&jaux, sizeof(double), 1, fp);
+                                //(&kaux, sizeof(double), 1, fp);
+                            }
+
                             fclose(fp);
                         }
                     }

@@ -23,4 +23,11 @@ $(EXE): $(OBJS) $(INCS) makefile
 	$(CC_LOAD) $(OBJS) $(LIBS) -o $(EXE)
 
 clean:
-	/bin/rm *.o *_s $(EXE)
+	/bin/rm -f *.o *_s $(EXE)
+
+newrun:
+	/bin/rm -rf sheets
+	/bin/mkdir sheets
+	/bin/rm -rf jcs_files
+	/bin/mkdir jcs_files
+

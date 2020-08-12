@@ -132,33 +132,40 @@ def Ebindisco(a):
     #Eb = (1.-3.**(-0.5))*a**2
     return( Eb )
 
-def mkmov_simple(starti=0,endi=600):
+
+def mkmov_simple(starti=0,endi=860):
     for i in range(starti,endi+1):
+
+        #data_folder = os.path.join("/home/gustavo/work/gyst/","dumps/")
+        #file_to_open = os.path.join(data_folder, "dump%03d" % i)
+
         rd("dump%03d" % i);
-        aphi=psicalc()
-        if i == starti: amax = aphi.max()
-        #cs, cb = plco(np.log10(rho),levels=np.linspace(-8,0,100),isfilled=1,k=0,xy=1,xmax=60,ymax=30,dobh=1,cb=1,extend="both",pretty=1)
-        cs, cb = plco(bu[3]*B_unit, levels = np.linspace(-8, 8, 100), isfilled=1, k=0, xy=1, xmax=20, ymax=20, dobh=1, cb=1, extend = "both", pretty=1, cmap = 'RdBu')
+        #rd(file_to_open);
+
+        #aphi=psicalc()
+        #if i == starti: amax = aphi.max()
+        cs, cb = plco(np.log10(rho),levels=np.linspace(-8,0,100),isfilled=1,k=0,xy=1,xmax=100,ymax=50,dobh=1,cb=1,extend="both",pretty=1)
+        #cs, cb = plco(bu[3]*B_unit, levels = np.linspace(-8, 8, 100), isfilled=1, k=0, xy=1, xmax=20, ymax=20, dobh=1, cb=1, extend = "both", pretty=1, cmap = 'RdBu')
 #        cs, cb = plco(bu[3]*B_unit, levels = np.linspace(-0.1, 0.1, 100), isfilled=1, k=0, xy=1, xmax=80, ymax=40, dobh=1, cb=1, extend = "both", pretty=1, cmap = 'RdBu')
         ax = plt.gca()
         ax.set_xlabel(r"$R\ [r_g]$",fontsize=20,labelpad=-5)
         ax.set_ylabel(r"$z\ [r_g]$",fontsize=20,labelpad=-5)
-        #cb.ax.set_xlabel(r"$\log\rho$",fontsize=20,ha="left")
-        cb.ax.set_xlabel(r"$b_\phi$",fontsize=20,ha="left")
-        plt.xlim(0,21)
-        plt.ylim(0,21)
-        plt.xticks(np.arange(0, 21, step=5)) #GS
-        plt.yticks(np.arange(0, 21, step=5)) #GS
+        cb.ax.set_xlabel(r"$\log\rho$",fontsize=20,ha="left")
+        #cb.ax.set_xlabel(r"$b_\phi$",fontsize=20,ha="left")
+        plt.xlim(0,101)
+        plt.ylim(-50,51)
+        plt.xticks(np.arange(0, 101, step=25)) #GS
+        plt.yticks(np.arange(-50, 51, step=25)) #GS
         circle1 = plt.Circle((0, 0), Rin, color='black') # GS
         fig = plt.gcf() # GS
         ax2 = fig.gca() # GS
         ax2.add_artist(circle1) # GS
         #plc(aphi,levels=np.linspace(-amax,amax,10)[1:-1],colors="black",linewidths=1,xy=-1)
         #print(i);
-        plt.title("t=%.4g"%np.round(t)); 
+        plt.title(r"$t=%.4g\ r_g/c$"%np.round(t)); 
         plt.tight_layout() # GS
         plt.draw();
-        plt.savefig("frame%03d.png"%i, dpi = 150)
+        plt.savefig("frame%03d.png"%i, dpi = 100)
 
 def convert_wrapper(**kwargs):
     if len(sys.argv[2:])==2 and sys.argv[2].isdigit() and sys.argv[3].isdigit():

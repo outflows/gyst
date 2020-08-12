@@ -15,7 +15,7 @@
 // to look for local maxima in J_cs
 #define HALF_BOX_SIZE 11
 // to find slope
-#define SHEET_HALF_BOX_SIZE 5
+#define SHEET_HALF_BOX_SIZE 7
 
 #define GR (1)
 #define NDIM (4)
