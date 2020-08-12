@@ -148,3 +148,4 @@ extern double ***betapl;   // plasma beta
 //extern double eflma;    // energy flux, matter
 //extern double lflem;    // angular momentum flux, EM
 //extern double lflma;    // angular momentum flux, matter
+extern double ***bernoulli; // bernoulli

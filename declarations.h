@@ -86,6 +86,7 @@ double ***betapl;   // plasma beta
 //double eflma;    // energy flux, matter
 //double lflem;    // angular momentum flux, EM
 //double lflma;    // angular momentum flux, matter
+double ***bernoulli; // bernoulli
 
 
 // characterization.c

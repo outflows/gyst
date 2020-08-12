@@ -159,6 +159,7 @@ void init_storage_data()
     sigma = (double ***) malloc_rank3_cont(N1, N2, N3);
     sigmaphi = (double ***) malloc_rank3_cont(N1, N2, N3);
     Sigmaphi = (double ***) malloc_rank3_cont(N1, N2, N3);
+	bernoulli = (double ***) malloc_rank3_cont(N1, N2, N3);
 	dJdx = (double ***) malloc_rank3_cont(N1, N2, N3); // must be global
 	dJdy = (double ***) malloc_rank3_cont(N1, N2, N3); // must be global
 	dJdz = (double ***) malloc_rank3_cont(N1, N2, N3); // must be global

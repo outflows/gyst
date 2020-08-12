@@ -1008,7 +1008,7 @@ void characterize2D()
             for (k = 0; k < N3; k++) {
 
                 //if(J_cs_peak[i][j][k] <= 0) printf("jcs %d %d %d %lf\n", i, j, k, J_cs[i][j][k]);
-                if (J_cs_peak[i][j][k] > 0.) {
+                if ( (J_cs_peak[i][j][k] > 0.) && (bernoulli[i][j][k] < -1) ) {
                     rr = a_r[i][j][k];
                     tth = a_th[i][j][k];
                     pphi = a_phi[i][j][k];
@@ -1083,7 +1083,7 @@ void characterize2D()
 
                         //7.1 test value of J_cs
                         //if ( fabs(B[3][ii][jj][kk]/B_test) > 0.05 || fabs(B_test/B[3][ii][jj][kk]) > 0.05) {
-                        if (J[ii][jj][kk] > 0.5*J_cs_peak[i][j][k]) {
+                        if ( (J[ii][jj][kk] > 0.5*J_cs_peak[i][j][k]) ) {
                         //if ( (J[ii][jj][kk] > 0.5*J_cs_peak[i][j][k]) && (fabs(B[3][ii][jj][kk]/B_test) > 0.05 || fabs(B_test/B[3][ii][jj][kk]) > 0.05) ) {
                             if ((ii != i_am) || (jj != j_am)) {
                             //if (1) {
@@ -1520,6 +1520,7 @@ void characterize2D()
                         }
                     }
                 }
+                else (J_cs_char[i][j][k] = 0.);
             }
         }
     }

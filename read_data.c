@@ -44,6 +44,7 @@ void read_data(char *fname) {
     int N1tot, N2tot, N3tot, N1G, N2G, N3G;
     int nstep, dump_cnt, image_cnt, rdump_cnt, rdump01_cnt, NPR, DOKTOT;
     double fractheta, fracphi;
+    double enth;
     //double ti, tj, tk, x1, x2, x3;//, r, th, phi;
     //double ktot, v1min, v1max, v2min, v2max, v3min, v3max;
 
@@ -166,22 +167,22 @@ void read_data(char *fname) {
                 //divb = var[18];
 
                 // 4-vec U and B (cov and con)
-                ucov[0][i][j][k] = var[19];
-                ucov[1][i][j][k] = var[20];
-                ucov[2][i][j][k] = var[21];
-                ucov[3][i][j][k] = var[22];
-                ucon[0][i][j][k] = var[23];
-                ucon[1][i][j][k] = var[24];
-                ucon[2][i][j][k] = var[25];
-                ucon[3][i][j][k] = var[26];
-                bcov[0][i][j][k] = var[27];
-                bcov[1][i][j][k] = var[28];
-                bcov[2][i][j][k] = var[29];
-                bcov[3][i][j][k] = var[30];
-                bcon[0][i][j][k] = var[31];
-                bcon[1][i][j][k] = var[32];
-                bcon[2][i][j][k] = var[33];
-                bcon[3][i][j][k] = var[34];
+                ucon[0][i][j][k] = var[19];
+                ucon[1][i][j][k] = var[20];
+                ucon[2][i][j][k] = var[21];
+                ucon[3][i][j][k] = var[22];
+                ucov[0][i][j][k] = var[23];
+                ucov[1][i][j][k] = var[24];
+                ucov[2][i][j][k] = var[25];
+                ucov[3][i][j][k] = var[26];
+                bcon[0][i][j][k] = var[27];
+                bcon[1][i][j][k] = var[28];
+                bcon[2][i][j][k] = var[29];
+                bcon[3][i][j][k] = var[30];
+                bcov[0][i][j][k] = var[31];
+                bcov[1][i][j][k] = var[32];
+                bcov[2][i][j][k] = var[33];
+                bcov[3][i][j][k] = var[34];
 
                 //v1min = var[35];
                 //v1max = var[36];
@@ -194,37 +195,40 @@ void read_data(char *fname) {
                 gdet = var[41];
 
                 // current
-                jcov[0][i][j][k] = var[42];
-                jcov[1][i][j][k] = var[43];
-                jcov[2][i][j][k] = var[44];
-                jcov[3][i][j][k] = var[45];
-                jcon[0][i][j][k] = var[46];
-                jcon[1][i][j][k] = var[47];
-                jcon[2][i][j][k] = var[48];
-                jcon[3][i][j][k] = var[49];
+                jcon[0][i][j][k] = var[42];
+                jcon[1][i][j][k] = var[43];
+                jcon[2][i][j][k] = var[44];
+                jcon[3][i][j][k] = var[45];
+                jcov[0][i][j][k] = var[46];
+                jcov[1][i][j][k] = var[47];
+                jcov[2][i][j][k] = var[48];
+                jcov[3][i][j][k] = var[49];
 
                 // get some derived quantities
-                jsq = jcov[0][i][j][k]*jcon[0][i][j][k] +
-                      jcov[1][i][j][k]*jcon[1][i][j][k] +
-                      jcov[2][i][j][k]*jcon[2][i][j][k] +
-                      jcov[3][i][j][k]*jcon[3][i][j][k];
-                jdotu = jcov[0][i][j][k]*ucon[0][i][j][k] +
-                        jcov[1][i][j][k]*ucon[1][i][j][k] +
-                        jcov[2][i][j][k]*ucon[2][i][j][k] +
-                        jcov[3][i][j][k]*ucon[3][i][j][k];
+                jsq = jcon[0][i][j][k]*jcov[0][i][j][k] +
+                      jcon[1][i][j][k]*jcov[1][i][j][k] +
+                      jcon[2][i][j][k]*jcov[2][i][j][k] +
+                      jcon[3][i][j][k]*jcov[3][i][j][k];
+                jdotu = jcon[0][i][j][k]*ucov[0][i][j][k] +
+                        jcon[1][i][j][k]*ucov[1][i][j][k] +
+                        jcon[2][i][j][k]*ucov[2][i][j][k] +
+                        jcon[3][i][j][k]*ucov[3][i][j][k];
                 Jsq   = jsq + jdotu*jdotu;
                 gJsq  = gdet*Jsq;
                 J[i][j][k] = sqrt(Jsq);
                 if (isnan(J[i][j][k])) J[i][j][k] = 1e-20;
                 pg  = (gam - 1.)*ug;
-                bsq = bcov[0][i][j][k]*bcon[0][i][j][k] +
-                      bcov[1][i][j][k]*bcon[1][i][j][k] +
-                      bcov[2][i][j][k]*bcon[2][i][j][k] +
-                      bcov[3][i][j][k]*bcon[3][i][j][k];
+                bsq = bcon[0][i][j][k]*bcov[0][i][j][k] +
+                      bcon[1][i][j][k]*bcov[1][i][j][k] +
+                      bcon[2][i][j][k]*bcov[2][i][j][k] +
+                      bcon[3][i][j][k]*bcov[3][i][j][k];
                 sigma[i][j][k] = bsq/rho[i][j][k];
                 betapl[i][j][k] = 2.*pg/bsq;
-                sigmaphi[i][j][k] = bcov[3][i][j][k]*bcon[3][i][j][k]/(rho[i][j][k]);
+                sigmaphi[i][j][k] = bcon[3][i][j][k]*bcov[3][i][j][k]/(rho[i][j][k]);
                 Sigmaphi[i][j][k] = B[3][i][j][k]*B[3][i][j][k]/(rho[i][j][k]);
+
+                enth = 1 + ug*gam/rho[i][j][k];
+                bernoulli[i][j][k] = enth*ucov[0][i][j][k];
             }
         }
     }
