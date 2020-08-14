@@ -1,5 +1,5 @@
 #!/bin/bash
-for ((i=230; i<=800; i++))
+for ((i=200; i<=700; i++))
 do
     ./gyst "dump$i"
 done

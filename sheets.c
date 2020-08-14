@@ -122,7 +122,7 @@ void get_current_sheets()
         }
     }
     // Print the maxima to a file
-    write_current_sheets(jpeak_output, J_cs_peak);
+    //write_current_sheets(jpeak_output, J_cs_peak);
     printf("Finished current sheet initialization.\n\n");
 
     // Main loop
