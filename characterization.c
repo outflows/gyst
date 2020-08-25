@@ -1008,7 +1008,7 @@ void characterize2D()
             for (k = 0; k < N3; k++) {
 
                 //if(J_cs_peak[i][j][k] <= 0) printf("jcs %d %d %d %lf\n", i, j, k, J_cs[i][j][k]);
-                if ( (J_cs_peak[i][j][k] > 0.) && (bernoulli[i][j][k] < -1.01) ) {
+                if ( (J_cs_peak[i][j][k] > 0.) && (bernoulli[i][j][k] < -1.02) ) {
                     rr = a_r[i][j][k];
                     tth = a_th[i][j][k];
                     pphi = a_phi[i][j][k];
