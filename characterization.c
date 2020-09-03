@@ -1546,6 +1546,10 @@ void characterize2D()
         }
     }
     printf("Identified %d possible reconnection sites.\n", is_good_count);
+    FILE *sitecount;
+    sitecount = fopen("sitecount.dat", "a");
+    fprintf(sitecount, "%s,%d\n", dump_file, is_good_count);
+    fclose(sitecount);
     write_current_sheets(jchar_output, J_cs_char);
     printf("Finished characterization of sheets.\n");
 }
