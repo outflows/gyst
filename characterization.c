@@ -924,7 +924,7 @@ void characterize2D_single()
                 sprintf(i_str, "%d", i);
                 sprintf(j_str, "%d", j);
                 sprintf(k_str, "%d", k);
-                strcpy(sheet_file, "/home/gustavo/work/gyst/sheets/");
+                strcpy(sheet_file, "/work/gustavo/gyst/sheets/");
                 strcat(sheet_file, dump_file);
                 strcat(sheet_file, "_");
                 strcat(sheet_file, i_str);
@@ -1478,45 +1478,66 @@ void characterize2D()
                             merge_arrays_int(j_lower_arr, j_upper_arr, j_arr, size_lower+1, size_upper);
                             merge_arrays_int(k_lower_arr, k_upper_arr, k_arr, size_lower+1, size_upper);
 
-                            sprintf(i_str, "%d", i);
-                            sprintf(j_str, "%d", j);
-                            sprintf(k_str, "%d", k);
-                            strcpy(sheet_file, "/home/gustavo/work/gyst/sheets/");
-                            strcat(sheet_file, dump_file);
-                            strcat(sheet_file, "_");
-                            strcat(sheet_file, i_str);
-                            strcat(sheet_file, "_");
-                            strcat(sheet_file, j_str);
-                            strcat(sheet_file, "_");
-                            strcat(sheet_file, k_str);
-                            strcat(sheet_file, "_s");
-/*
-                            fp = fopen(sheet_file, "w");
-                            fprintf(fp, "Br\tBth\tBph\tJ\tbeta\tsigma\tsigmaphi\ti\tj\tk\n");
+                            // check absolute max and min
+                            B_max = 0.;
+                            B_min = 0.;
                             for (m = 0; m < size_B; m++) {
-                                fprintf(fp, "%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%d\t%d\t0\n",
-                                Br_arr[m], Bth_arr[m], Bphi_arr[m], J_arr[m],
-                                beta_arr[m], sigma_arr[m], sigmaphi_arr[m], i_arr[m], j_arr[m]);
+                                if (Bphi_arr[m] < B_min) {
+                                    B_min = Bphi_arr[m];
+                                }
+                                if (Bphi_arr[m] > B_max) {
+                                    B_max = Bphi_arr[m];
+                                }
                             }
-*/
-                            fp = fopen(sheet_file, "wb");
-                            for (m = 0; m < size_B; m++) {
-                                fwrite(&Br_arr[m], sizeof(double), 1, fp);
-                                fwrite(&Bth_arr[m], sizeof(double), 1, fp);
-                                fwrite(&Bphi_arr[m], sizeof(double), 1, fp);
-                                fwrite(&J_arr[m], sizeof(double), 1, fp);
-                                fwrite(&beta_arr[m], sizeof(double), 1, fp);
-                                fwrite(&sigma_arr[m], sizeof(double), 1, fp);
-                                fwrite(&sigmaphi_arr[m], sizeof(double), 1, fp);
-                                iaux = i_arr[m];
-                                jaux = j_arr[m];
-                                //jaux = 0.;
-                                fwrite(&iaux, sizeof(double), 1, fp);
-                                fwrite(&jaux, sizeof(double), 1, fp);
-                                //(&kaux, sizeof(double), 1, fp);
+                            if (fabs(B_max/B_min) < 0.8) {
+                                J_cs_char[i][j][k] = 0.;
+                                is_good = 0;
+                            }
+                            if (fabs(B_min/B_max) < 0.8) {
+                                J_cs_char[i][j][k] = 0.;
+                                is_good = 0;
                             }
 
-                            fclose(fp);
+                            if (is_good) {
+                                sprintf(i_str, "%d", i);
+                                sprintf(j_str, "%d", j);
+                                sprintf(k_str, "%d", k);
+                                strcpy(sheet_file, "/work/gustavo/gyst/sheets/");
+                                strcat(sheet_file, dump_file);
+                                strcat(sheet_file, "_");
+                                strcat(sheet_file, i_str);
+                                strcat(sheet_file, "_");
+                                strcat(sheet_file, j_str);
+                                strcat(sheet_file, "_");
+                                strcat(sheet_file, k_str);
+                                strcat(sheet_file, "_s");
+    /*
+                                fp = fopen(sheet_file, "w");
+                                fprintf(fp, "Br\tBth\tBph\tJ\tbeta\tsigma\tsigmaphi\ti\tj\tk\n");
+                                for (m = 0; m < size_B; m++) {
+                                    fprintf(fp, "%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%d\t%d\t0\n",
+                                    Br_arr[m], Bth_arr[m], Bphi_arr[m], J_arr[m],
+                                    beta_arr[m], sigma_arr[m], sigmaphi_arr[m], i_arr[m], j_arr[m]);
+                                }
+    */
+                                fp = fopen(sheet_file, "wb");
+                                for (m = 0; m < size_B; m++) {
+                                    fwrite(&Br_arr[m], sizeof(double), 1, fp);
+                                    fwrite(&Bth_arr[m], sizeof(double), 1, fp);
+                                    fwrite(&Bphi_arr[m], sizeof(double), 1, fp);
+                                    fwrite(&J_arr[m], sizeof(double), 1, fp);
+                                    fwrite(&beta_arr[m], sizeof(double), 1, fp);
+                                    fwrite(&sigma_arr[m], sizeof(double), 1, fp);
+                                    fwrite(&sigmaphi_arr[m], sizeof(double), 1, fp);
+                                    iaux = i_arr[m];
+                                    jaux = j_arr[m];
+                                    //jaux = 0.;
+                                    fwrite(&iaux, sizeof(double), 1, fp);
+                                    fwrite(&jaux, sizeof(double), 1, fp);
+                                    //(&kaux, sizeof(double), 1, fp);
+                                }
+                                fclose(fp);
+                            }
                         }
                     }
                 }

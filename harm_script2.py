@@ -66,8 +66,8 @@ def mathify_axes_ticks(ax,fontsize=20,xticks=None,yticks=None):
 def convert_to_single_file(startn=0,endn=-1,ln=10,whichi=0,whichn=1,**kwargs):
     which = kwargs.pop("which","convert_file")
     rg("gdump")
-    flist1 = np.sort(glob.glob( os.path.join("dumps/", "dump[0-9][0-9][0-9]_0000") ) )
-    flist2 = np.sort(glob.glob( os.path.join("dumps/", "dump[0-9][0-9][0-9][0-9]_0000") ) )
+    flist1 = np.sort(glob.glob( os.path.join("/work/gustavo/dumps2D/", "dump[0-9][0-9][0-9]_0000") ) )
+    flist2 = np.sort(glob.glob( os.path.join("/work/gustavo/dumps2D/", "dump[0-9][0-9][0-9][0-9]_0000") ) )
     flist1.sort()
     flist2.sort()
     flist = np.concatenate((flist1,flist2))
@@ -195,14 +195,14 @@ def mkmov(startn=0,endn=-1,ln=10,whichi=0,whichn=1,**kwargs):
     aphi=psicalc()
     aphimax = aphi.max()
     #construct file list
-    flist1 = np.sort(glob.glob( os.path.join("dumps/", "dump[0-9][0-9][0-9]") ) )
-    flist2 = np.sort(glob.glob( os.path.join("dumps/", "dump[0-9][0-9][0-9][0-9]") ) )
+    flist1 = np.sort(glob.glob( os.path.join("/work/gustavo/dumps2D/", "dump[0-9][0-9][0-9]") ) )
+    flist2 = np.sort(glob.glob( os.path.join("/work/gustavo/dumps2D/", "dump[0-9][0-9][0-9][0-9]") ) )
     flist1.sort()
     flist2.sort()
     flist = np.concatenate((flist1,flist2))
     if len(flist) == 0:
-        flist1 = np.sort(glob.glob( os.path.join("dumps/", "dump[0-9][0-9][0-9]_0000") ) )
-        flist2 = np.sort(glob.glob( os.path.join("dumps/", "dump[0-9][0-9][0-9][0-9]_0000") ) )
+        flist1 = np.sort(glob.glob( os.path.join("/work/gustavo/dumps2D/", "dump[0-9][0-9][0-9]_0000") ) )
+        flist2 = np.sort(glob.glob( os.path.join("/work/gustavo/dumps2D/", "dump[0-9][0-9][0-9][0-9]_0000") ) )
         flist1.sort()
         flist2.sort()
         flist = np.concatenate((flist1,flist2))
@@ -390,9 +390,9 @@ def read_file(dump,type=None,savedump=True,saverdump=False,noround=False):
             print("Couldn't guess dump type; assuming it is a data dump")
             type = "dump"
     #normal dump
-    if os.path.isfile( "dumps/" + dump ):
-        headerline = read_header("dumps/" + dump, returnheaderline = True)
-        gd = read_body("dumps/" + dump,nx=N1+2*N1G,ny=N2+2*N2G,nz=N3+2*N3G,noround=1)
+    if os.path.isfile( "/work/gustavo/dumps2D/" + dump ):
+        headerline = read_header("/work/gustavo/dumps2D/" + dump, returnheaderline = True)
+        gd = read_body("/work/gustavo/dumps2D/" + dump,nx=N1+2*N1G,ny=N2+2*N2G,nz=N3+2*N3G,noround=1)
         if noround:
             res = data_assign(         gd,type=type,nx=N1+2*N1G,ny=N2+2*N2G,nz=N3+2*N3G)
         else:
@@ -400,7 +400,7 @@ def read_file(dump,type=None,savedump=True,saverdump=False,noround=False):
         return res
     #MPI-type dump that is spread over many files
     else:
-        flist = np.sort(glob.glob( "dumps/" + dump + "_[0-9][0-9][0-9][0-9]" ))
+        flist = np.sort(glob.glob( "/work/gustavo/dumps2D/" + dump + "_[0-9][0-9][0-9][0-9]" ))
         if len(flist) == 0:
             print( "Could not find %s or its MPI counterpart" % dump )
             return
@@ -439,7 +439,7 @@ def read_file(dump,type=None,savedump=True,saverdump=False,noround=False):
         res = data_assign(fgd,type=type,nx=nx+2*N1G,ny=ny+2*N2G,nz=nz+2*N3G)
         if savedump:
             #if the full dump file does not exist, create it
-            dumpfullname = "dumps/" + dump
+            dumpfullname = "/work/gustavo/dumps2D/" + dump
             if (type == "dump" or type == "gdump") and not os.path.isfile(dumpfullname):
                 sys.stdout.write("Saving full dump to %s..." % dumpfullname)
                 sys.stdout.flush()
@@ -476,7 +476,7 @@ def read_header(dump,issilent=True,returnheaderline=False):
     header = headerline.split()
     nheadertot = len(header)
     fin.close()
-    if not dump.startswith("dumps/rdump"):
+    if not dump.startswith("/work/gustavo/dumps2D/rdump"):
         if not issilent: print( "dump header: len(header) = %d" % len(header) )
         nheader = 57
         n = 0
@@ -622,7 +622,7 @@ def read_header(dump,issilent=True,returnheaderline=False):
 def read_body(dump,nx=None,ny=None,nz=None,noround=False):
         fin = open( dump, "rb" )
         header = fin.readline()
-        if dump.startswith("dumps/rdump"):
+        if dump.startswith("/work/gustavo/dumps2D/rdump"):
             dtype = np.float64
             body = np.fromfile(fin,dtype=dtype,count=-1)
             gd = body.view().reshape((nx,ny,nz,-1), order='C')
@@ -630,7 +630,7 @@ def read_body(dump,nx=None,ny=None,nz=None,noround=False):
                 gd=gd.transpose(3,0,1,2)
             else:
                 gd=myfloat(gd.transpose(3,0,1,2))
-        elif dump.startswith("dumps/gdump2"):
+        elif dump.startswith("/work/gustavo/dumps2D/gdump2"):
             dtype = np.float64
             body = np.fromfile(fin,dtype=dtype,count=-1)
             gd = body.view().reshape((nx,ny,nz,-1), order='C')
@@ -638,7 +638,7 @@ def read_body(dump,nx=None,ny=None,nz=None,noround=False):
                 gd=gd.transpose(3,0,1,2)
             else:
                 gd=myfloat(gd.transpose(3,0,1,2))
-        elif dump.startswith("dumps/fdump"):
+        elif dump.startswith("/work/gustavo/dumps2D/fdump"):
             dtype = np.int64
             body = np.fromfile(fin,dtype=dtype,count=-1)
             gd = body.view().reshape((-1,nz,ny,nx), order='F')
@@ -1064,9 +1064,9 @@ def testfail(fldname = "dump000"):
 
 
 def get_sorted_file_list(prefix="dump"):
-    flist0 = np.sort(glob.glob( os.path.join("dumps/", "%s[0-9][0-9][0-9]"%prefix) ) )
-    flist1 = np.sort(glob.glob( os.path.join("dumps/", "%s[0-9][0-9][0-9][0-9]"%prefix) ) )
-    flist2 = np.sort(glob.glob( os.path.join("dumps/", "%s[0-9][0-9][0-9][0-9][0-9]"%prefix) ) )
+    flist0 = np.sort(glob.glob( os.path.join("/work/gustavo/dumps2D/", "%s[0-9][0-9][0-9]"%prefix) ) )
+    flist1 = np.sort(glob.glob( os.path.join("/work/gustavo/dumps2D/", "%s[0-9][0-9][0-9][0-9]"%prefix) ) )
+    flist2 = np.sort(glob.glob( os.path.join("/work/gustavo/dumps2D/", "%s[0-9][0-9][0-9][0-9][0-9]"%prefix) ) )
     flist0.sort()
     flist1.sort()
     flist2.sort()

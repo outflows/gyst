@@ -15,9 +15,10 @@ int main(int argc, char *argv[])
     struct of_geom geom;
     FILE *gdumpfile, *metricfile;
     char dump[100], gdump[100], metric[100];
-    //char path[100] = "/home/gustavo/Dropbox/trabalho/programs/grmonty_harmpi/";
-    char path[100] = "/home/gustavo/work/dumps/";
-    char jcs_dir[100] = "/home/gustavo/work/gyst/jcs_files/";
+    //char path[100] = "/home/gustavo/work/dumps/"; // LAPTOP
+    //char jcs_dir[100] = "/home/gustavo/work/gyst/jcs_files/"; // LAPTOP
+    char path[100] = "/work/gustavo/dumps2D/"; // DESKTOP IAG
+    char jcs_dir[100] = "/work/gustavo/gyst/jcs_files/"; // DESKTOP IAG
 
     clock_t begin = clock();
 
