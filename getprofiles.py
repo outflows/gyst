@@ -515,10 +515,14 @@ for dumpno in range(dumpmin,dumpmax+1):
                             distance = 0
                             distanceold = 0
                         else:
-                            r1 = r[i][0][0]
-                            r2 = r[i+1][0][0]
-                            th1 = h[i][0][0]
-                            th2 = h[i+1][0][0]
+                            r1 = r[myi[ii]][myj[ii]][0]
+							r2 = r[myi[ii-1]][myj[ii-1]][0]
+                            th1 = h[myi[ii]][myj[ii]][0]
+							th2 = h[myi[ii-1]][myj[ii-1]][0]
+                            #r1 = r[i][j][0]
+                            #r2 = r[i+1][j+1][0]
+                            #th1 = h[0][0][0]
+                            #th2 = h[i+1][0][0]
                             distance = np.sqrt(r1*r1 + r2*r2 - 2*r1*r2*np.cos(th1 - th2)) + distanceold
                             distanceold = distance
                         position.append(distance)
