@@ -1036,13 +1036,6 @@ void characterize2D()
                     }
 
                     //3. move along eigenvector (upper)
-/*
-                    if (BETWEEN(i, 0, 180)) step = STEP1;
-                    else if (BETWEEN(i, 181, 850)) step = STEP2;
-                    //else if (BETWEEN(i, 511, 850)) step = STEP3;
-                    else if (BETWEEN(i, 851, N1)) step = STEP3;
-*/
-
                     i_am = i;
                     j_am = j;
                     k_am = k;
@@ -1100,16 +1093,6 @@ void characterize2D()
                                 Bprim[2] = B[2][ii][jj][kk];
                                 Bprim[3] = B[3][ii][jj][kk];
 
-                                //9. project V, B along e1, e2, e3 to find V, B along these eigenvectors
-                                // NOTE: may have to change, use 4vec and recalculate V, B
-                                /*
-                                V_proj_e1 = dot3(Vprim, e1) / (sqrt(dot3(e1,e1)) + SMALL);
-                                B_proj_e1 = dot3(Bprim, e1) / (sqrt(dot3(e1,e1)) + SMALL);
-                                B_proj_e2 = dot3(Bprim, e2) / (sqrt(dot3(e2,e2)) + SMALL);
-                                B_upper = fabs(B_proj_e1);
-                                B_upper_arr[m] = B_proj_e1;
-                                */
-
                                 B_upper = Bprim[3];
                                 Br_upper_arr[m] = Bprim[1];
                                 Bth_upper_arr[m] = Bprim[2];
@@ -1132,17 +1115,21 @@ void characterize2D()
                                 m++;
                                 size_upper = m;
 
-                                //10. use B_proj to find v_alfven
-                                /*
-                                V_A = sqrt((B_proj_e1*B_proj_e1 +
-                                            B_proj_e2*B_proj_e2)/(rho[ii][jj][kk] + SMALL));
-                                V_upper = V_proj_e1/V_A;
-                                */
+                                V_proj_e1 = dot3(Vprim, e1) / (sqrt(dot3(e1,e1)) + SMALL);
+                                B_proj_e1 = dot3(Bprim, e1) / (sqrt(dot3(e1,e1)) + SMALL);
+                                B_proj_e2 = dot3(Bprim, e2) / (sqrt(dot3(e2,e2)) + SMALL);
 
+/*
                                 V_A = sqrt((Bprim[1]*Bprim[1] +
                                             Bprim[2]*Bprim[2] +
                                             Bprim[3]*Bprim[3])/(rho[ii][jj][kk] + SMALL));
                                 V_upper = Vprim[1]/V_A;
+*/
+                                //10. use B_proj to find v_alfven
+
+                                V_A = sqrt((B_proj_e1*B_proj_e1 +
+                                            B_proj_e2*B_proj_e2)/(rho[ii][jj][kk] + SMALL));
+                                V_upper = V_proj_e1/V_A;//va[i][j][k];
 
                                 is_good_upper = 1;
                             }
@@ -1150,79 +1137,8 @@ void characterize2D()
                         }
                         else break;
                     }
-/*
-                    if (more_to_go_upper) {
-                        while (iter < 50) {
 
-                            p_cart[0] = rr;
-                            p_cart[1] = tth;
-                            for (ii = 0; ii < 2; ii++) new_position[ii] = p_cart[ii] + e1[ii]*step;
-                            ap_x[1] = new_position[0];
-                            ap_x[2] = new_position[1];
-                            ap_x[3] = 0.;
-                            step += stepsize;
-                            Xtoijk_new(ap_x, &ii, &jj, &kk, del);
-
-                            if ( (1.05*B[3][ii][jj][kk] < B_upper) || (1.05*B_upper < B[3][ii][jj][kk]) ) {
-                                if ((ii != i_am) || (jj != j_am)) {
-                                    //B_test = B[3][ii][jj][kk];
-                                    i_am = ii;
-                                    j_am = jj;
-
-                                    Vprim[0] = 0.;
-                                    Vprim[1] = V[1][ii][jj][kk];
-                                    Vprim[2] = V[2][ii][jj][kk];
-                                    Vprim[3] = V[3][ii][jj][kk];
-                                    Bprim[0] = 0.;
-                                    Bprim[1] = B[1][ii][jj][kk];
-                                    Bprim[2] = B[2][ii][jj][kk];
-                                    Bprim[3] = B[3][ii][jj][kk];
-
-                                    //B_upper = Bprim[3];
-                                    Br_upper_arr[m] = Bprim[1];
-                                    Bth_upper_arr[m] = Bprim[2];
-                                    Bphi_upper_arr[m] = Bprim[3];
-                                    J_upper_arr[m] = J[ii][jj][kk];
-                                    beta_upper_arr[m] = betapl[ii][jj][kk];
-                                    sigma_upper_arr[m] = sigma[ii][jj][kk];
-                                    sigmaphi_upper_arr[m] = sigmaphi[ii][jj][kk];
-                                    i_upper_arr[m] = ii;
-                                    j_upper_arr[m] = jj;
-
-                                    if (Bphi_upper_arr[m] < B_min) {
-                                        B_min = Bphi_upper_arr[m];
-                                    }
-                                    if (Bphi_upper_arr[m] > B_max) {
-                                        B_max = Bphi_upper_arr[m];
-                                    }
-
-                                    m++;
-                                    size_upper = m;
-
-                                    V_A = sqrt((Bprim[1]*Bprim[1] +
-                                                Bprim[2]*Bprim[2] +
-                                                Bprim[3]*Bprim[3])/(rho[ii][jj][kk] + SMALL));
-                                    //V_upper = Vprim[1]/V_A;
-
-                                    is_good_upper = 1;
-                                }
-                                iter++;
-                            }
-                            else {
-                                more_to_go_upper = 0;
-                                break;
-                            }
-                        }
-                    }
-*/
                     //5. move along eigenvector (lower)
-/*
-                    if (BETWEEN(i, 0, 180)) step = STEP1;
-                    else if (BETWEEN(i, 181, 850)) step = STEP2;
-                    //else if (BETWEEN(i, 511, 850)) step = STEP3;
-                    else if (BETWEEN(i, 851, N1)) step = STEP3;
-*/
-
                     i_am = i;
                     j_am = j;
                     k_am = k;
@@ -1277,15 +1193,6 @@ void characterize2D()
                                 Bprim[2] = B[2][ii][jj][kk];
                                 Bprim[3] = B[3][ii][jj][kk];
 
-                                //9. project B along e1, e2, e3 to find B along these eigenvectors
-                                /*
-                                V_proj_e1 = dot3(Vprim, e1) / (sqrt(dot3(e1,e1)) + SMALL);
-                                B_proj_e1 = dot3(Bprim, e1) / (sqrt(dot3(e1,e1)) + SMALL);
-                                B_proj_e2 = dot3(Bprim, e2) / (sqrt(dot3(e2,e2)) + SMALL);
-                                B_lower = fabs(B_proj_e1);
-                                B_lower_arr[m] = B_proj_e1;
-                                */
-
                                 B_lower = Bprim[3];
                                 Br_lower_arr[m] = Bprim[1];
                                 Bth_lower_arr[m] = Bprim[2];
@@ -1308,17 +1215,18 @@ void characterize2D()
                                 m++;
                                 size_lower = m;
 
-                                //10. use B_proj to find v_alfven
-                                /*
-                                V_A = sqrt((B_proj_e1*B_proj_e1 +
-                                            B_proj_e2*B_proj_e2)/(rho[ii][jj][kk] + SMALL));
-                                V_lower = V_proj_e1/V_A;
-                                */
-
+                                V_proj_e1 = dot3(Vprim, e1) / (sqrt(dot3(e1,e1)) + SMALL);
+                                B_proj_e1 = dot3(Bprim, e1) / (sqrt(dot3(e1,e1)) + SMALL);
+                                B_proj_e2 = dot3(Bprim, e2) / (sqrt(dot3(e2,e2)) + SMALL);
+/*
                                 V_A = sqrt((Bprim[1]*Bprim[1] +
                                             Bprim[2]*Bprim[2] +
                                             Bprim[3]*Bprim[3])/(rho[ii][jj][kk] + SMALL));
                                 V_lower = Vprim[1]/V_A;
+*/
+                                V_A = sqrt((B_proj_e1*B_proj_e1 +
+                                            B_proj_e2*B_proj_e2)/(rho[ii][jj][kk] + SMALL));
+                                V_lower = V_proj_e1/V_A;//va[i][j][k];
 
                                 is_good_lower = 1;
                                 more_to_go_lower = 1;
@@ -1327,71 +1235,7 @@ void characterize2D()
                         }
                         else break;
                     }
-/*
-                    if (more_to_go_lower) {
-                        while (iter < 50) {
 
-                            p_cart[0] = rr;
-                            p_cart[1] = tth;
-                            for (ii = 0; ii < 2; ii++) new_position[ii] = p_cart[ii] - e1[ii]*step;
-                            ap_x[1] = new_position[0];
-                            ap_x[2] = new_position[1];
-                            ap_x[3] = 0.;
-                            step += stepsize;
-                            Xtoijk_new(ap_x, &ii, &jj, &kk, del);
-
-                            if ( (1.05*B[3][ii][jj][kk] < B_lower) || (1.05*B_lower < B[3][ii][jj][kk]) ) {
-                                if ((ii != i_am) || (jj != j_am)) {
-                                    //B_test = B[3][ii][jj][kk];
-                                    i_am = ii;
-                                    j_am = jj;
-
-                                    Vprim[0] = 0.;
-                                    Vprim[1] = V[1][ii][jj][kk];
-                                    Vprim[2] = V[2][ii][jj][kk];
-                                    Vprim[3] = V[3][ii][jj][kk];
-                                    Bprim[0] = 0.;
-                                    Bprim[1] = B[1][ii][jj][kk];
-                                    Bprim[2] = B[2][ii][jj][kk];
-                                    Bprim[3] = B[3][ii][jj][kk];
-
-                                    //B_lower = Bprim[3];
-                                    Br_lower_arr[m] = Bprim[1];
-                                    Bth_lower_arr[m] = Bprim[2];
-                                    Bphi_lower_arr[m] = Bprim[3];
-                                    J_lower_arr[m] = J[ii][jj][kk];
-                                    beta_lower_arr[m] = betapl[ii][jj][kk];
-                                    sigma_lower_arr[m] = sigma[ii][jj][kk];
-                                    sigmaphi_lower_arr[m] = sigmaphi[ii][jj][kk];
-                                    i_lower_arr[m] = ii;
-                                    j_lower_arr[m] = jj;
-
-                                    if (Bphi_lower_arr[m] < B_min) {
-                                        B_min = Bphi_lower_arr[m];
-                                    }
-                                    if (Bphi_lower_arr[m] > B_max) {
-                                        B_max = Bphi_lower_arr[m];
-                                    }
-
-                                    m++;
-                                    size_lower = m;
-
-                                    V_A = sqrt((Bprim[1]*Bprim[1] +
-                                                Bprim[2]*Bprim[2] +
-                                                Bprim[3]*Bprim[3])/(rho[ii][jj][kk] + SMALL));
-                                    //V_upper = Vprim[1]/V_A;
-
-                                    is_good_lower = 1;
-                                }
-                                iter++;
-                            }
-                            else {
-                                more_to_go_lower = 0;
-                                break;
-                            }
-                        }
-                    }
-*/
                     if (is_good_lower && is_good_upper) {
                         //12. get V_in/V_A
                         V_rec = 0.5*(V_lower - V_upper);
@@ -1502,7 +1346,9 @@ void characterize2D()
                                 sprintf(i_str, "%d", i);
                                 sprintf(j_str, "%d", j);
                                 sprintf(k_str, "%d", k);
-                                strcpy(sheet_file, "/work/gustavo/gyst/sheets/");
+                                //strcpy(sheet_file, "/home/gustavo/work/gyst/sheets"); // LAPTOP
+                                //strcpy(sheet_file, "/work/gustavo/gyst/sheets/"); // DESKTOP IAG
+                                strcpy(sheet_file, "/work/gustavo/gyst/sheets_VA/"); // DESKTOP IAG
                                 strcat(sheet_file, dump_file);
                                 strcat(sheet_file, "_");
                                 strcat(sheet_file, i_str);

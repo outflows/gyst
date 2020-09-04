@@ -18,7 +18,8 @@ int main(int argc, char *argv[])
     //char path[100] = "/home/gustavo/work/dumps/"; // LAPTOP
     //char jcs_dir[100] = "/home/gustavo/work/gyst/jcs_files/"; // LAPTOP
     char path[100] = "/work/gustavo/dumps2D/"; // DESKTOP IAG
-    char jcs_dir[100] = "/work/gustavo/gyst/jcs_files/"; // DESKTOP IAG
+    //char jcs_dir[100] = "/work/gustavo/gyst/jcs_files/"; // DESKTOP IAG
+    char jcs_dir[100] = "/work/gustavo/gyst/jcs_files_VA/"; // DESKTOP IAG
 
     clock_t begin = clock();
 

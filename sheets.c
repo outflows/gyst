@@ -128,15 +128,7 @@ void get_current_sheets()
     // Main loop
     printf("Getting current sheets...\n");
     printf("Entering main loop...\n");
-    //clock_t begin_loop = clock();
-    //clock_t now_loop;
-    //float time_spent_loop;
     for (i = 0; i < N1; i++) {
-        //if (i % 50 == 0) {
-        //    now_loop = clock();
-        //    time_spent_loop = (double)(now_loop - begin_loop) / CLOCKS_PER_SEC;
-        //    printf("i = %d, %.2f%% of N1, t (main loop) = %.2f seconds\n", i, (float)i/N1*100, time_spent_loop);
-        //}
         for (j = 0; j < N2; j++) {
             for (k = 0; k < N3; k++) {
                 if ((i <= N1_inside) &&

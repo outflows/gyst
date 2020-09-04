@@ -132,11 +132,11 @@ extern double ***sigmaphi; // phi-component of magnetization
 extern double ***Sigmaphi;
 extern double pg;        // gas pressure
 //extern double K;
-//extern double EF;       // enthalpy
+extern double EF;       // enthalpy
 extern double bsq;
-//extern double EE;       // eta
-//extern double va2;      // relativistic alfvén speed squared
-//extern double va;       // relativistic alfvén speed
+extern double EE;       // eta
+extern double va2;      // relativistic alfvén speed squared
+extern double ***va;       // relativistic alfvén speed
 //extern double cs2;      // speed of sound squared
 //extern double cms2;     // magnetosonic speed squared
 //extern double T;

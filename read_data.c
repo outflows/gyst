@@ -227,6 +227,11 @@ void read_data(char *fname) {
                 sigmaphi[i][j][k] = bcon[3][i][j][k]*bcov[3][i][j][k]/(rho[i][j][k]);
                 Sigmaphi[i][j][k] = B[3][i][j][k]*B[3][i][j][k]/(rho[i][j][k]);
 
+                EF = rho[i][j][k] + gam*ug;
+                EE = bsq + EF;
+                va2 = bsq/EE;
+                va[i][j][k] = sqrt(va2);
+
                 enth = 1 + ug*gam/rho[i][j][k];
                 bernoulli[i][j][k] = enth*ucov[0][i][j][k];
             }

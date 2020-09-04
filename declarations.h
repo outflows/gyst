@@ -70,11 +70,11 @@ double ***sigmaphi; // phi-component of magnetization
 double ***Sigmaphi; // phi-component of magnetization
 double pg;        // gas pressure
 //double K;
-//double EF;       // enthalpy
+double EF;       // enthalpy
 double bsq;
-//double EE;       // eta
-//double va2;      // relativistic alfvén speed squared
-//double va;      // relativistic alfvén speed
+double EE;       // eta
+double va2;      // relativistic alfvén speed squared
+double ***va;      // relativistic alfvén speed
 //double cs2;      // speed of sound squared
 //double cms2;     // magnetosonic speed squared
 //double T;
