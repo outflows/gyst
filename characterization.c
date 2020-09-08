@@ -1008,7 +1008,7 @@ void characterize2D()
             for (k = 0; k < N3; k++) {
 
                 //if(J_cs_peak[i][j][k] <= 0) printf("jcs %d %d %d %lf\n", i, j, k, J_cs[i][j][k]);
-                if ( (J_cs_peak[i][j][k] > 0.) && (bernoulli[i][j][k] < -1.02) ) {
+                if ( (J_cs_peak[i][j][k] > 0.) && (bernoulli[i][j][k] > -1.02) ) {
                     rr = a_r[i][j][k];
                     tth = a_th[i][j][k];
                     pphi = a_phi[i][j][k];
@@ -1129,7 +1129,7 @@ void characterize2D()
 
                                 V_A = sqrt((B_proj_e1*B_proj_e1 +
                                             B_proj_e2*B_proj_e2)/(rho[ii][jj][kk] + SMALL));
-                                V_upper = V_proj_e1/V_A;//va[i][j][k];
+                                V_upper = V_proj_e1/va[i][j][k];//V_A;
 
                                 is_good_upper = 1;
                             }
@@ -1226,7 +1226,7 @@ void characterize2D()
 */
                                 V_A = sqrt((B_proj_e1*B_proj_e1 +
                                             B_proj_e2*B_proj_e2)/(rho[ii][jj][kk] + SMALL));
-                                V_lower = V_proj_e1/V_A;//va[i][j][k];
+                                V_lower = V_proj_e1/va[i][j][k];//V_A
 
                                 is_good_lower = 1;
                                 more_to_go_lower = 1;
@@ -1348,7 +1348,9 @@ void characterize2D()
                                 sprintf(k_str, "%d", k);
                                 //strcpy(sheet_file, "/home/gustavo/work/gyst/sheets"); // LAPTOP
                                 //strcpy(sheet_file, "/work/gustavo/gyst/sheets/"); // DESKTOP IAG
-                                strcpy(sheet_file, "/work/gustavo/gyst/sheets_VA/"); // DESKTOP IAG
+                                //strcpy(sheet_file, "/work/gustavo/gyst/sheets_VA/"); // DESKTOP IAG
+                                strcpy(sheet_file, "/work/gustavo/gyst/sheets_disc/"); // DESKTOP IAG
+                                //strcpy(sheet_file, "/work/gustavo/gyst/sheets_disc_VA/"); // DESKTOP IAG
                                 strcat(sheet_file, dump_file);
                                 strcat(sheet_file, "_");
                                 strcat(sheet_file, i_str);
@@ -1393,7 +1395,7 @@ void characterize2D()
     }
     printf("Identified %d possible reconnection sites.\n", is_good_count);
     FILE *sitecount;
-    sitecount = fopen("sitecount.dat", "a");
+    sitecount = fopen("sitecount_disc.dat", "a");
     fprintf(sitecount, "%s,%d\n", dump_file, is_good_count);
     fclose(sitecount);
     write_current_sheets(jchar_output, J_cs_char);

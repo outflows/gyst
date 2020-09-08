@@ -489,7 +489,8 @@ for dumpno in range(dumpmin,dumpmax+1):
     for i in range(imin,rthr):
         for j in range(0,N2):
             for k in range(0,N3):
-                myfilename = "/work/gustavo/gyst/sheets/dump%03d_%d_%d_%d_s" %(dumpno,i,j,k)
+                #myfilename = "/work/gustavo/gyst/sheets/dump%03d_%d_%d_%d_s" %(dumpno,i,j,k)
+                myfilename = "/work/gustavo/gyst/sheets_VA/dump%03d_%d_%d_%d_s" %(dumpno,i,j,k)
                 if (os.path.isfile(myfilename)):
                     
                     myfile = open(myfilename, "rb")
@@ -515,10 +516,10 @@ for dumpno in range(dumpmin,dumpmax+1):
                             distance = 0
                             distanceold = 0
                         else:
-                            r1 = r[myi[ii]][myj[ii]][0]
-							r2 = r[myi[ii-1]][myj[ii-1]][0]
-                            th1 = h[myi[ii]][myj[ii]][0]
-							th2 = h[myi[ii-1]][myj[ii-1]][0]
+                            r1 = r[int(myi[ii])][int(myj[ii])][0]
+                            r2 = r[int(myi[ii-1])][int(myj[ii-1])][0]
+                            th1 = h[int(myi[ii])][int(myj[ii])][0]
+                            th2 = h[int(myi[ii-1])][int(myj[ii-1])][0]
                             #r1 = r[i][j][0]
                             #r2 = r[i+1][j+1][0]
                             #th1 = h[0][0][0]
@@ -561,6 +562,7 @@ for dumpno in range(dumpmin,dumpmax+1):
                     #plt.axvline(x=15, color = 'black', linestyle = ':', linewidth = 1)
 
                     fig.tight_layout()  # otherwise the right y-label is slightly clipped
-                    plt.savefig("/work/gustavo/gyst/images/profiles/dump%03d_%d_%d_%d_p.png" %(dumpno, i, j, k), dpi = 50)
+                    #plt.savefig("/work/gustavo/gyst/images/profiles/dump%03d_%d_%d_%d_p.png" %(dumpno, i, j, k), dpi = 50)
+                    plt.savefig("/work/gustavo/gyst/images/profiles_VA/dump%03d_%d_%d_%d_p.png" %(dumpno, i, j, k), dpi = 50)
                     plt.close()
 

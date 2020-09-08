@@ -19,7 +19,9 @@ int main(int argc, char *argv[])
     //char jcs_dir[100] = "/home/gustavo/work/gyst/jcs_files/"; // LAPTOP
     char path[100] = "/work/gustavo/dumps2D/"; // DESKTOP IAG
     //char jcs_dir[100] = "/work/gustavo/gyst/jcs_files/"; // DESKTOP IAG
-    char jcs_dir[100] = "/work/gustavo/gyst/jcs_files_VA/"; // DESKTOP IAG
+    //char jcs_dir[100] = "/work/gustavo/gyst/jcs_files_VA/"; // DESKTOP IAG
+    char jcs_dir[100] = "/work/gustavo/gyst/jcs_files_disc/"; // DESKTOP IAG
+    //char jcs_dir[100] = "/work/gustavo/gyst/jcs_files_disc_VA/"; // DESKTOP IAG
 
     clock_t begin = clock();
 
