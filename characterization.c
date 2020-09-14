@@ -1007,8 +1007,7 @@ void characterize2D()
         for (j = 0; j < N2; j++) {
             for (k = 0; k < N3; k++) {
 
-                //if(J_cs_peak[i][j][k] <= 0) printf("jcs %d %d %d %lf\n", i, j, k, J_cs[i][j][k]);
-                if ( (J_cs_peak[i][j][k] > 0.) && (bernoulli[i][j][k] > -1.02) ) {
+                if ( (J_cs_peak[i][j][k] > 0.) && (bernoulli[i][j][k] < -1.02) ) {
                     rr = a_r[i][j][k];
                     tth = a_th[i][j][k];
                     pphi = a_phi[i][j][k];
@@ -1075,12 +1074,8 @@ void characterize2D()
                         Xtoijk_new(ap_x, &ii, &jj, &kk, del);
 
                         //7.1 test value of J_cs
-                        //if ( fabs(B[3][ii][jj][kk]/B_test) > 0.05 || fabs(B_test/B[3][ii][jj][kk]) > 0.05) {
                         if ( (J[ii][jj][kk] > 0.5*J_cs_peak[i][j][k]) ) {
-                        //if ( (J[ii][jj][kk] > 0.5*J_cs_peak[i][j][k]) && (fabs(B[3][ii][jj][kk]/B_test) > 0.05 || fabs(B_test/B[3][ii][jj][kk]) > 0.05) ) {
                             if ((ii != i_am) || (jj != j_am)) {
-                            //if (1) {
-                                //B_test = B[3][ii][jj][kk];
                                 i_am = ii;
                                 j_am = jj;
 
@@ -1126,7 +1121,6 @@ void characterize2D()
                                 V_upper = Vprim[1]/V_A;
 */
                                 //10. use B_proj to find v_alfven
-
                                 V_A = sqrt((B_proj_e1*B_proj_e1 +
                                             B_proj_e2*B_proj_e2)/(rho[ii][jj][kk] + SMALL));
                                 V_upper = V_proj_e1/va[i][j][k];//V_A;
@@ -1174,16 +1168,11 @@ void characterize2D()
                         Xtoijk_new(ap_x, &ii, &jj, &kk, del);
 
                         //7.1 test value of J_cs
-                        //if ( fabs(B[3][ii][jj][kk]/B_test) > 0.05 || fabs(B_test/B[3][ii][jj][kk]) > 0.05) {
                         if (J[ii][jj][kk] > 0.5*J_cs_peak[i][j][k]) {
-                        //if ( (J[ii][jj][kk] > 0.5*J_cs_peak[i][j][k]) && (fabs(B[3][ii][jj][kk]/B_test) > 0.05 || fabs(B_test/B[3][ii][jj][kk]) > 0.05) ) {
                             if ((ii != i_am) || (jj != j_am)) {
-                                //B_test = B[3][ii][jj][kk];
                                 i_am = ii;
                                 j_am = jj;
 
-                                //8. project V along max_evec to find V_in at this cell
-                                // NOTE: may have to change, use 4vec and recalculate V, B
                                 Vprim[0] = 0.;
                                 Vprim[1] = V[1][ii][jj][kk];
                                 Vprim[2] = V[2][ii][jj][kk];
@@ -1237,12 +1226,12 @@ void characterize2D()
                     }
 
                     if (is_good_lower && is_good_upper) {
-                        //12. get V_in/V_A
+                        //12. get V_in/va
                         V_rec = 0.5*(V_lower - V_upper);
 
                         is_good = 1;
                         // don't consider point if smallish reconnection velocity
-                        if (fabs(V_rec) < 0.3) {
+                        if (fabs(V_rec) < 0.1) {
                             J_cs_char[i][j][k] = 0.;
                             is_good = 0;
                             //printf("1\n");
@@ -1336,10 +1325,12 @@ void characterize2D()
                             if (fabs(B_max/B_min) < 0.8) {
                                 J_cs_char[i][j][k] = 0.;
                                 is_good = 0;
+                                is_good_count--;
                             }
                             if (fabs(B_min/B_max) < 0.8) {
                                 J_cs_char[i][j][k] = 0.;
                                 is_good = 0;
+                                is_good_count--;
                             }
 
                             if (is_good) {
@@ -1347,10 +1338,8 @@ void characterize2D()
                                 sprintf(j_str, "%d", j);
                                 sprintf(k_str, "%d", k);
                                 //strcpy(sheet_file, "/home/gustavo/work/gyst/sheets"); // LAPTOP
-                                //strcpy(sheet_file, "/work/gustavo/gyst/sheets/"); // DESKTOP IAG
-                                //strcpy(sheet_file, "/work/gustavo/gyst/sheets_VA/"); // DESKTOP IAG
-                                strcpy(sheet_file, "/work/gustavo/gyst/sheets_disc/"); // DESKTOP IAG
-                                //strcpy(sheet_file, "/work/gustavo/gyst/sheets_disc_VA/"); // DESKTOP IAG
+                                strcpy(sheet_file, "/work/gustavo/gyst/sheets/"); // DESKTOP IAG
+                                //strcpy(sheet_file, "/work/gustavo/gyst/sheets_disc/"); // DESKTOP IAG
                                 strcat(sheet_file, dump_file);
                                 strcat(sheet_file, "_");
                                 strcat(sheet_file, i_str);
@@ -1359,15 +1348,7 @@ void characterize2D()
                                 strcat(sheet_file, "_");
                                 strcat(sheet_file, k_str);
                                 strcat(sheet_file, "_s");
-    /*
-                                fp = fopen(sheet_file, "w");
-                                fprintf(fp, "Br\tBth\tBph\tJ\tbeta\tsigma\tsigmaphi\ti\tj\tk\n");
-                                for (m = 0; m < size_B; m++) {
-                                    fprintf(fp, "%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%d\t%d\t0\n",
-                                    Br_arr[m], Bth_arr[m], Bphi_arr[m], J_arr[m],
-                                    beta_arr[m], sigma_arr[m], sigmaphi_arr[m], i_arr[m], j_arr[m]);
-                                }
-    */
+
                                 fp = fopen(sheet_file, "wb");
                                 for (m = 0; m < size_B; m++) {
                                     fwrite(&Br_arr[m], sizeof(double), 1, fp);
@@ -1379,10 +1360,11 @@ void characterize2D()
                                     fwrite(&sigmaphi_arr[m], sizeof(double), 1, fp);
                                     iaux = i_arr[m];
                                     jaux = j_arr[m];
-                                    //jaux = 0.;
+                                    kaux = 0.;
                                     fwrite(&iaux, sizeof(double), 1, fp);
                                     fwrite(&jaux, sizeof(double), 1, fp);
-                                    //(&kaux, sizeof(double), 1, fp);
+                                    fwrite(&kaux, sizeof(double), 1, fp);
+                                    fwrite(&V_rec, sizeof(double), 1, fp);
                                 }
                                 fclose(fp);
                             }
@@ -1395,7 +1377,8 @@ void characterize2D()
     }
     printf("Identified %d possible reconnection sites.\n", is_good_count);
     FILE *sitecount;
-    sitecount = fopen("sitecount_disc.dat", "a");
+    sitecount = fopen("sitecount_2D_jet.dat", "a"); //// DONT FORGET TO CHANGE!!!!!!
+    //sitecount = fopen("sitecount_2D_disc.dat", "a"); //// DONT FORGET TO CHANGE!!!!!!
     fprintf(sitecount, "%s,%d\n", dump_file, is_good_count);
     fclose(sitecount);
     write_current_sheets(jchar_output, J_cs_char);

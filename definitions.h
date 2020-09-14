@@ -9,7 +9,7 @@
 #define BETAPL_THR 5.
 //#define BU3_THR 10e-3 #0.00775
 #define JPEAK_FAC 0.5
-#define J_FAC 5.
+#define J_FAC 4.
 
 // Box sizes
 // to look for local maxima in J_cs

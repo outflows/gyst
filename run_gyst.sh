@@ -1,5 +1,6 @@
 #!/bin/bash
-for ((i=0; i<=700; i++))
+
+for i in $(seq -f "%03g" 0 700)
 do
     ./gyst "dump$i"
 done
