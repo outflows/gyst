@@ -489,15 +489,16 @@ for dumpno in range(dumpmin,dumpmax+1):
     for i in range(imin,rthr):
         for j in range(0,N2):
             for k in range(0,N3):
-                #myfilename = "/work/gustavo/gyst/sheets/dump%03d_%d_%d_%d_s" %(dumpno,i,j,k)
-                myfilename = "/work/gustavo/gyst/sheets_VA/dump%03d_%d_%d_%d_s" %(dumpno,i,j,k)
+                if (disc):
+                    myfilename = "/work/gustavo/gyst/sheets_disc/dump%03d_%d_%d_%d_s" %(dumpno,i,j,k)
+                elif (jet):
+                    myfilename = "/work/gustavo/gyst/sheets_disc/dump%03d_%d_%d_%d_s" %(dumpno,i,j,k)
                 if (os.path.isfile(myfilename)):
-                    
                     myfile = open(myfilename, "rb")
                     dtype = np.float64
                     body = np.fromfile(myfile,dtype=dtype,count=-1)
-                    sheetrows = (body.size)/9
-                    mydata = body.view().reshape((int(9),int(sheetrows)), order='F')
+                    sheetrows = (body.size)/10
+                    mydata = body.view().reshape((int(10),int(sheetrows)), order='F')
 
                     myBr       = mydata[0]
                     myBth      = mydata[1]
@@ -508,6 +509,7 @@ for dumpno in range(dumpmin,dumpmax+1):
                     mysigmaphi = mydata[6]
                     myi        = mydata[7]
                     myj        = mydata[8]
+                    myVrec     = mydata[9]
                     myfile.close()
                     
                     position = []
@@ -520,10 +522,6 @@ for dumpno in range(dumpmin,dumpmax+1):
                             r2 = r[int(myi[ii-1])][int(myj[ii-1])][0]
                             th1 = h[int(myi[ii])][int(myj[ii])][0]
                             th2 = h[int(myi[ii-1])][int(myj[ii-1])][0]
-                            #r1 = r[i][j][0]
-                            #r2 = r[i+1][j+1][0]
-                            #th1 = h[0][0][0]
-                            #th2 = h[i+1][0][0]
                             distance = np.sqrt(r1*r1 + r2*r2 - 2*r1*r2*np.cos(th1 - th2)) + distanceold
                             distanceold = distance
                         position.append(distance)

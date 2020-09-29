@@ -740,6 +740,7 @@ def dump_assign(gd,**kwargs):
     Jsq = jsq + jdotu*jdotu
     gJsq = gdet*Jsq
     rhor = 1+(1-a**2)**0.5
+    gdetB = gdet*B
     if "guu" in globals():
         #lapse
         alpha = (-guu[0,0])**(-0.5)
@@ -1020,6 +1021,106 @@ def Tcalcud():
     enth=1+ug*gam/rho
     unb=enth*ud[0]
     isunbound=(-unb>1.0)
+
+def cvel():
+    global ud,etad, etau, gamma, vu, vd, bu, bd, bsq
+    ud = mdot(gv3,uu)                  #g_mn u^n
+    etad = np.zeros_like(uu)
+    etad[0] = -1/(-gn3[0,0])**0.5      #ZAMO frame velocity (definition)
+    etau = mdot(gn3,etad)
+    gamma=-mdot(uu,etad)                #Lorentz factor as measured by ZAMO
+    vu = uu - gamma*etau               #u^m = v^m + gamma eta^m
+    vd = mdot(gv3,vu)
+    bu=np.empty_like(uu)              #allocate memory for bu
+    #set component per component
+    bu[0]=mdot(B[1:4], ud[1:4])             #B^i u_i
+    bu[1:4]=(B[1:4] + bu[0]*uu[1:4])/uu[0]  #b^i = (B^i + b^t u^i)/u^t
+    bd=mdot(gv3,bu)
+    bsq=mdot(bu,bd)
+
+def horfluxcalc(ihor=None,minbsqorho=10):
+    """
+    Computes the absolute flux through the sphere i = ihor
+    """
+    global gdetB, _dx2, _dx3
+    #1D function of theta only:
+    dfabs = (np.abs(gdetB[1]*(bsq/rho>minbsqorho))).sum(2)*_dx2*_dx3
+    fabs = dfabs.sum(axis=1)
+    #account for the wedge
+    fabs=scaletofullwedge(fabs)
+    #fabs *= 
+    if ihor == None:
+        return(fabs)
+    else:
+        return(fabs[ihor])
+
+def mdotcalc(ihor=None,**kwargs):
+    """
+    Computes the absolute flux through the sphere i = ihor
+    """
+    #1D function of theta only:
+    md = intangle( -gdet*rho*uu[1], **kwargs)
+    if ihor==None:
+        return(md)
+    else:
+        return(md[ihor])
+
+def intangle(qty,hoverr=None,thetamid=np.pi/2,minbsqorho=None,which=1):
+    #somehow gives slightly different answer than when computed directly
+    if hoverr == None:
+        hoverr = np.pi/2
+        thetamid = np.pi/2
+    integrand = qty
+    insidehor = np.abs(h-thetamid)<hoverr
+    if minbsqorho != None:
+        insidebsqorho = bsq/rho>=minbsqorho
+    else:
+        insidebsqorho = 1
+    integral=(integrand*insidehor*insidebsqorho*which).sum(axis=2).sum(axis=1)*_dx2*_dx3
+    integral=scaletofullwedge(integral)
+    return(integral)
+
+def scaletofullwedge(val):
+    return(val * 2*np.pi/(dxdxp[3,3,0,0,0]*nz*_dx3))
+
+def jetpowcalc(which=2,minbsqorho=10,minmu=None,donorthsouth=0):
+    if which==0:
+        jetpowden = -gdet*TudEM[1,0]
+    if which==1:
+        jetpowden = -gdet*TudMA[1,0]
+    if which==2:
+        jetpowden = -gdet*Tud[1,0]
+    if which==3:
+        #rest-mass flux
+        jetpowden = gdet*rho*uu[1]
+    if which==4:
+        #phi (mag. flux)
+        jetpowden = np.abs(gdetB[1])
+    #jetpowden[tj>=ny-2] = 0*jetpowden[tj>=ny-2]
+    #jetpowden[tj<1] = 0*jetpowden[tj<1]
+    if minmu is None:
+        jetpowden[bsq/rho<minbsqorho] = 0*jetpowden[bsq/rho<minbsqorho]
+    else:
+        #zero out outside jet (cut out low magnetization region)
+        cond=(mu<minmu)
+        #zero out bound region
+        cond+=(1-isunbound)
+        #zero out infalling region
+        cond+=(uu[1]<=0.0)
+        # 1 = north
+        #-1 = south
+        if donorthsouth==1:
+            #NORTH
+            #[zero out south hemisphere]
+            cond += (tj>=ny/2)
+        elif donorthsouth==-1:
+            #SOUTH
+            #[zero out north hemisphere]
+            cond += (tj<ny/2)
+        jetpowden[cond] = 0*jetpowden[cond]
+    jetpowtot = scaletofullwedge(np.sum(np.sum(jetpowden,axis=2),axis=1)*_dx2*_dx3)
+    #print "which = %d, minbsqorho = %g" % (which, minbsqorho)
+    return(jetpowtot)
 
 
 def aux():
