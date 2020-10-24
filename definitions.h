@@ -1,8 +1,11 @@
-#define CYL 1 // did we use cylindrification in our simulation?
+#define CYL 1 //did we use cylindrification in our simulation?
 
 // General controls: 0 or 1 to tell the code to do something or not
 #define SHEETS 1
 #define CHARACTERIZE 1
+
+#define RUN_DISC 0
+#define RUN_JET 1
 
 // Threshold values for our criteria to find current sheets
 #define SIGMAPHI_THR 10e-5
@@ -10,6 +13,8 @@
 //#define BU3_THR 10e-3 #0.00775
 #define JPEAK_FAC 0.5
 #define J_FAC 4.
+#define BE_THR -1.05
+#define VA_THR 0.1
 
 // Box sizes
 // to look for local maxima in J_cs
@@ -35,6 +40,8 @@
 #define COORDSINGFIX 1
 
 #define BETWEEN(value, min, max) (value < max && value >= min)
+//#define BE_DISC(bernoulli, i, j, k, BE_THR) (bernoulli[i][j][k] >= BE_THR)
+//#define BE_JET(bernoulli, i, j, k, BE_JET) (bernoulli[i][j][k] < BE_THR)
 
 // all constants in cgs units
 #define ME 9.1093826e-28   // electron mass (g)

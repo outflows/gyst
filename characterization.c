@@ -33,7 +33,8 @@ void characterize()
         for (j = 0; j < N2; j++) {
             for (k = 0; k < N3; k++) {
                 get_1stderivative(i, j, k, J_cs);
-                J_cs_char[i][j][k] = J_cs_peak[i][j][k];
+                //J_cs_char[i][j][k] = J_cs_peak[i][j][k];
+                J_cs_char[i][j][k] = J_cs[i][j][k];
             }
         }
     }
@@ -996,7 +997,7 @@ void characterize2D()
         for (j = 0; j < N2; j++) {
             for (k = 0; k < N3; k++) {
                 get_1stderivative2D(i, j, k, J_cs);
-                J_cs_char[i][j][k] = J_cs_peak[i][j][k];
+                J_cs_char[i][j][k] = J_cs[i][j][k];
             }
         }
     }
@@ -1006,8 +1007,9 @@ void characterize2D()
     for (i = 0; i < N1; i++) {
         for (j = 0; j < N2; j++) {
             for (k = 0; k < N3; k++) {
-
-                if ( (J_cs_peak[i][j][k] > 0.) && (bernoulli[i][j][k] < -1.02) ) {
+                // disc: > BE_THR
+                // jet: < BE_THR
+                if ( (J_cs[i][j][k] > 0.) && (bernoulli[i][j][k] < BE_THR) && (va[i][j][k] > VA_THR) ) {
                     rr = a_r[i][j][k];
                     tth = a_th[i][j][k];
                     pphi = a_phi[i][j][k];
@@ -1109,22 +1111,22 @@ void characterize2D()
 
                                 m++;
                                 size_upper = m;
-
+/*
                                 V_proj_e1 = dot3(Vprim, e1) / (sqrt(dot3(e1,e1)) + SMALL);
                                 B_proj_e1 = dot3(Bprim, e1) / (sqrt(dot3(e1,e1)) + SMALL);
                                 B_proj_e2 = dot3(Bprim, e2) / (sqrt(dot3(e2,e2)) + SMALL);
 
-/*
+
                                 V_A = sqrt((Bprim[1]*Bprim[1] +
                                             Bprim[2]*Bprim[2] +
                                             Bprim[3]*Bprim[3])/(rho[ii][jj][kk] + SMALL));
                                 V_upper = Vprim[1]/V_A;
-*/
+
                                 //10. use B_proj to find v_alfven
                                 V_A = sqrt((B_proj_e1*B_proj_e1 +
                                             B_proj_e2*B_proj_e2)/(rho[ii][jj][kk] + SMALL));
-                                V_upper = V_proj_e1/va[i][j][k];//V_A;
-
+                                V_upper = V_proj_e1/V_A;//va[i][j][k];//V_A;
+*/
                                 is_good_upper = 1;
                             }
                             iter++;
@@ -1203,20 +1205,20 @@ void characterize2D()
 
                                 m++;
                                 size_lower = m;
-
+/*
                                 V_proj_e1 = dot3(Vprim, e1) / (sqrt(dot3(e1,e1)) + SMALL);
                                 B_proj_e1 = dot3(Bprim, e1) / (sqrt(dot3(e1,e1)) + SMALL);
                                 B_proj_e2 = dot3(Bprim, e2) / (sqrt(dot3(e2,e2)) + SMALL);
-/*
+
                                 V_A = sqrt((Bprim[1]*Bprim[1] +
                                             Bprim[2]*Bprim[2] +
                                             Bprim[3]*Bprim[3])/(rho[ii][jj][kk] + SMALL));
                                 V_lower = Vprim[1]/V_A;
-*/
+
                                 V_A = sqrt((B_proj_e1*B_proj_e1 +
                                             B_proj_e2*B_proj_e2)/(rho[ii][jj][kk] + SMALL));
-                                V_lower = V_proj_e1/va[i][j][k];//V_A
-
+                                V_lower = V_proj_e1/V_A;//va[i][j][k];//V_A
+*/
                                 is_good_lower = 1;
                                 more_to_go_lower = 1;
                             }
@@ -1227,15 +1229,15 @@ void characterize2D()
 
                     if (is_good_lower && is_good_upper) {
                         //12. get V_in/va
-                        V_rec = 0.5*(V_lower - V_upper);
+                        //V_rec = 0.5*(V_lower - V_upper);
 
                         is_good = 1;
                         // don't consider point if smallish reconnection velocity
-                        if (fabs(V_rec) < 0.1) {
-                            J_cs_char[i][j][k] = 0.;
-                            is_good = 0;
+                        //if (fabs(va[i][j][k]) < 0.01) {
+                        //    J_cs_char[i][j][k] = 0.;
+                        //    is_good = 0;
                             //printf("1\n");
-                        }
+                        //}
 
                         // don't consider point if too asymetrical
                         if (fabs(B_upper/B_lower) < 0.8) {
@@ -1337,9 +1339,16 @@ void characterize2D()
                                 sprintf(i_str, "%d", i);
                                 sprintf(j_str, "%d", j);
                                 sprintf(k_str, "%d", k);
-                                //strcpy(sheet_file, "/home/gustavo/work/gyst/sheets"); // LAPTOP
-                                strcpy(sheet_file, "/work/gustavo/gyst/sheets/"); // DESKTOP IAG
-                                //strcpy(sheet_file, "/work/gustavo/gyst/sheets_disc/"); // DESKTOP IAG
+                                #if (RUN_DISC)
+                                {
+                                    strcpy(sheet_file, "/work/gustavo/gyst/sheets_disc/"); // DESKTOP IAG
+                                }
+                                #else if (RUN_JET)
+                                {
+                                    strcpy(sheet_file, "/work/gustavo/gyst/sheets/"); // DESKTOP IAG
+                                    //strcpy(sheet_file, "/home/gustavo/work/gyst/sheets"); // LAPTOP
+                                }
+                                #endif
                                 strcat(sheet_file, dump_file);
                                 strcat(sheet_file, "_");
                                 strcat(sheet_file, i_str);
@@ -1364,7 +1373,7 @@ void characterize2D()
                                     fwrite(&iaux, sizeof(double), 1, fp);
                                     fwrite(&jaux, sizeof(double), 1, fp);
                                     fwrite(&kaux, sizeof(double), 1, fp);
-                                    fwrite(&V_rec, sizeof(double), 1, fp);
+                                    //fwrite(&V_rec, sizeof(double), 1, fp);
                                 }
                                 fclose(fp);
                             }
@@ -1377,8 +1386,15 @@ void characterize2D()
     }
     printf("Identified %d possible reconnection sites.\n", is_good_count);
     FILE *sitecount;
-    sitecount = fopen("sitecount_2D_jet.dat", "a"); //// DONT FORGET TO CHANGE!!!!!!
-    //sitecount = fopen("sitecount_2D_disc.dat", "a"); //// DONT FORGET TO CHANGE!!!!!!
+    #if (RUN_DISC)
+    {
+        sitecount = fopen("sitecount_2D_disc.dat", "a"); //// DONT FORGET TO CHANGE!!!!!!
+    }
+    #else if (RUN_JET)
+    {
+        sitecount = fopen("sitecount_2D_jet.dat", "a"); //// DONT FORGET TO CHANGE!!!!!!
+    }
+    #endif
     fprintf(sitecount, "%s,%d\n", dump_file, is_good_count);
     fclose(sitecount);
     write_current_sheets(jchar_output, J_cs_char);

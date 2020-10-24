@@ -18,8 +18,16 @@ int main(int argc, char *argv[])
     //char path[100] = "/home/gustavo/work/dumps/"; // LAPTOP
     //char jcs_dir[100] = "/home/gustavo/work/gyst/jcs_files/"; // LAPTOP
     char path[100] = "/work/gustavo/dumps2D/"; // DESKTOP IAG
-    char jcs_dir[100] = "/work/gustavo/gyst/jcs_files/"; // DESKTOP IAG
-    //char jcs_dir[100] = "/work/gustavo/gyst/jcs_files_disc/"; // DESKTOP IAG
+    char jcs_dir[100] = "/work/gustavo/gyst/";
+    #if (RUN_DISC)
+    {
+        strcat(jcs_dir, "jcs_files_disc/"); // DESKTOP IAG
+    }
+    #else if (RUN_JET)
+    {
+        strcat(jcs_dir, "jcs_files/"); // DESKTOP IAG
+    }
+    #endif
 
     clock_t begin = clock();
 
@@ -59,6 +67,13 @@ int main(int argc, char *argv[])
 
     if (CHARACTERIZE) {
         printf("CHARACTERIZE set to 1 by user: this run WILL characterize the current sheets\n\n");
+        if (RUN_DISC) {
+            printf("RUN_DISC set to 1\n\n");
+        }
+        else if (RUN_JET) {
+            printf("RUN_JET set to 1\n\n");
+        }
+
     }
     else {
         printf("CHARACTERIZE set to 0 by user: this run WILL NOT characterize the current sheets\n\n");
