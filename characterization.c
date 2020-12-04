@@ -997,18 +997,19 @@ void characterize2D()
         for (j = 0; j < N2; j++) {
             for (k = 0; k < N3; k++) {
                 get_1stderivative2D(i, j, k, J_cs);
-                J_cs_char[i][j][k] = J_cs[i][j][k];
+                //J_cs_char[i][j][k] = J_cs[i][j][k];
+                J_cs_char[i][j][k] = 0.;
             }
         }
     }
 
     is_good_count = 0;
     printf("Entering main loop...\n");
-    for (i = 0; i < N1; i++) {
+    for (i = 0; i < ILIM; i++) {
         for (j = 0; j < N2; j++) {
             for (k = 0; k < N3; k++) {
                 // disc: > BE_THR
-                // jet: < BE_THR
+                // jet,outflows: < BE_THR
                 if ( (J_cs[i][j][k] > 0.) && (bernoulli[i][j][k] < BE_THR) && (va[i][j][k] > VA_THR) ) {
                     rr = a_r[i][j][k];
                     tth = a_th[i][j][k];
@@ -1241,25 +1242,25 @@ void characterize2D()
 
                         // don't consider point if too asymetrical
                         if (fabs(B_upper/B_lower) < 0.8) {
-                            J_cs_char[i][j][k] = 0.;
+                            //J_cs_char[i][j][k] = 0.;
                             is_good = 0;
                             //printf("2\n");
                         }
                         if (fabs(B_lower/B_upper) < 0.8) {
-                            J_cs_char[i][j][k] = 0.;
+                            //J_cs_char[i][j][k] = 0.;
                             is_good = 0;
                             //printf("3\n");
                         }
 
                         if (B_upper * B_lower > 0) {
-                            J_cs_char[i][j][k] = 0.;
+                            //J_cs_char[i][j][k] = 0.;
                             is_good = 0;
                             //printf("4\n");
                         }
 
                         size_B = size_lower + size_upper + 1;
                         if (size_B <= 3) {
-                            J_cs_char[i][j][k] = 0.;
+                            //J_cs_char[i][j][k] = 0.;
                             is_good = 0;
                             //printf("5\n");
                         }
@@ -1324,18 +1325,22 @@ void characterize2D()
                                     B_max = Bphi_arr[m];
                                 }
                             }
-                            if (fabs(B_max/B_min) < 0.8) {
-                                J_cs_char[i][j][k] = 0.;
-                                is_good = 0;
-                                is_good_count--;
-                            }
-                            if (fabs(B_min/B_max) < 0.8) {
-                                J_cs_char[i][j][k] = 0.;
+
+                            if ( (fabs(B_max/B_min) < 0.8) || (fabs(B_min/B_max) < 0.8) ) {
+                                //J_cs_char[i][j][k] = 0.;
                                 is_good = 0;
                                 is_good_count--;
                             }
 
+                            if ( (RUN_JET) && (is_good != 0) ) {
+                                if ( (sigma_arr[0] < 1.) && (sigma_arr[size_lower+size_upper] < 1.) ) {
+                                    is_good = 0;
+                                    is_good_count--;
+                                }
+                            }
+
                             if (is_good) {
+                                J_cs_char[i][j][k] = J[i][j][k];
                                 sprintf(i_str, "%d", i);
                                 sprintf(j_str, "%d", j);
                                 sprintf(k_str, "%d", k);
@@ -1343,9 +1348,14 @@ void characterize2D()
                                 {
                                     strcpy(sheet_file, "/work/gustavo/gyst/sheets_disc/"); // DESKTOP IAG
                                 }
-                                #else if (RUN_JET)
+                                #elif (RUN_OUTFLOWS)
                                 {
-                                    strcpy(sheet_file, "/work/gustavo/gyst/sheets/"); // DESKTOP IAG
+                                    strcpy(sheet_file, "/work/gustavo/gyst/sheets_outflows/"); // DESKTOP IAG
+                                    //strcpy(sheet_file, "/home/gustavo/work/gyst/sheets"); // LAPTOP
+                                }
+                                #elif (RUN_JET)
+                                {
+                                    strcpy(sheet_file, "/work/gustavo/gyst/sheets_jet/"); // DESKTOP IAG
                                     //strcpy(sheet_file, "/home/gustavo/work/gyst/sheets"); // LAPTOP
                                 }
                                 #endif
@@ -1380,7 +1390,7 @@ void characterize2D()
                         }
                     }
                 }
-                else (J_cs_char[i][j][k] = 0.);
+                //else (J_cs_char[i][j][k] = 0.);
             }
         }
     }
@@ -1390,7 +1400,11 @@ void characterize2D()
     {
         sitecount = fopen("sitecount_2D_disc.dat", "a"); //// DONT FORGET TO CHANGE!!!!!!
     }
-    #else if (RUN_JET)
+    #elif (RUN_OUTFLOWS)
+    {
+        sitecount = fopen("sitecount_2D_outflows.dat", "a"); //// DONT FORGET TO CHANGE!!!!!!
+    }
+    #elif (RUN_JET)
     {
         sitecount = fopen("sitecount_2D_jet.dat", "a"); //// DONT FORGET TO CHANGE!!!!!!
     }

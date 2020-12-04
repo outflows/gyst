@@ -6,6 +6,10 @@
 
 #define RUN_DISC 0
 #define RUN_JET 1
+#define RUN_OUTFLOWS 0
+
+#define ILIM 821+1
+
 
 // Threshold values for our criteria to find current sheets
 #define SIGMAPHI_THR 10e-5

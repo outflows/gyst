@@ -17,15 +17,20 @@ int main(int argc, char *argv[])
     char dump[100], gdump[100], metric[100];
     //char path[100] = "/home/gustavo/work/dumps/"; // LAPTOP
     //char jcs_dir[100] = "/home/gustavo/work/gyst/jcs_files/"; // LAPTOP
-    char path[100] = "/work/gustavo/dumps2D/"; // DESKTOP IAG
+    //char path[100] = "/work/gustavo/dumps2D/"; // DESKTOP IAG
+    char path[100] = "/work/gustavo/dumps2D_smalltorusSANE/"; // DESKTOP IAG
     char jcs_dir[100] = "/work/gustavo/gyst/";
     #if (RUN_DISC)
     {
         strcat(jcs_dir, "jcs_files_disc/"); // DESKTOP IAG
     }
-    #else if (RUN_JET)
+    #elif (RUN_OUTFLOWS)
     {
-        strcat(jcs_dir, "jcs_files/"); // DESKTOP IAG
+        strcat(jcs_dir, "jcs_files_outflows/"); // DESKTOP IAG
+    }
+    #elif (RUN_JET)
+    {
+        strcat(jcs_dir, "jcs_files_jet/"); // DESKTOP IAG
     }
     #endif
 
@@ -69,6 +74,9 @@ int main(int argc, char *argv[])
         printf("CHARACTERIZE set to 1 by user: this run WILL characterize the current sheets\n\n");
         if (RUN_DISC) {
             printf("RUN_DISC set to 1\n\n");
+        }
+        else if (RUN_OUTFLOWS) {
+            printf("RUN_OUTFLOWS set to 1\n\n");
         }
         else if (RUN_JET) {
             printf("RUN_JET set to 1\n\n");
