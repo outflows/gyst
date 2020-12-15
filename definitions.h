@@ -5,8 +5,8 @@
 #define CHARACTERIZE 1
 
 #define RUN_DISC 0
-#define RUN_JET 1
-#define RUN_OUTFLOWS 0
+#define RUN_JET 0
+#define RUN_OUTFLOWS 1
 
 #define ILIM 821+1
 
