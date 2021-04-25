@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     //char path[100] = "/home/gustavo/work/dumps/"; // LAPTOP
     //char jcs_dir[100] = "/home/gustavo/work/gyst/jcs_files/"; // LAPTOP
     //char path[100] = "/work/gustavo/dumps2D/"; // DESKTOP IAG
-    char path[100] = "/work/gustavo/dumps2D_smalltorusMAD/"; // DESKTOP IAG
+    char path[100] = "/work/gustavo/dumps2D_smalltorusMAD52/"; // DESKTOP IAG
     char jcs_dir[100] = "/work/gustavo/gyst/";
     #if (RUN_DISC)
     {
