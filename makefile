@@ -26,8 +26,8 @@ clean:
 	/bin/rm -f *.o *_s $(EXE)
 
 newrun:
-	/bin/rm -rf sheets
-	/bin/mkdir sheets
-	/bin/rm -rf jcs_files
-	/bin/mkdir jcs_files
+	/bin/rm -rf sheets_disc sheets_outflows sheets_jet
+	/bin/mkdir sheets_disc sheets_outflows sheets_jet
+	/bin/rm -rf jcs_files_disc jcs_files_outflows_jcs_files_jet
+	/bin/mkdir jcs_files_disc jcs_files_outflows_jcs_files_jet
 

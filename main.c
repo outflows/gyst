@@ -14,23 +14,19 @@ int main(int argc, char *argv[])
     double X[NDIM];
     struct of_geom geom;
     FILE *gdumpfile, *metricfile;
-    char dump[100], gdump[100], metric[100];
-    //char path[100] = "/home/gustavo/work/dumps/"; // LAPTOP
-    //char jcs_dir[100] = "/home/gustavo/work/gyst/jcs_files/"; // LAPTOP
-    //char path[100] = "/work/gustavo/dumps2D/"; // DESKTOP IAG
-    char path[100] = "/work/gustavo/dumps2D_smalltorusMAD52/"; // DESKTOP IAG
-    char jcs_dir[100] = "/work/gustavo/gyst/";
+    char dump[200], gdump[200], metric[200], jcs_dir[200];
+
     #if (RUN_DISC)
     {
-        strcat(jcs_dir, "jcs_files_disc/"); // DESKTOP IAG
+        strcpy(jcs_dir, JCS_DISC_DIR); // DESKTOP IAG
     }
     #elif (RUN_OUTFLOWS)
     {
-        strcat(jcs_dir, "jcs_files_outflows/"); // DESKTOP IAG
+        strcpy(jcs_dir, JCS_OUTFLOWS_DIR); // DESKTOP IAG
     }
     #elif (RUN_JET)
     {
-        strcat(jcs_dir, "jcs_files_jet/"); // DESKTOP IAG
+        strcat(jcs_dir, JCS_JET_DIR); // DESKTOP IAG
     }
     #endif
 
@@ -42,8 +38,8 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    strcpy(dump, path);
-    strcpy(gdump, path);
+    strcpy(dump, DUMP_DIR);
+    strcpy(gdump, DUMP_DIR);
 
     sscanf(argv[1], "%s", dump_file);
     strcat(dump, dump_file);
@@ -58,7 +54,7 @@ int main(int argc, char *argv[])
     strcpy(jchar_output, jcs_dir);
     strcat(jchar_output, "_jcs_char");
 
-    strcpy(metric, path);
+    strcpy(metric, DUMP_DIR);
     strcat(metric, "metric");
     //strcpy(metric, dump_file);
     //strcat(metric, "_metric");

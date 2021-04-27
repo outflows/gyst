@@ -10,6 +10,14 @@
 
 #define ILIM 821+1
 
+// Directories
+#define DUMP_DIR "/work/gustavo/dumps2D_smalltorusMAD52/";
+#define JCS_DISC_DIR "/work/gustavo/gyst/jcs_files_disc/";
+#define JCS_OUTFLOWS_DIR "/work/gustavo/gyst/jcs_files_disc/";
+#define JCS_JET_DIR "/work/gustavo/gyst/jcs_files_disc/";
+#define SHEETS_DISC_DIR "/work/gustavo/gyst/sheets_disc/";
+#define SHEETS_OUTFLOWS_DIR "/work/gustavo/gyst/sheets_outflows/";
+#define SHEETS_JET_DIR "/work/gustavo/gyst/sheets_jet/";
 
 // Threshold values for our criteria to find current sheets
 #define SIGMAPHI_THR 10e-5
@@ -80,9 +88,7 @@
 // Constants, definitions and units
 extern double M_unit, L_unit, T_unit, RHO_unit, U_unit, B_unit, Ne_unit;
 
-extern char dump_file[100], jcs_output[100], jchar_output[100], jpeak_output[100];
-extern char path[100];
-extern char gdump[100];
+extern char dump_file[200], jcs_output[200], jchar_output[200], jpeak_output[200];
 
 extern double *****grid_gcov, *****grid_gcon, ***grid_gdet, ******grid_conn;
 
