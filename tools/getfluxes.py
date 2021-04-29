@@ -21,7 +21,7 @@ for dumpno in range(starti,endi+1):
     #jtot.append(jetpowcalc(2)[ihor]) #jet power (total)
 
 #write to file
-fluxes_file = open("fluxes.dat","w+")
+fluxes_file = open("../run/fluxes.dat","w+")
 for line in range(len(ts)):
     fluxes_file.write(str(ts[line]))
     fluxes_file.write("\t")

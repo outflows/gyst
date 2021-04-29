@@ -46,7 +46,7 @@ from numpy import ma
 import matplotlib.colors as colors
 #use_math_text = True
 
-path_to_dumps = "/work/gustavo/dumps2D/"
+path_to_dumps = "/home/physics/rodrgust/harmpi/MAD52_beta80/dumps/"
 
 def mathify_axes_ticks(ax,fontsize=20,xticks=None,yticks=None):
     if xticks is None:

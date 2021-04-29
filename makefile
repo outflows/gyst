@@ -28,4 +28,5 @@ clean:
 newrun:
 	/bin/rm -rf run
 	/bin/mkdir run
-	/bin/mkdir run/sheets_disc run/sheets_outflows run/sheets_jet run/jcs_files_disc run/jcs_files_outflows run/jcs_files_jet
+	/bin/mkdir run/images run/sheets_disc run/sheets_outflows run/sheets_jet \
+	run/jcs_files_disc run/jcs_files_outflows run/jcs_files_jet
