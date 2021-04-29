@@ -21,10 +21,10 @@ mpl.rcParams['font.sans-serif'] = 'helvetica'
 
 #font = { 'size'   : 20}
 #rc('font', **font)
-rc('xtick', labelsize=20) 
-rc('ytick', labelsize=20) 
-#rc('xlabel', **font) 
-#rc('ylabel', **font) 
+rc('xtick', labelsize=20)
+rc('ytick', labelsize=20)
+#rc('xlabel', **font)
+#rc('ylabel', **font)
 
 # legend = {'fontsize': 20}
 # rc('legend',**legend)
@@ -34,7 +34,7 @@ rc('mathtext',fontset='cm')
 #use this, but at the expense of slowdown of rendering
 #rc('text', usetex=True)
 # #add amsmath to the preamble
-#matplotlib.rcParams['text.latex.preamble']=[r"\usepackage{amssymb,amsmath}"] 
+#matplotlib.rcParams['text.latex.preamble']=[r"\usepackage{amssymb,amsmath}"]
 import pdb
 
 import numpy as np
@@ -46,6 +46,7 @@ from numpy import ma
 import matplotlib.colors as colors
 #use_math_text = True
 
+path_to_dumps = "/work/gustavo/dumps2D/"
 
 def mathify_axes_ticks(ax,fontsize=20,xticks=None,yticks=None):
     if xticks is None:
@@ -66,8 +67,8 @@ def mathify_axes_ticks(ax,fontsize=20,xticks=None,yticks=None):
 def convert_to_single_file(startn=0,endn=-1,ln=10,whichi=0,whichn=1,**kwargs):
     which = kwargs.pop("which","convert_file")
     rg("gdump")
-    flist1 = np.sort(glob.glob( os.path.join("/work/gustavo/dumps2D/", "dump[0-9][0-9][0-9]_0000") ) )
-    flist2 = np.sort(glob.glob( os.path.join("/work/gustavo/dumps2D/", "dump[0-9][0-9][0-9][0-9]_0000") ) )
+    flist1 = np.sort(glob.glob( os.path.join(path_to_dumps, "dump[0-9][0-9][0-9]_0000") ) )
+    flist2 = np.sort(glob.glob( os.path.join(path_to_dumps, "dump[0-9][0-9][0-9][0-9]_0000") ) )
     flist1.sort()
     flist2.sort()
     flist = np.concatenate((flist1,flist2))
@@ -89,7 +90,7 @@ def convert_to_single_file(startn=0,endn=-1,ln=10,whichi=0,whichn=1,**kwargs):
             continue
         if not os.path.isfile( fname ):
             rd(fname)
-        
+
 
 def ellk(a,r):
     ekval = ek(a,r)
@@ -124,7 +125,7 @@ def etaNT(a):
 def Ebindisco(a):
     eps = np.finfo(np.float64).eps
     a0 = 0.99999 #1.-1e8*eps
-    if a > a0: 
+    if a > a0:
         a = a0
         Eb = Ebind( Risco(a), a )
         return((a-a0)/(1.-a0)*(1.-3.**(-0.5)) + (1.-a)/(1.-a0)*Eb)
@@ -162,7 +163,7 @@ def mkmov_simple(starti=0,endi=860):
         ax2.add_artist(circle1) # GS
         #plc(aphi,levels=np.linspace(-amax,amax,10)[1:-1],colors="black",linewidths=1,xy=-1)
         #print(i);
-        plt.title(r"$t=%.4g\ r_g/c$"%np.round(t)); 
+        plt.title(r"$t=%.4g\ r_g/c$"%np.round(t));
         plt.tight_layout() # GS
         plt.draw();
         plt.savefig("frame%03d.png"%i, dpi = 100)
@@ -195,14 +196,14 @@ def mkmov(startn=0,endn=-1,ln=10,whichi=0,whichn=1,**kwargs):
     aphi=psicalc()
     aphimax = aphi.max()
     #construct file list
-    flist1 = np.sort(glob.glob( os.path.join("/work/gustavo/dumps2D/", "dump[0-9][0-9][0-9]") ) )
-    flist2 = np.sort(glob.glob( os.path.join("/work/gustavo/dumps2D/", "dump[0-9][0-9][0-9][0-9]") ) )
+    flist1 = np.sort(glob.glob( os.path.join(path_to_dumps, "dump[0-9][0-9][0-9]") ) )
+    flist2 = np.sort(glob.glob( os.path.join(path_to_dumps, "dump[0-9][0-9][0-9][0-9]") ) )
     flist1.sort()
     flist2.sort()
     flist = np.concatenate((flist1,flist2))
     if len(flist) == 0:
-        flist1 = np.sort(glob.glob( os.path.join("/work/gustavo/dumps2D/", "dump[0-9][0-9][0-9]_0000") ) )
-        flist2 = np.sort(glob.glob( os.path.join("/work/gustavo/dumps2D/", "dump[0-9][0-9][0-9][0-9]_0000") ) )
+        flist1 = np.sort(glob.glob( os.path.join(path_to_dumps, "dump[0-9][0-9][0-9]_0000") ) )
+        flist2 = np.sort(glob.glob( os.path.join(path_to_dumps, "dump[0-9][0-9][0-9][0-9]_0000") ) )
         flist1.sort()
         flist2.sort()
         flist = np.concatenate((flist1,flist2))
@@ -239,7 +240,7 @@ def mkmov(startn=0,endn=-1,ln=10,whichi=0,whichn=1,**kwargs):
         if dosavefig:
             plt.savefig(fname,dpi = dpi)
 
-            
+
 #############
 def mkfrmsimple(fig=None,aphimax=None,lnx=100,lny=100,vmin=-10,vmax=1,fntsize=20,asp=1.):
     if fig is None: fig = plt.gcf();
@@ -262,7 +263,7 @@ def mkfrmsimple(fig=None,aphimax=None,lnx=100,lny=100,vmin=-10,vmax=1,fntsize=20
     plt.xlim(-lnx,lnx)
     plt.ylim(-lny,lny)
     mathify_axes_ticks(ax)
-    
+
 def mkvertcolorbar(ax,fig,vmin=0,vmax=1,label=None,ylabel=None,ticks=None,fntsize=20,cmap=mpl.cm.jet,gap=0.03,width=0.02,extend="neither",loc="right"):
     box = ax.get_position()
     #pdb.set_trace()
@@ -390,9 +391,9 @@ def read_file(dump,type=None,savedump=True,saverdump=False,noround=False):
             print("Couldn't guess dump type; assuming it is a data dump")
             type = "dump"
     #normal dump
-    if os.path.isfile( "/work/gustavo/dumps2D/" + dump ):
-        headerline = read_header("/work/gustavo/dumps2D/" + dump, returnheaderline = True)
-        gd = read_body("/work/gustavo/dumps2D/" + dump,nx=N1+2*N1G,ny=N2+2*N2G,nz=N3+2*N3G,noround=1)
+    if os.path.isfile( path_to_dumps + dump ):
+        headerline = read_header(path_to_dumps + dump, returnheaderline = True)
+        gd = read_body(path_to_dumps + dump,nx=N1+2*N1G,ny=N2+2*N2G,nz=N3+2*N3G,noround=1)
         if noround:
             res = data_assign(         gd,type=type,nx=N1+2*N1G,ny=N2+2*N2G,nz=N3+2*N3G)
         else:
@@ -400,7 +401,7 @@ def read_file(dump,type=None,savedump=True,saverdump=False,noround=False):
         return res
     #MPI-type dump that is spread over many files
     else:
-        flist = np.sort(glob.glob( "/work/gustavo/dumps2D/" + dump + "_[0-9][0-9][0-9][0-9]" ))
+        flist = np.sort(glob.glob( path_to_dumps + dump + "_[0-9][0-9][0-9][0-9]" ))
         if len(flist) == 0:
             print( "Could not find %s or its MPI counterpart" % dump )
             return
@@ -439,7 +440,7 @@ def read_file(dump,type=None,savedump=True,saverdump=False,noround=False):
         res = data_assign(fgd,type=type,nx=nx+2*N1G,ny=ny+2*N2G,nz=nz+2*N3G)
         if savedump:
             #if the full dump file does not exist, create it
-            dumpfullname = "/work/gustavo/dumps2D/" + dump
+            dumpfullname = path_to_dumps + dump
             if (type == "dump" or type == "gdump") and not os.path.isfile(dumpfullname):
                 sys.stdout.write("Saving full dump to %s..." % dumpfullname)
                 sys.stdout.flush()
@@ -476,7 +477,7 @@ def read_header(dump,issilent=True,returnheaderline=False):
     header = headerline.split()
     nheadertot = len(header)
     fin.close()
-    if not dump.startswith("/work/gustavo/dumps2D/rdump"):
+    if not dump.startswith(path_to_dumps+"rdump"):
         if not issilent: print( "dump header: len(header) = %d" % len(header) )
         nheader = 57
         n = 0
@@ -618,11 +619,11 @@ def read_header(dump,issilent=True,returnheaderline=False):
         return headerline
     else:
         return header
-            
+
 def read_body(dump,nx=None,ny=None,nz=None,noround=False):
         fin = open( dump, "rb" )
         header = fin.readline()
-        if dump.startswith("/work/gustavo/dumps2D/rdump"):
+        if dump.startswith(path_to_dumps+"rdump"):
             dtype = np.float64
             body = np.fromfile(fin,dtype=dtype,count=-1)
             gd = body.view().reshape((nx,ny,nz,-1), order='C')
@@ -630,7 +631,7 @@ def read_body(dump,nx=None,ny=None,nz=None,noround=False):
                 gd=gd.transpose(3,0,1,2)
             else:
                 gd=myfloat(gd.transpose(3,0,1,2))
-        elif dump.startswith("/work/gustavo/dumps2D/gdump2"):
+        elif dump.startswith(path_to_dumps+"gdump2"):
             dtype = np.float64
             body = np.fromfile(fin,dtype=dtype,count=-1)
             gd = body.view().reshape((nx,ny,nz,-1), order='C')
@@ -638,7 +639,7 @@ def read_body(dump,nx=None,ny=None,nz=None,noround=False):
                 gd=gd.transpose(3,0,1,2)
             else:
                 gd=myfloat(gd.transpose(3,0,1,2))
-        elif dump.startswith("/work/gustavo/dumps2D/fdump"):
+        elif dump.startswith(path_to_dumps+"fdump"):
             dtype = np.int64
             body = np.fromfile(fin,dtype=dtype,count=-1)
             gd = body.view().reshape((-1,nz,ny,nx), order='F')
@@ -672,7 +673,7 @@ def data_assign(gd,type=None,**kwargs):
     else:
         print("Unknown data type: %s" % type)
         return gd
-    
+
 def gdump_assign(gd,**kwargs):
     global t,nx,ny,nz,N1,N2,N3,_dx1,_dx2,_dx3,a,gam,Rin,Rout,hslope,R0,ti,tj,tk,x1,x2,x3,r,h,ph,gcov,gcon,gdet,drdx,gn3,gv3,guu,gdd,dxdxp, games
     nx = kwargs.pop("nx",nx)
@@ -779,8 +780,8 @@ def fdump_assign(gd,**kwargs):
 def mdot(a,b):
     """
     Computes a contraction of two tensors/vectors.  Assumes
-    the following structure: tensor[m,n,i,j,k] OR vector[m,i,j,k], 
-    where i,j,k are spatial indices and m,n are variable indices. 
+    the following structure: tensor[m,n,i,j,k] OR vector[m,i,j,k],
+    where i,j,k are spatial indices and m,n are variable indices.
     """
     if (a.ndim == 3 and b.ndim == 3) or (a.ndim == 4 and b.ndim == 4):
           c = (a*b).sum(0)
@@ -883,9 +884,9 @@ def plc(myvar,**kwargs): #plc
             xcoord=np.concatenate((-xcoord[:,::-1],xcoord),axis=1)
             ycoord=np.concatenate((ycoord[:,::-1],ycoord),axis=1)
         else:
-            if myvar.shape[-1] > 1: 
-                symmk = (k+nz/2)%nz 
-            else: 
+            if myvar.shape[-1] > 1:
+                symmk = (k+nz/2)%nz
+            else:
                 symmk = k
             myvar=np.concatenate((myvar[:,ny-1:ny,k:k+1],myvar[:,::-1,symmk:symmk+1],myvar[:,:,k:k+1]),axis=1)
             xcoord=np.concatenate((xcoord[:,ny-1:ny,k:k+1],-xcoord[:,::-1],xcoord),axis=1)
@@ -965,7 +966,7 @@ def plc(myvar,**kwargs): #plc
         if pretty:
             for label in cb.ax.get_yticklabels():
                 label.set_fontsize(fntsize)
-    if xy and dobh and "rhor" in globals(): 
+    if xy and dobh and "rhor" in globals():
         el = Ellipse((0,0), 2*rhor, 2*rhor, facecolor='k', alpha=1)
         art=ax.add_artist(el)
         art.set_zorder(20)
@@ -1048,7 +1049,7 @@ def horfluxcalc(ihor=None,minbsqorho=10):
     fabs = dfabs.sum(axis=1)
     #account for the wedge
     fabs=scaletofullwedge(fabs)
-    #fabs *= 
+    #fabs *=
     if ihor == None:
         return(fabs)
     else:
@@ -1158,22 +1159,22 @@ def bhole():
 
 
 def testfail(fldname = "dump000"):
-    try: 
+    try:
         rd(fldname)
     except IOError as e:
         print("I/O error({0}): {1}".format(e.errno, e.strerror))
 
 
 def get_sorted_file_list(prefix="dump"):
-    flist0 = np.sort(glob.glob( os.path.join("/work/gustavo/dumps2D/", "%s[0-9][0-9][0-9]"%prefix) ) )
-    flist1 = np.sort(glob.glob( os.path.join("/work/gustavo/dumps2D/", "%s[0-9][0-9][0-9][0-9]"%prefix) ) )
-    flist2 = np.sort(glob.glob( os.path.join("/work/gustavo/dumps2D/", "%s[0-9][0-9][0-9][0-9][0-9]"%prefix) ) )
+    flist0 = np.sort(glob.glob( os.path.join(path_to_dumps, "%s[0-9][0-9][0-9]"%prefix) ) )
+    flist1 = np.sort(glob.glob( os.path.join(path_to_dumps, "%s[0-9][0-9][0-9][0-9]"%prefix) ) )
+    flist2 = np.sort(glob.glob( os.path.join(path_to_dumps, "%s[0-9][0-9][0-9][0-9][0-9]"%prefix) ) )
     flist0.sort()
     flist1.sort()
     flist2.sort()
     flist = np.concatenate((flist0,flist1,flist2))
     return flist
-    
+
 
 
 def fFdd(i,j):
@@ -1233,8 +1234,8 @@ def amin(arg1,arg2):
 # End of movie making
 #
 #############################
-        
-    
+
+
 if __name__ == "__main__":
     if len(sys.argv)>1:
         if sys.argv[1].startswith("mkfrm"):
@@ -1263,7 +1264,7 @@ if __name__ == "__main__":
 
 def is_outlier(points, thresh=3.5):
     """
-    Returns a boolean array with True if points are outliers and False 
+    Returns a boolean array with True if points are outliers and False
     otherwise.
 
     Parameters:
@@ -1281,7 +1282,7 @@ def is_outlier(points, thresh=3.5):
     ----------
         Boris Iglewicz and David Hoaglin (1993), "Volume 16: How to Detect and
         Handle Outliers", The ASQC Basic References in Quality Control:
-        Statistical Techniques, Edward F. Mykytka, Ph.D., Editor. 
+        Statistical Techniques, Edward F. Mykytka, Ph.D., Editor.
     """
     if len(points.shape) == 1:
         points = points[:,None]
@@ -1293,4 +1294,3 @@ def is_outlier(points, thresh=3.5):
     modified_z_score = 0.6745 * diff / med_abs_deviation
 
     return modified_z_score > thresh
-

@@ -11,13 +11,13 @@
 #define ILIM 821+1
 
 // Directories
-#define DUMP_DIR "/work/gustavo/dumps2D_smalltorusMAD52/";
-#define JCS_DISC_DIR "/work/gustavo/gyst/jcs_files_disc/";
-#define JCS_OUTFLOWS_DIR "/work/gustavo/gyst/jcs_files_disc/";
-#define JCS_JET_DIR "/work/gustavo/gyst/jcs_files_disc/";
-#define SHEETS_DISC_DIR "/work/gustavo/gyst/sheets_disc/";
-#define SHEETS_OUTFLOWS_DIR "/work/gustavo/gyst/sheets_outflows/";
-#define SHEETS_JET_DIR "/work/gustavo/gyst/sheets_jet/";
+#define DUMP_DIR "/home/physics/rodrgust/harmpi/MAD52_beta80/harmpi/dumps/";
+#define JCS_DISC_DIR "/home/physics/rodrgust/gyst/run/jcs_files_disc/";
+#define JCS_OUTFLOWS_DIR "/home/physics/rodrgust/gyst/run/jcs_files_disc/";
+#define JCS_JET_DIR "/home/physics/rodrgust/run/jcs_files_disc/";
+#define SHEETS_DISC_DIR "/home/physics/rodrgust/run/sheets_disc/";
+#define SHEETS_OUTFLOWS_DIR "/home/physics/rodrgust/run/sheets_outflows/";
+#define SHEETS_JET_DIR "/home/physics/rodrgust/run/sheets_jet/";
 
 // Threshold values for our criteria to find current sheets
 #define SIGMAPHI_THR 10e-5
