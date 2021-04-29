@@ -29,8 +29,3 @@ newrun:
 	/bin/rm -rf run
 	/bin/mkdir run
 	/bin/mkdir run/sheets_disc run/sheets_outflows run/sheets_jet run/jcs_files_disc run/jcs_files_outflows run/jcs_files_jet
-
-	#/bin/rm -rf sheets_disc sheets_outflows sheets_jet
-	#/bin/mkdir sheets_disc sheets_outflows sheets_jet
-	#/bin/rm -rf jcs_files_disc jcs_files_outflows jcs_files_jet
-	#/bin/mkdir jcs_files_disc jcs_files_outflows jcs_files_jet
