@@ -561,6 +561,7 @@ void write_current_sheets(char *fname, double ***sheets) {
     if (fp == NULL) {
 		fprintf(stderr, "Sheet file not found. Check filename and path to file.\n");
 		exit(1);
+    }
 
     fprintf(stdout, "Writing into file '%s'...\n", fname);
     //fwrite(sheets, sizeof(double), N1*N2*N3, fp);
@@ -568,7 +569,6 @@ void write_current_sheets(char *fname, double ***sheets) {
         for (j = 0; j < N2; j++) {
             for (k = 0; k < N3; k++) {
                 fwrite(&sheets[i][j][k], sizeof(double), 1, fp);
-
             }
         }
     }
