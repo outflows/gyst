@@ -12,6 +12,7 @@
 
 // Directories
 #define DUMP_DIR "/home/physics/rodrgust/harmpi/MAD52_beta80/harmpi/dumps/";
+#define RUN_DIR "/home/physics/rodrgust/gyst/run/"
 #define JCS_DISC_DIR "/home/physics/rodrgust/gyst/run/jcs_files_disc/";
 #define JCS_OUTFLOWS_DIR "/home/physics/rodrgust/gyst/run/jcs_files_disc/";
 #define JCS_JET_DIR "/home/physics/rodrgust/run/jcs_files_disc/";

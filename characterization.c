@@ -78,7 +78,7 @@ void characterize()
     double Br_center, Bth_center, Bphi_center, beta_center, sigma_center;
 
     int is_good_count, is_good, is_good_lower, is_good_upper, size_lower, size_upper, size_B;
-    char i_str[6], j_str[6], k_str[6], sheet_file[200];
+    char i_str[6], j_str[6], k_str[6], sheet_file[200], count_file[200];
     FILE *fp;
 
     double Br_upper_arr[100], Br_lower_arr[100], Bth_upper_arr[100], Bth_lower_arr[100], Bphi_upper_arr[100], Bphi_lower_arr[100];
@@ -443,16 +443,21 @@ void characterize()
     FILE *sitecount;
     #if (RUN_DISC)
     {
-        sitecount = fopen("sitecount_2D_disc.dat", "a"); //// DONT FORGET TO CHANGE!!!!!!
+        strcpy(count_file, RUN_DIR);
+        strcat(count_file, "sitecount_2D_disc.dat")
+        sitecount = fopen(count_file, "a"); //// DONT FORGET TO CHANGE!!!!!!
     }
     #elif (RUN_OUTFLOWS)
     {
-        sitecount = fopen("sitecount_2D_outflows.dat", "a"); //// DONT FORGET TO CHANGE!!!!!!
+        strcpy(count_file, RUN_DIR);
+        strcat(count_file, "sitecount_2D_outflows.dat")
+        sitecount = fopen(count_file, "a"); //// DONT FORGET TO CHANGE!!!!!!
     }
     #elif (RUN_JET)
     {
-        sitecount = fopen("sitecount_2D_jet.dat", "a"); //// DONT FORGET TO CHANGE!!!!!!
-    }
+        strcpy(count_file, RUN_DIR);
+        strcat(count_file, "sitecount_2D_jet.dat")
+        sitecount = fopen(count_file, "a"); //// DONT FORGET TO CHANGE!!!!!!    }
     #endif
     fprintf(sitecount, "%s,%d\n", dump_file, is_good_count);
     fclose(sitecount);
