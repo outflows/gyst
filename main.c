@@ -18,15 +18,15 @@ int main(int argc, char *argv[])
 
     #if (RUN_DISC)
     {
-        strcpy(jcs_dir, JCS_DISC_DIR); // DESKTOP IAG
+        strcpy(jcs_dir, JCS_DISC_DIR);
     }
     #elif (RUN_OUTFLOWS)
     {
-        strcpy(jcs_dir, JCS_OUTFLOWS_DIR); // DESKTOP IAG
+        strcpy(jcs_dir, JCS_OUTFLOWS_DIR);
     }
     #elif (RUN_JET)
     {
-        strcat(jcs_dir, JCS_JET_DIR); // DESKTOP IAG
+        strcpy(jcs_dir, JCS_JET_DIR);
     }
     #endif
 
@@ -37,7 +37,6 @@ int main(int argc, char *argv[])
         fprintf(stderr, "./gyst dumpfile_name\n\n");
         exit(0);
     }
-
     strcpy(dump, DUMP_DIR);
     strcpy(gdump, DUMP_DIR);
 
@@ -60,38 +59,38 @@ int main(int argc, char *argv[])
     //strcat(metric, "_metric");
 
     if (SHEETS) {
-        printf("SHEETS set to 1 by user: this run WILL find the current sheets\n");
+        fprintf(stdout, "SHEETS set to 1 by user: this run WILL find the current sheets\n");
     }
     else {
-        printf("SHEETS set to 0 by user: this run WILL NOT find the current sheets\n");
+        fprintf(stdout, "SHEETS set to 0 by user: this run WILL NOT find the current sheets\n");
     }
 
     if (CHARACTERIZE) {
-        printf("CHARACTERIZE set to 1 by user: this run WILL characterize the current sheets\n\n");
+        fprintf(stdout, "CHARACTERIZE set to 1 by user: this run WILL characterize the current sheets\n\n");
         if (RUN_DISC) {
-            printf("RUN_DISC set to 1\n\n");
+            fprintf(stdout, "RUN_DISC set to 1\n\n");
         }
         else if (RUN_OUTFLOWS) {
-            printf("RUN_OUTFLOWS set to 1\n\n");
+            fprintf(stdout, "RUN_OUTFLOWS set to 1\n\n");
         }
         else if (RUN_JET) {
-            printf("RUN_JET set to 1\n\n");
+            fprintf(stdout, "RUN_JET set to 1\n\n");
         }
 
     }
     else {
-        printf("CHARACTERIZE set to 0 by user: this run WILL NOT characterize the current sheets\n\n");
+        printf(stdout, "CHARACTERIZE set to 0 by user: this run WILL NOT characterize the current sheets\n\n");
     }
 
     clock_t begin_read = clock();
     assign_units();
-    printf("dump file: '%s'\n", dump);
+    fprintf(stdout, "dump file: '%s'\n", dump);
     read_data(dump);
 
     metricfile = fopen(metric, "rb");
     if (metricfile != NULL) {
-        printf("metric file: %s\n", metric);
-        printf("metric file found, reading metric...\n");
+        fprintf(stdout, "metric file: %s\n", metric);
+        fprintf(stdout, "metric file found, reading metric...\n");
         fclose(metricfile);
         read_metric(metric);
     }
@@ -99,7 +98,7 @@ int main(int argc, char *argv[])
         strcat(gdump, "gdump");
         gdumpfile = fopen(gdump, "rb");
         if (gdumpfile == NULL) {
-            printf("gdump not found, setting up grid...\n");
+            fprintf(stdout, "gdump not found, setting up grid...\n");
 
             for (i = 0; i < N1; i++) {
                 for (j = 0; j < N2; j++) {
@@ -114,12 +113,12 @@ int main(int argc, char *argv[])
         }
         else {
             fclose(gdumpfile);
-            printf("gdump file: '%s'\n", gdump);
-            printf("gdump found, reading gdump...\n");
+            fprintf(stdout, "gdump file: '%s'\n", gdump);
+            fprintf(stdout, "gdump found, reading gdump...\n");
             read_gdump(gdump);
         }
 
-        printf("Calculating connection coefficients...\n");
+        fprintf(stdout, "Calculating connection coefficients...\n");
         for (i = 0; i < N1; i++) {
             for (j = 0; j < N2; j++) {
                 for (k = 0; k < N3; k++) {
@@ -129,11 +128,11 @@ int main(int argc, char *argv[])
                 }
             }
         }
-        printf("writing metric information into 'metric'\n");
+        fprintf(stdout, "writing metric information into 'metric'\n");
         write_metric(metric);
     }
 
-    printf("Finished data initialization.\n\n");
+    fprintf(stdout, "Finished data initialization.\n\n");
     clock_t end_read = clock();
     double time_spent_read = (double)(end_read - begin_read) / CLOCKS_PER_SEC;
 
@@ -150,8 +149,8 @@ int main(int argc, char *argv[])
             read_current_sheets(jcs_output, J_cs);
             read_current_sheets(jpeak_output, J_cs_peak);
         }
-        if (N3 > 1) characterize();
-        else characterize2D();
+        if (N3 > 1) characterize(); // not doing 3D here, this is just legacy code!
+        else characterize();
         //else characterize2D_single();
     }
     clock_t end_char = clock();
@@ -160,12 +159,12 @@ int main(int argc, char *argv[])
     clock_t end = clock();
     double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
-    printf("\n");
-    printf("Running time (initialization): %.2lf seconds.\n", time_spent_read);
-    if (SHEETS) printf("Running time (get current sheets): %.2lf seconds.\n", time_spent_current);
-    if (CHARACTERIZE) printf("Running time (characterization): %.2lf seconds.\n", time_spent_char);
-    printf("Total running time: %.2lf seconds.\n", time_spent);
-    printf("Total running time: %.2lf minutes.\n", time_spent/60.);
+    fprintf(stdout, "\n");
+    fprintf(stdout, "Running time (initialization): %.2lf seconds.\n", time_spent_read);
+    if (SHEETS) fprintf(stdout, "Running time (get current sheets): %.2lf seconds.\n", time_spent_current);
+    if (CHARACTERIZE) fprintf(stdout, "Running time (characterization): %.2lf seconds.\n", time_spent_char);
+    fprintf(stdout, "Total running time: %.2lf seconds.\n", time_spent);
+    fprintf(stdout, "Total running time: %.2lf minutes.\n", time_spent/60.);
 
     return(0);
 }

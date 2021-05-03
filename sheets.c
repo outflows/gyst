@@ -20,7 +20,7 @@ void get_current_sheets()
     J_mean_inner = (double *) malloc(N1*sizeof(double*));
     J_mean_outer = (double *) malloc(N1*sizeof(double*));
 
-    printf("Initializing current sheets...\n");
+    fprintf(stdout, "Initializing current sheets...\n");
 
     for (i = 0; i < N1; i++) {
         J_mean_inner[i] = 0.;
@@ -93,7 +93,7 @@ void get_current_sheets()
         }
     }
 
-    printf("Checking initial candidates and getting local maxima...\n");
+    fprintf(stdout, "Checking initial candidates and getting local maxima...\n");
     // Loop over all J_cs points. For each point, look within a box
     // (see HALF_BOX_SIZE in definitions.h for box size) surrounding it.
     // If any point inside this box has a larger current, then the initial
@@ -103,7 +103,7 @@ void get_current_sheets()
     // Calculate amount and print percentage of points which are above the
     // current sheet threshold.
     percent = (double)(peak_count)/(N1*N2*N3)*100.;
-    printf("%d (%.2lf%%) points are above the threshold.\n", peak_count, percent);
+    fprintf(stdout, "%d (%.2lf%%) points are above the threshold.\n", peak_count, percent);
 
     // TO DO: adapt jpeak to GRMONTY grid (0, 1 thing, like flag)
     // TO DO: print to another file the 0-1 grid for the new jpeak
@@ -123,11 +123,11 @@ void get_current_sheets()
     }
     // Print the maxima to a file
     //write_current_sheets(jpeak_output, J_cs_peak);
-    printf("Finished current sheet initialization.\n\n");
+    fprintf(stdout, "Finished current sheet initialization.\n\n");
 
     // Main loop
-    printf("Getting current sheets...\n");
-    printf("Entering main loop...\n");
+    fprintf(stdout, "Getting current sheets...\n");
+    fprintf(stdout, "Entering main loop...\n");
     for (i = 0; i < N1; i++) {
         for (j = 0; j < N2; j++) {
             for (k = 0; k < N3; k++) {
@@ -147,9 +147,9 @@ void get_current_sheets()
             }
         }
     }
-    printf("NOTE: normalization of current left to plotting script!\n");
+    fprintf(stdout, "NOTE: normalization of current left to plotting script!\n");
     write_current_sheets(jcs_output, J_cs);
-    printf("Finished getting current sheets.\n");
+    fprintf(stdout, "Finished getting current sheets.\n");
 }
 
 

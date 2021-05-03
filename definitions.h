@@ -10,15 +10,28 @@
 
 #define ILIM 821+1
 
-// Directories
-#define DUMP_DIR "/home/physics/rodrgust/harmpi/MAD52_beta80/harmpi/dumps/";
+// Directories - cosine
+/*
+#define DUMP_DIR "/home/physics/rodrgust/harmpi/MAD52_beta80/harmpi/dumps/"
 #define RUN_DIR "/home/physics/rodrgust/gyst/run/"
-#define JCS_DISC_DIR "/home/physics/rodrgust/gyst/run/jcs_files_disc/";
-#define JCS_OUTFLOWS_DIR "/home/physics/rodrgust/gyst/run/jcs_files_disc/";
-#define JCS_JET_DIR "/home/physics/rodrgust/run/jcs_files_disc/";
-#define SHEETS_DISC_DIR "/home/physics/rodrgust/run/sheets_disc/";
-#define SHEETS_OUTFLOWS_DIR "/home/physics/rodrgust/run/sheets_outflows/";
-#define SHEETS_JET_DIR "/home/physics/rodrgust/run/sheets_jet/";
+#define JCS_DISC_DIR "/home/physics/rodrgust/gyst/run/jcs_files_disc/"
+#define JCS_OUTFLOWS_DIR "/home/physics/rodrgust/gyst/run/jcs_files_outflows/"
+#define JCS_JET_DIR "/home/physics/rodrgust/gyst/run/jcs_files_jet/"
+#define SHEETS_DISC_DIR "/home/physics/rodrgust/gyst/run/sheets_disc/"
+#define SHEETS_OUTFLOWS_DIR "/home/physics/rodrgust/gyst/run/sheets_outflows/"
+#define SHEETS_JET_DIR "/home/physics/rodrgust/gyst/run/sheets_jet/"
+*/
+
+// Directories - mbp
+#define DUMP_DIR "/Users/rodrgust/Work/projects/sheets/dumps/"
+#define RUN_DIR "/Users/rodrgust/Work/programs/gyst/run/"
+#define JCS_DISC_DIR "/Users/rodrgust/Work/programs/gyst/run/jcs_files_disc/"
+#define JCS_OUTFLOWS_DIR "/Users/rodrgust/Work/programs/gyst/run/jcs_files_outflows/"
+#define JCS_JET_DIR "/Users/rodrgust/Work/programs/gyst/run/jcs_files_jet/"
+#define SHEETS_DISC_DIR "/Users/rodrgust/Work/programs/gyst/run/sheets_disc/"
+#define SHEETS_OUTFLOWS_DIR "/Users/rodrgust/Work/programs/gyst/run/sheets_outflows/"
+#define SHEETS_JET_DIR "/Users/rodrgust/Work/programs/gyst/run/sheets_jet/"
+
 
 // Threshold values for our criteria to find current sheets
 #define SIGMAPHI_THR 10e-5

@@ -93,10 +93,10 @@ void characterize()
     int more_to_go_lower, more_to_go_upper;
     double iaux, jaux, kaux;
 
-    if (SHEETS) printf("\n");
-    printf("Beginning characterization...\n");
+    if (SHEETS) fprintf(stdout, "\n");
+    fprintf(stdout, "Beginning characterization...\n");
 
-    printf("Getting 1st derivatives...\n");
+    fprintf(stdout, "Getting 1st derivatives...\n");
     for (i = 0; i < N1; i++) {
         for (j = 0; j < N2; j++) {
             for (k = 0; k < N3; k++) {
@@ -107,7 +107,7 @@ void characterize()
     }
 
     is_good_count = 0;
-    printf("Entering main loop...\n");
+    fprintf(stdout, "Entering main loop...\n");
     for (i = 0; i < ILIM; i++) {
         for (j = 0; j < N2; j++) {
             for (k = 0; k < N3; k++) {
@@ -439,28 +439,29 @@ void characterize()
             }
         }
     }
-    printf("Identified %d possible reconnection sites.\n", is_good_count);
+    fprintf(stdout, "Identified %d possible reconnection sites.\n", is_good_count);
     FILE *sitecount;
     #if (RUN_DISC)
     {
         strcpy(count_file, RUN_DIR);
-        strcat(count_file, "sitecount_2D_disc.dat")
+        strcat(count_file, "sitecount_2D_disc.dat");
         sitecount = fopen(count_file, "a"); //// DONT FORGET TO CHANGE!!!!!!
     }
     #elif (RUN_OUTFLOWS)
     {
         strcpy(count_file, RUN_DIR);
-        strcat(count_file, "sitecount_2D_outflows.dat")
+        strcat(count_file, "sitecount_2D_outflows.dat");
         sitecount = fopen(count_file, "a"); //// DONT FORGET TO CHANGE!!!!!!
     }
     #elif (RUN_JET)
     {
         strcpy(count_file, RUN_DIR);
-        strcat(count_file, "sitecount_2D_jet.dat")
-        sitecount = fopen(count_file, "a"); //// DONT FORGET TO CHANGE!!!!!!    }
+        strcat(count_file, "sitecount_2D_jet.dat");
+        sitecount = fopen(count_file, "a"); //// DONT FORGET TO CHANGE!!!!!!
+    }
     #endif
     fprintf(sitecount, "%s,%d\n", dump_file, is_good_count);
     fclose(sitecount);
     write_current_sheets(jchar_output, J_cs_char);
-    printf("Finished characterization of sheets.\n");
+    fprintf(stdout, "Finished characterization of sheets.\n");
 }

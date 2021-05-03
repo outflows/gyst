@@ -136,7 +136,7 @@ double ******malloc_rank6_cont(int n1, int n2, int n3, int n4, int n5, int n6)
 
 void init_storage_data()
 {
-    printf("Allocating memory for data...\n");
+    fprintf(stdout, "Allocating memory for data...\n");
 
     flag = (int ***) malloc_rank3_cont(N1, N2, N3);
     a_r = (double ***) malloc_rank3_cont(N1, N2, N3);
@@ -169,7 +169,7 @@ void init_storage_data()
 
 void init_storage_metric()
 {
-    printf("Allocating memory for grid...\n");
+    fprintf(stdout, "Allocating memory for grid...\n");
 
     grid_gcov = (double *****) malloc_rank5_cont(N1, N2, N3, NDIM, NDIM);
     grid_gcon = (double *****) malloc_rank5_cont(N1, N2, N3, NDIM, NDIM);

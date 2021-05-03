@@ -2,6 +2,7 @@
 double M_unit, L_unit, T_unit, RHO_unit, U_unit, B_unit, Ne_unit;
 
 char dump_file[200], jcs_output[200], jchar_output[200], jpeak_output[200];
+//char JCS_JET_DIR[200];
 
 double *****grid_gcov, *****grid_gcon, ***grid_gdet, ******grid_conn;
 

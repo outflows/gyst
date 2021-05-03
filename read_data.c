@@ -11,7 +11,7 @@ void assign_units() {
     // Calculates the units for radiative transfer calculations.
     // Not needed here.
 
-    printf("Assigning units...\n");
+    fprintf(stdout, "Assigning units...\n");
 
     L_unit = GNEWT * MBH / (CL * CL);
     T_unit = L_unit / CL;
@@ -20,13 +20,13 @@ void assign_units() {
     B_unit = CL * sqrt(4. * M_PI * RHO_unit);
     Ne_unit = RHO_unit / (MP + ME);
 
-    //printf("MBH: %g\n", MBH);
-    //printf("M_unit: %g\n", MUNIT);
-    //printf("L_unit: %g\n", L_unit);
-    //printf("RHO_unit: %g\n", RHO_unit);
-    //printf("U_unit: %g\n", U_unit);
-    //printf("B_unit: %g\n", B_unit);
-    //printf("Ne_unit: %g\n\n", Ne_unit);
+    //fprintf(stdout, "MBH: %g\n", MBH);
+    //fprintf(stdout, "M_unit: %g\n", MUNIT);
+    //fprintf(stdout, "L_unit: %g\n", L_unit);
+    //fprintf(stdout, "RHO_unit: %g\n", RHO_unit);
+    //fprintf(stdout, "U_unit: %g\n", U_unit);
+    //fprintf(stdout, "B_unit: %g\n", B_unit);
+    //fprintf(stdout, "Ne_unit: %g\n\n", Ne_unit);
 }
 
 void read_data(char *fname) {
@@ -50,17 +50,17 @@ void read_data(char *fname) {
 
     float var[50]; // must be float because HARMPI dump data is saved as float!
 
-    printf("Opening dump file...\n");
+    fprintf(stdout, "Opening dump file...\n");
     fp = fopen(fname, "r");
     if (fp == NULL) {
-		fprintf(stderr, "dump file not found.\n");
+		fprintf(stderr, "dump file not found. Check filename and path to file.\n");
 		exit(1);
 	} else {
-		fprintf(stderr, "Successfully opened dump file.\n");
+		fprintf(stdout, "Successfully opened dump file.\n");
 	}
 
     // get standard HARMPI header
-    printf("Reading header...\n");
+    fprintf(stdout, "Reading header...\n");
 
     fscanf(fp, "%lf ", &t);
     fscanf(fp, "%d ", &N1);
@@ -133,10 +133,10 @@ void read_data(char *fname) {
     // initialize malloc for variables
     init_storage_data();
 
-    printf("Simulation grid: %d x %d x %d\n", N1, N2, N3);
+    fprintf(stdout, "Simulation grid: %d x %d x %d\n", N1, N2, N3);
 
     // get data
-    printf("Reading body...\n");
+    fprintf(stdout, "Reading body...\n");
     for (i = 0; i < N1; i++) {
         for (j = 0; j < N2; j++) {
             for (k = 0; k < N3; k++) {
@@ -237,7 +237,7 @@ void read_data(char *fname) {
             }
         }
     }
-    printf("Finished reading fluid data.\n\n");
+    fprintf(stdout, "Finished reading fluid data.\n\n");
     fclose(fp);
 /*
     // OLD WAY
@@ -308,17 +308,17 @@ void read_gdump(char *fname)
 
     float var[58];
 
-    printf("Opening gdump file...\n");
+    fprintf(stdout, "Opening gdump file...\n");
     fp = fopen(fname, "rb");
 	if (fp == NULL) {
-		fprintf(stderr, "gdump not found.\n");
+		fprintf(stderr, "gdump not found. Check filename and path to file.\n");
 		exit(1);
 	} else {
-		fprintf(stderr, "Successfully opened gdump file.\n");
+		fprintf(stdout, "Successfully opened gdump file.\n");
 	}
 
     // get standard HARMPI header
-    printf("Reading header...\n");
+    fprintf(stdout, "Reading header...\n");
 
     fscanf(fp, "%lf ", &t);
     fscanf(fp, "%d ", &N1);
@@ -392,7 +392,7 @@ void read_gdump(char *fname)
     init_storage_metric();
 
     // Read metric
-    printf("Reading body...\n");
+    fprintf(stdout, "Reading body...\n");
     for (i = 0; i < N1; i++) {
         for (j = 0; j < N2; j++) {
             for (k = 0; k < N3; k++) {
@@ -442,7 +442,7 @@ void read_gdump(char *fname)
         }
     }
 
-    printf("Finished reading gdump.\n\n");
+    fprintf(stdout, "Finished reading gdump.\n\n");
     fclose(fp);
 }
 
@@ -497,7 +497,7 @@ void read_metric(char *fname)
             }
         }
     }
-    printf("Finished reading metric.\n\n");
+    fprintf(stdout, "Finished reading metric.\n\n");
     fclose(fp);
 }
 
@@ -511,7 +511,7 @@ void write_metric(char *fname)
     fp = fopen(fname, "wb");
 
     if(fp==NULL) {
-      fprintf(stderr,"error opening metricfile\n") ;
+      fprintf(stderr,"error opening metricfile, metricfile not found. Check filename and path to file. \n") ;
       exit(1) ;
     }
 
@@ -558,12 +558,17 @@ void write_current_sheets(char *fname, double ***sheets) {
     int i, j, k;
 
     fp = fopen(fname, "wb");
+    if (fp == NULL) {
+		fprintf(stderr, "Sheet file not found. Check filename and path to file.\n");
+		exit(1);
 
-    printf("Writing into file '%s'...\n", fname);
+    fprintf(stdout, "Writing into file '%s'...\n", fname);
+    //fwrite(sheets, sizeof(double), N1*N2*N3, fp);
     for (i = 0; i < N1; i++) {
         for (j = 0; j < N2; j++) {
             for (k = 0; k < N3; k++) {
                 fwrite(&sheets[i][j][k], sizeof(double), 1, fp);
+
             }
         }
     }
@@ -582,7 +587,7 @@ void read_current_sheets(char *fname, double ***sheets)
 
     fp = fopen(fname, "rb");
 
-    printf("Reading current sheets from file '%s'...\n", fname);
+    fprintf(stdout, "Reading current sheets from file '%s'...\n", fname);
     for (i = 0; i < N1; i++) {
         for (j = 0; j < N2; j++) {
             for (k = 0; k < N3; k++) {
