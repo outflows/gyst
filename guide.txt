@@ -1,0 +1,9 @@
+Welcome to gyst (get your sheets together!)
+
+Below, a quick step by step guide to the order of programs/scripts you should run:
+
+1) run simulation
+2) run getfluxes.py
+3) run gyst
+4) run getenergy
+5) run guide_fields

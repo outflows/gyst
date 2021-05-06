@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import sys
 import argparse
 from scipy import interpolate
-import tqdm
-import nmmn.lsd, nmmn.misc
+#import tqdm
+#import nmmn.lsd, nmmn.misc
 import os.path
 import pandas as pd
 import astropy.visualization
@@ -14,7 +14,7 @@ import matplotlib as mpl
 mpl.rcParams['font.serif'] = 'helvetica'
 mpl.rcParams['font.sans-serif'] = 'helvetica'
 
-path_to_dumps = "/home/physics/rodrgust/harmpi/MAD52_beta80/dumps/"
+path_to_dumps = "/home/physics/rodrgust/harmpi/MAD52_beta80/harmpi/dumps/"
 path_to_run = "/home/physics/rodrgust/gyst/run/"
 
 def mdot(a,b):
