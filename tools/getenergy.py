@@ -558,24 +558,35 @@ for dumpno in range(dumpmin,dumpmax+1):
     sum_snapshot = sum(sum_sheets_arr)
     magenergy_arr.append(sum_snapshot)
 
-#if (disc):
-#    energyfile = open("energy_disc_2D.dat", "w+")
-#elif (jet):
-#    energyfile = open("energy_jet_2D.dat", "w+")
 mean_energy = np.mean(mean_energy_arr)
 std_energy = np.std(mean_energy_arr)
-print("mean energy [code units]",mean_energy)
+print("mean energy [code]",mean_energy)
 print("mean energy [erg] =",mean_energy*B_unit*B_unit*L_unit*L_unit*L_unit)
-print("std error energy [code units]",std_energy)
+print("std error energy [code]",std_energy)
 print("std error energy [erg] =",std_energy*B_unit*B_unit*L_unit*L_unit*L_unit)
-print("max energy [code units] =",max_energy)
+print("max energy [code] =",max_energy)
 print("max energy [erg] =",max_energy*B_unit*B_unit*L_unit*L_unit*L_unit)
 
+#write main results to file
+if (disc):
+    total_energy_file = open(path_to_run + "magenergy_max_mean_disc.dat", "w+")
+if (outflows):
+    total_energy_file = open(path_to_run + "magenergy_max_mean_outflows.dat", "w+")
+if (jet):
+    total_energy_file = open(path_to_run + "magenergy_max_mean_jet.dat", "w+")
+total_energy_file.write("mean energy [code]",mean_energy)
+total_energy_file.write("mean energy [erg] =",mean_energy*B_unit*B_unit*L_unit*L_unit*L_unit)
+total_energy_file.write("std error energy [code]",std_energy)
+total_energy_file.write("std error energy [erg] =",std_energy*B_unit*B_unit*L_unit*L_unit*L_unit)
+total_energy_file.write("max energy [code] =",max_energy)
+total_energy_file.write("max energy [erg] =",max_energy*B_unit*B_unit*L_unit*L_unit*L_unit)
+total_energy_file.close()
 
 magenergy_arr = [element for element in magenergy_arr if str(element) != 'nan']
 magenergy_arr = [element for element in magenergy_arr if str(element) != 'inf']
 magenergy_arr = np.array(magenergy_arr)
 
+# write energy from snapshots to file
 if (disc):
     magenergy_file = open(path_to_run + "magenergy_2D_disc.dat","w+")
 elif (outflows):
